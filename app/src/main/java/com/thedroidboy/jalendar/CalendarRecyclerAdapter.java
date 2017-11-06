@@ -1,12 +1,15 @@
 package com.thedroidboy.jalendar;
 
 import android.arch.paging.PagedListAdapter;
+import android.databinding.DataBindingUtil;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.thedroidboy.jalendar.databinding.MonthItemBinding;
+import com.thedroidboy.jalendar.model.MonthVM;
 
 /**
  * Created by Yaakov Shahak
@@ -24,7 +27,8 @@ public class CalendarRecyclerAdapter extends PagedListAdapter<MonthVM, CalendarR
     @Override
     public CalendarViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        return new CalendarViewHolder(layoutInflater.inflate(R.layout.month_item, parent, false));
+        MonthItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, parent, false);
+        return new CalendarViewHolder(binding);
     }
 
     @Override
@@ -35,17 +39,20 @@ public class CalendarRecyclerAdapter extends PagedListAdapter<MonthVM, CalendarR
         }
     }
 
-    static class CalendarViewHolder extends RecyclerView.ViewHolder{
-        private TextView monthLabel;
+    static class CalendarViewHolder extends RecyclerView.ViewHolder {
+        final MonthItemBinding binding;
 
-        CalendarViewHolder(View itemView) {
-            super(itemView);
-            monthLabel = itemView.findViewById(R.id.month_label);
+        CalendarViewHolder(MonthItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.recyclerView.setLayoutManager(new GridLayoutManager(itemView.getContext(), 7, LinearLayoutManager.VERTICAL, false));
+            binding.recyclerView.setHasFixedSize(true);
+
         }
 
-        public void bindTo(MonthVM monthVM){
-            Log.d(TAG, "binding:" + monthVM.getMonthHebName());
-            monthLabel.setText(monthVM.getMonthHebName());
+        void bindTo(MonthVM monthVM) {
+            binding.setMonth(monthVM);
+            binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
         }
     }
 

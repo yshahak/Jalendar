@@ -1,5 +1,9 @@
-package com.thedroidboy.jalendar;
+package com.thedroidboy.jalendar.model;
 
+
+import android.graphics.Color;
+
+import com.thedroidboy.jalendar.JewCalendar;
 
 import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
 
@@ -28,6 +32,7 @@ public class Day {
     private long endDayInMillis;
     private int dayInMonth;
     private boolean isOutOfMonthRange;
+    private int backgroundColor = Color.TRANSPARENT;
 
     public Day() {
     }
@@ -63,16 +68,16 @@ public class Day {
         return id;
     }
 
-//    public List<EventInstance> getGoogleEventInstances() {
-//        return googleEventInstances;
-//    }
-//
-//    public void setGoogleEventInstances(List<EventInstance> googleEventInstances) {
-//        this.googleEventInstances = googleEventInstances;
-//    }
-
     public String getLabel() {
         return label;
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public int getBackgroundColor() {
+        return backgroundColor;
     }
 
     public long getStartDayInMillis() {
@@ -108,5 +113,18 @@ public class Day {
     public void setBeginAndEnd(Day day) {
         this.startDayInMillis = day.endDayInMillis;
         this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+    }
+
+    @Override
+    public String toString() {
+        return "Day{" +
+                "\tid=" + id +
+                "\t label='" + label + '\'' +
+                "\t startDayInMillis=" + startDayInMillis +
+                "\t endDayInMillis=" + endDayInMillis +
+                "\t dayInMonth=" + dayInMonth +
+                "\t isOutOfMonthRange=" + isOutOfMonthRange +
+                "\t backgroundColor=" + backgroundColor +
+                '}';
     }
 }

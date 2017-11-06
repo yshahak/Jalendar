@@ -1,6 +1,9 @@
 package com.thedroidboy.jalendar;
 
+import android.graphics.Color;
 import android.os.Parcel;
+
+import com.thedroidboy.jalendar.model.Day;
 
 import net.sourceforge.zmanim.hebrewcalendar.HebrewDateFormatter;
 import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
@@ -218,6 +221,7 @@ public class JewCalendar extends JewishCalendar {
         for (int i = 0; i < copy.getHeadOffset(); i++) {
             Day day = new Day(copy);
             day.setOutOfMonthRange(true);
+            day.setBackgroundColor(Color.GRAY);
             copy.shiftDay(1);
             if (dayList.size() ==0 ){
                 day.setBeginAndEnd(copy);
@@ -244,6 +248,7 @@ public class JewCalendar extends JewishCalendar {
             day.setBeginAndEnd(dayList.get(dayList.size() - 1));
             copy.shiftDay(1);
             dayList.add(day);
+            day.setBackgroundColor(Color.GRAY);
         }
         copy.shiftMonthBackword();
     }
