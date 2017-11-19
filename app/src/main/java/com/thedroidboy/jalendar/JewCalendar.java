@@ -1,18 +1,13 @@
 package com.thedroidboy.jalendar;
 
-import android.graphics.Color;
 import android.os.Parcel;
-
-import com.thedroidboy.jalendar.model.Day;
 
 import net.sourceforge.zmanim.hebrewcalendar.HebrewDateFormatter;
 import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -25,16 +20,14 @@ public class JewCalendar extends JewishCalendar {
 
     public static HebrewDateFormatter hebrewDateFormatter = new HebrewDateFormatter();
     private static JewCalendar calculatorCalendar = new JewCalendar();
+
     static {
         hebrewDateFormatter.setHebrewFormat(true);
     }
-    private List<Day> dayList = new ArrayList<>();
 
-    private int headOffset, trailOffset;
+//    private List<Day> dayList = new ArrayList<>();
 
-    private int oldPosition;
-    private boolean isRecycled;
-    public boolean flagCurrentMonth;
+//    private int headOffset, trailOffset;
 
     public JewCalendar(int jewishYear, int jewishMonth, int day) {
         super(jewishYear, jewishMonth, day);
@@ -44,8 +37,8 @@ public class JewCalendar extends JewishCalendar {
         super(calendar);
     }
 
-    public boolean isRecycled() {
-        return isRecycled;
+    public JewCalendar() {
+        super();
     }
 
     public JewCalendar(int offset) {
@@ -54,15 +47,9 @@ public class JewCalendar extends JewishCalendar {
 
     public JewCalendar(Date date) {
         super(date);
-        setOffsets();
     }
 
-    public JewCalendar() {
-        setOffsets();
-    }
-
-    public JewCalendar shiftMonth(int position) {
-        int offset = position - oldPosition;
+    public JewCalendar shiftMonth(int offset) {
         if (offset > 0) {
             for (int i = 0; i < offset; i++) {
                 shiftMonthForward();
@@ -71,14 +58,10 @@ public class JewCalendar extends JewishCalendar {
             for (int i = offset * (-1); i > 0; i--) {
                 shiftMonthBackword();
             }
-        } else {
-            flagCurrentMonth = true;
         }
-//        setOffsets();
-//        setMonthDays();
-        oldPosition = position;
         return this;
     }
+
     public void shiftDay(int offset) {
         if (offset > 0) {
             for (int i = 0; i < offset; i++) {
@@ -141,22 +124,39 @@ public class JewCalendar extends JewishCalendar {
     }
 
 
-    public void setOffsets() {
-        { //calculate head
-            int dayInMonth = getJewishDayOfMonth() % 7;
-            Date date = getTime();
-            date.setTime(date.getTime() - 1000 * 60 * 60 * 24 * (--dayInMonth));
-            JewishCalendar mockCalendar = new JewishCalendar(date);
-            int dayInWeek = mockCalendar.getDayOfWeek();
-            headOffset = --dayInWeek;
-        }
-        {//calculate trail
-            JewishCalendar mock = new JewishCalendar(getTime());
-            mock.setJewishDayOfMonth(isFullMonth() ? 30 : 29);
-            int dayOfWeek = mock.getDayOfWeek();
-            trailOffset = 7 - dayOfWeek;
-        }
-//        Log.d("TAG", getMonthName() +  ", headOffset:" + headOffset + ", trailOffset:" + trailOffset);
+//    public void setOffsets() {
+//        { //calculate head
+//            int dayInMonth = getJewishDayOfMonth() % 7;
+//            Date date = getTime();
+//            date.setTime(date.getTime() - 1000 * 60 * 60 * 24 * (--dayInMonth));
+//            JewishCalendar mockCalendar = new JewishCalendar(date);
+//            int dayInWeek = mockCalendar.getDayOfWeek();
+//            headOffset = --dayInWeek;
+//        }
+//        {//calculate trail
+//            JewishCalendar mock = new JewishCalendar(getTime());
+//            mock.setJewishDayOfMonth(isFullMonth() ? 30 : 29);
+//            int dayOfWeek = mock.getDayOfWeek();
+//            trailOffset = 7 - dayOfWeek;
+//        }
+//    }
+
+    public int getMonthHeadOffset() {
+        //calculate head
+        int dayInMonth = getJewishDayOfMonth() % 7;
+        Date date = getTime();
+        date.setTime(date.getTime() - 1000 * 60 * 60 * 24 * (--dayInMonth));
+        JewishCalendar mockCalendar = new JewishCalendar(date);
+        int dayInWeek = mockCalendar.getDayOfWeek();
+        return --dayInWeek;
+    }
+
+    public int getMonthTrailOffset() {
+        //calculate trail
+        JewishCalendar mock = new JewishCalendar(getTime());
+        mock.setJewishDayOfMonth(isFullMonth() ? 30 : 29);
+        int dayOfWeek = mock.getDayOfWeek();
+        return 7 - dayOfWeek;
     }
 
     public void setHour(int hour) {
@@ -175,14 +175,6 @@ public class JewCalendar extends JewishCalendar {
 
     public boolean isFullMonth() {
         return getDaysInJewishMonth() == 30;
-    }
-
-    public int getHeadOffset() {
-        return headOffset;
-    }
-
-    public int getTrailOffset() {
-        return trailOffset;
     }
 
     public String getDayLabel() {
@@ -209,50 +201,49 @@ public class JewCalendar extends JewishCalendar {
         return calendar.getTimeInMillis();
     }
 
-    public List<Day> getMonthDays() {
-        return dayList;
-    }
+//    public List<Day> getMonthDays() {
+//        return dayList;
+//    }
 
-    public void setMonthDays() {
-        dayList.clear();
-        JewCalendar copy = this;
-        copy.setJewishDayOfMonth(1);
-        copy.shiftDay(copy.getHeadOffset()*(-1));
-        for (int i = 0; i < copy.getHeadOffset(); i++) {
-            Day day = new Day(copy);
-            day.setOutOfMonthRange(true);
-            day.setBackgroundColor(Color.GRAY);
-            copy.shiftDay(1);
-            if (dayList.size() ==0 ){
-                day.setBeginAndEnd(copy);
-            } else {
-                day.setBeginAndEnd(dayList.get(dayList.size() - 1));
-            }
-            dayList.add(day);
-        }
-        int daysSum = copy.getDaysInJewishMonth();
-        for (int i = 1; i <= daysSum; i++) {
-            copy.setJewishDayOfMonth(i);
-            Day day = new Day(copy);
-            if (dayList.size() ==0 ){
-                day.setBeginAndEnd(copy);
-            } else {
-                day.setBeginAndEnd(dayList.get(dayList.size() - 1));
-            }
-            dayList.add(day);
-        }
-        copy.shiftDay(1);
-        for (int i = 0; i < copy.getTrailOffset(); i++){
-            Day day = new Day(copy);
-            day.setOutOfMonthRange(true);
-            day.setBeginAndEnd(dayList.get(dayList.size() - 1));
-            copy.shiftDay(1);
-            dayList.add(day);
-            day.setBackgroundColor(Color.GRAY);
-        }
-        copy.shiftMonthBackword();
-    }
-
+//    public void setMonthDays() {
+//        dayList.clear();
+//        JewCalendar copy = this;
+//        copy.setJewishDayOfMonth(1);
+//        copy.shiftDay(copy.getHeadOffset() * (-1));
+//        for (int i = 0; i < copy.getHeadOffset(); i++) {
+//            Day day = new Day(copy);
+//            day.setOutOfMonthRange(true);
+//            day.setBackgroundColor(Color.GRAY);
+//            copy.shiftDay(1);
+//            if (dayList.size() == 0) {
+//                day.setBeginAndEnd(copy);
+//            } else {
+//                day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+//            }
+//            dayList.add(day);
+//        }
+//        int daysSum = copy.getDaysInJewishMonth();
+//        for (int i = 1; i <= daysSum; i++) {
+//            copy.setJewishDayOfMonth(i);
+//            Day day = new Day(copy);
+//            if (dayList.size() == 0) {
+//                day.setBeginAndEnd(copy);
+//            } else {
+//                day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+//            }
+//            dayList.add(day);
+//        }
+//        copy.shiftDay(1);
+//        for (int i = 0; i < copy.getTrailOffset(); i++) {
+//            Day day = new Day(copy);
+//            day.setOutOfMonthRange(true);
+//            day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+//            copy.shiftDay(1);
+//            dayList.add(day);
+//            day.setBackgroundColor(Color.GRAY);
+//        }
+//        copy.shiftMonthBackword();
+//    }
 
 
     protected JewCalendar(Parcel in) {
@@ -303,14 +294,6 @@ public class JewCalendar extends JewishCalendar {
 
         }
         return shift;
-    }
-
-    public Object clone() {
-        JewCalendar clone;
-        clone = (JewCalendar) super.clone();
-        clone.headOffset = this.headOffset;
-        clone.trailOffset = this.trailOffset;
-        return clone;
     }
 
     public static int getDayOfMonth(long date) {

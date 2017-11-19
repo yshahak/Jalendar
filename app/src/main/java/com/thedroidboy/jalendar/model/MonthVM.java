@@ -5,10 +5,12 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListProvider;
 import android.arch.paging.PagedList;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 
 import com.thedroidboy.jalendar.CalendarDataSource;
+import com.thedroidboy.jalendar.JewCalendar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +31,7 @@ public class MonthVM extends ViewModel {
     private int daysInMonth, headOffset, trailOffset;
     private List<Day> dayList = new ArrayList<>();
 
-    public void init(){
+    public void init() {
         monthList = new LivePagedListProvider<Integer, MonthVM>() {
             @Override
             protected DataSource<Integer, MonthVM> createDataSource() {
@@ -73,10 +75,6 @@ public class MonthVM extends ViewModel {
         return monthHebName;
     }
 
-    public void setDayList(List<Day> dayList) {
-        this.dayList = dayList;
-    }
-
     public List<Day> getDayList() {
         return dayList;
     }
@@ -88,6 +86,49 @@ public class MonthVM extends ViewModel {
     public int getTrailOffset() {
         return trailOffset;
     }
+
+    public void setMonthDays(JewCalendar monthCalendar) {
+        int currentDayOfMonth = monthCalendar.getJewishDayOfMonth();
+        monthCalendar.setJewishDayOfMonth(1);
+        int headOffset = getHeadOffset();
+        monthCalendar.shiftDay(headOffset * (-1));
+        for (int i = 0; i < headOffset; i++) {
+            Day day = new Day(monthCalendar);
+            day.setOutOfMonthRange(true);
+            day.setBackgroundColor(Color.GRAY);
+            monthCalendar.shiftDay(1);
+            if (dayList.size() == 0) {
+                day.setBeginAndEnd(monthCalendar);
+            } else {
+                day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+            }
+            dayList.add(day);
+        }
+        int daysSum = monthCalendar.getDaysInJewishMonth();
+        for (int i = 1; i <= daysSum; i++) {
+            monthCalendar.setJewishDayOfMonth(i);
+            Day day = new Day(monthCalendar);
+            if (dayList.size() == 0) {
+                day.setBeginAndEnd(monthCalendar);
+            } else {
+                day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+            }
+            dayList.add(day);
+        }
+        int monthTrailOffset = monthCalendar.getMonthTrailOffset();
+        monthCalendar.shiftDay(1);
+        for (int i = 0; i < monthTrailOffset; i++) {
+            Day day = new Day(monthCalendar);
+            day.setOutOfMonthRange(true);
+            day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+            monthCalendar.shiftDay(1);
+            dayList.add(day);
+            day.setBackgroundColor(Color.GRAY);
+        }
+        monthCalendar.shiftMonthBackword();
+        monthCalendar.setJewishDayOfMonth(currentDayOfMonth);
+    }
+
 
     public static DiffCallback<MonthVM> DIFF_CALLBACK = new DiffCallback<MonthVM>() {
 
