@@ -143,20 +143,19 @@ public class JewCalendar extends JewishCalendar {
 
     public int getMonthHeadOffset() {
         //calculate head
-        int dayInMonth = getJewishDayOfMonth() % 7;
-        Date date = getTime();
-        date.setTime(date.getTime() - 1000 * 60 * 60 * 24 * (--dayInMonth));
-        JewishCalendar mockCalendar = new JewishCalendar(date);
-        int dayInWeek = mockCalendar.getDayOfWeek();
-        return --dayInWeek;
+        int currentDayOfMonth = getJewishDayOfMonth();
+        int currentDayOfWeek = getDayOfWeek();
+        int remain = currentDayOfMonth % 7;
+        return Math.abs(remain - currentDayOfWeek);
     }
 
     public int getMonthTrailOffset() {
         //calculate trail
-        JewishCalendar mock = new JewishCalendar(getTime());
-        mock.setJewishDayOfMonth(isFullMonth() ? 30 : 29);
-        int dayOfWeek = mock.getDayOfWeek();
-        return 7 - dayOfWeek;
+        int totalDays = getDaysInJewishMonth();
+        int currentDayOfMonth = getJewishDayOfMonth();
+        int currentDayOfWeek = getDayOfWeek();
+        int remain = (totalDays - currentDayOfMonth + currentDayOfWeek) % 7;
+        return (7- remain);
     }
 
     public void setHour(int hour) {

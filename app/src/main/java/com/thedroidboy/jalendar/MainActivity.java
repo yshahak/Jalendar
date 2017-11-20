@@ -1,14 +1,10 @@
 package com.thedroidboy.jalendar;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
-import com.thedroidboy.jalendar.model.MonthVM;
+import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +14,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
+        viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
+        viewPager.setOffscreenPageLimit(2);
+    }
+
+    /*
+     RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         MonthVM monthVM = ViewModelProviders.of(this).get(MonthVM.class);
         final CalendarRecyclerAdapter recyclerAdapter = new CalendarRecyclerAdapter();
@@ -57,5 +60,5 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         snapHelper.attachToRecyclerView(recyclerView);
-    }
+    * */
 }

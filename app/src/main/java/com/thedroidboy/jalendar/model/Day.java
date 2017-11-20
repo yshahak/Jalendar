@@ -8,7 +8,6 @@ import com.thedroidboy.jalendar.JewCalendar;
 import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 import static com.thedroidboy.jalendar.JewCalendar.hebrewDateFormatter;
 
@@ -101,18 +100,18 @@ public class Day {
     }
 
     public void setBeginAndEnd(JewishCalendar jewishCalendar) {
-        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        this.startDayInMillis = calendar.getTimeInMillis();
-        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+//        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//        calendar.set(Calendar.MILLISECOND, 0);
+//        this.startDayInMillis = calendar.getTimeInMillis();
+//        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
     }
 
     public void setBeginAndEnd(Day day) {
-        this.startDayInMillis = day.endDayInMillis;
-        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+//        this.startDayInMillis = day.endDayInMillis;
+//        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
     }
 
     @Override

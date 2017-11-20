@@ -2,8 +2,6 @@ package com.thedroidboy.jalendar.model;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListProvider;
 import android.arch.paging.PagedList;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -31,19 +29,19 @@ public class MonthVM extends ViewModel {
     private int daysInMonth, headOffset, trailOffset;
     private List<Day> dayList = new ArrayList<>();
 
-    public void init() {
-        monthList = new LivePagedListProvider<Integer, MonthVM>() {
-            @Override
-            protected DataSource<Integer, MonthVM> createDataSource() {
-                calendarDataSource = new CalendarDataSource();
-                return calendarDataSource;
-            }
-        }.create(INITIAL_OFFSET, new PagedList.Config.Builder()
-                .setEnablePlaceholders(false)
-                .setPageSize(3)
-                .setInitialLoadSizeHint(3)
-                .build());
-    }
+//    public void init() {
+//        monthList = new LivePagedListProvider<Integer, MonthVM>() {
+//            @Override
+//            protected DataSource<Integer, MonthVM> createDataSource() {
+//                calendarDataSource = new CalendarDataSource();
+//                return calendarDataSource;
+//            }
+//        }.create(INITIAL_OFFSET, new PagedList.Config.Builder()
+//                .setEnablePlaceholders(false)
+//                .setPageSize(2)
+////                .setInitialLoadSizeHint(3)
+//                .build());
+//    }
 
 
     public void setMonthHebName(String monthHebName) {
