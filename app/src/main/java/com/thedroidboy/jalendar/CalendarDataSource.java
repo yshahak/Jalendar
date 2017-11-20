@@ -29,14 +29,8 @@ public class CalendarDataSource extends TiledDataSource<MonthVM> {
         List<MonthVM> monthVMS = new ArrayList<>();
         for (int i = 0 ; i < count ; i++){
             JewCalendar jewCalendar = new JewCalendar(startPosition - MonthVM.INITIAL_OFFSET);
-//            jewCalendar.setMonthDays();
             Log.d(TAG, jewCalendar.getMonthName());
-            MonthVM monthVM = new MonthVM();
-            monthVM.setMonthHebName(jewCalendar.getMonthName());
-            monthVM.setDaysInMonth(jewCalendar.getDaysInJewishMonth());
-            monthVM.setHeadOffset(jewCalendar.getMonthHeadOffset());
-            monthVM.setTrailOffset(jewCalendar.getMonthTrailOffset());
-            monthVM.setMonthDays(jewCalendar);
+            MonthVM monthVM = new MonthVM(jewCalendar);
             monthVMS.add(monthVM);
             startPosition++;
         }

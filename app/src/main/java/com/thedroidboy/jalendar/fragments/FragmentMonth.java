@@ -44,12 +44,7 @@ public class FragmentMonth extends Fragment {
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         JewCalendar jewCalendar = new JewCalendar(position);
-        MonthVM monthVM = new MonthVM();
-        monthVM.setMonthHebName(jewCalendar.getMonthName());
-        monthVM.setDaysInMonth(jewCalendar.getDaysInJewishMonth());
-        monthVM.setHeadOffset(jewCalendar.getMonthHeadOffset());
-        monthVM.setTrailOffset(jewCalendar.getMonthTrailOffset());
-        monthVM.setMonthDays(jewCalendar);
+        MonthVM monthVM = new MonthVM(jewCalendar);
 
         MonthItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false));

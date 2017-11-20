@@ -29,6 +29,15 @@ public class MonthVM extends ViewModel {
     private int daysInMonth, headOffset, trailOffset;
     private List<Day> dayList = new ArrayList<>();
 
+    public MonthVM(JewCalendar jewCalendar) {
+        setMonthHebName(jewCalendar.getMonthName());
+        setDaysInMonth(jewCalendar.getDaysInJewishMonth());
+        setHeadOffset(jewCalendar.getMonthHeadOffset());
+        setTrailOffset(jewCalendar.getMonthTrailOffset());
+        setMonthDays(jewCalendar);
+
+    }
+
 //    public void init() {
 //        monthList = new LivePagedListProvider<Integer, MonthVM>() {
 //            @Override
@@ -86,15 +95,16 @@ public class MonthVM extends ViewModel {
     }
 
     public void setMonthDays(JewCalendar monthCalendar) {
-        int currentDayOfMonth = monthCalendar.getJewishDayOfMonth();
-        monthCalendar.setJewishDayOfMonth(1);
+//        int currentDayOfMonth = monthCalendar.getJewishDayOfMonth();
+//        monthCalendar.setJewishDayOfMonth(1);
         int headOffset = getHeadOffset();
-        monthCalendar.shiftDay(headOffset * (-1));
-        for (int i = 0; i < headOffset; i++) {
-            Day day = new Day(monthCalendar);
+//        monthCalendar.shiftDay(headOffset * (-1));
+        int daysInPrevMonth = monthCalendar.getDaysInPreviousMonth();
+        for (int i = daysInPrevMonth - headOffset; i <= daysInPrevMonth; i++) {
+            Day day = new Day(i);
             day.setOutOfMonthRange(true);
             day.setBackgroundColor(Color.GRAY);
-            monthCalendar.shiftDay(1);
+//            monthCalendar.shiftDay(1);
             if (dayList.size() == 0) {
                 day.setBeginAndEnd(monthCalendar);
             } else {
@@ -104,8 +114,8 @@ public class MonthVM extends ViewModel {
         }
         int daysSum = monthCalendar.getDaysInJewishMonth();
         for (int i = 1; i <= daysSum; i++) {
-            monthCalendar.setJewishDayOfMonth(i);
-            Day day = new Day(monthCalendar);
+//            monthCalendar.setJewishDayOfMonth(i);
+            Day day = new Day(i);
             if (dayList.size() == 0) {
                 day.setBeginAndEnd(monthCalendar);
             } else {
@@ -114,17 +124,17 @@ public class MonthVM extends ViewModel {
             dayList.add(day);
         }
         int monthTrailOffset = monthCalendar.getMonthTrailOffset();
-        monthCalendar.shiftDay(1);
-        for (int i = 0; i < monthTrailOffset; i++) {
-            Day day = new Day(monthCalendar);
+//        monthCalendar.shiftDay(1);
+        for (int i = 1; i <= monthTrailOffset; i++) {
+            Day day = new Day(i);
             day.setOutOfMonthRange(true);
             day.setBeginAndEnd(dayList.get(dayList.size() - 1));
-            monthCalendar.shiftDay(1);
+//            monthCalendar.shiftDay(1);
             dayList.add(day);
             day.setBackgroundColor(Color.GRAY);
         }
-        monthCalendar.shiftMonthBackword();
-        monthCalendar.setJewishDayOfMonth(currentDayOfMonth);
+//        monthCalendar.shiftMonthBackword();
+//        monthCalendar.setJewishDayOfMonth(currentDayOfMonth);
     }
 
 

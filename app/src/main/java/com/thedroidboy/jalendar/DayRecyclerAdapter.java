@@ -37,7 +37,7 @@ public class DayRecyclerAdapter extends RecyclerView.Adapter<DayRecyclerAdapter.
 
     @Override
     public int getItemCount() {
-        return monthVM.getDaysInMonth() + monthVM.getTrailOffset() + monthVM.getHeadOffset();
+        return monthVM.getDayList().size();
     }
 
     static class DayViewHolder extends RecyclerView.ViewHolder{

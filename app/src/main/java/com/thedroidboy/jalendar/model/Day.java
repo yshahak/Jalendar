@@ -36,6 +36,11 @@ public class Day {
     public Day() {
     }
 
+    public Day(int dayInMonth) {
+        this.dayInMonth = dayInMonth;
+        this.label = hebrewDateFormatter.formatHebrewNumber(dayInMonth);
+    }
+
     public Day(JewCalendar jewishCalendar) {
         this.dayInMonth = jewishCalendar.getJewishDayOfMonth();
         id = jewishCalendar.monthHashCode() + dayInMonth;

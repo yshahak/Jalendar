@@ -176,6 +176,27 @@ public class JewCalendar extends JewishCalendar {
         return getDaysInJewishMonth() == 30;
     }
 
+    public int getDaysInPreviousMonth() {
+        int year = getJewishYear();
+        int month = getJewishMonth() - 1;
+        if (month == 6){
+            year--;
+        }
+        return month != 2 && month != 4 && month != 6 && (month != 8 || isCheshvanLong(year)) && (month != 9 || !isKislevShort(year)) && month != 10 && (month != 12 || isJewishLeapYear(year)) && month != 13?30:29;
+    }
+
+    private static boolean isCheshvanLong(int year) {
+        return getDaysInJewishYear(year) % 10 == 5;
+    }
+
+    private static boolean isKislevShort(int year) {
+        return getDaysInJewishYear(year) % 10 == 3;
+    }
+
+    private static boolean isJewishLeapYear(int year) {
+        return (7 * year + 1) % 19 < 7;
+    }
+
     public String getDayLabel() {
         return hebrewDateFormatter.formatHebrewNumber(getJewishDayOfMonth());
     }

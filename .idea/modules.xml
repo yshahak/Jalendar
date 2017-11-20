@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Jalendar.iml" filepath="$PROJECT_DIR$/Jalendar.iml" />
+      <module fileurl="file://C:\Users\B.E.L\AndroidstudioProjects\Jalendar\Jalendar.iml" filepath="C:\Users\B.E.L\AndroidstudioProjects\Jalendar\Jalendar.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\B.E.L\AndroidstudioProjects\Jalendar\app\app.iml" filepath="C:\Users\B.E.L\AndroidstudioProjects\Jalendar\app\app.iml" />
     </modules>
   </component>
 </project>
