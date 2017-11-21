@@ -1,5 +1,6 @@
 package com.thedroidboy.jalendar.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,8 +13,10 @@ import android.view.ViewGroup;
 
 import com.thedroidboy.jalendar.DayRecyclerAdapter;
 import com.thedroidboy.jalendar.JewCalendar;
+import com.thedroidboy.jalendar.JewCalendarPool;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
+import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
 
 /**
@@ -25,6 +28,8 @@ public class FragmentMonth extends Fragment {
 
     private static final String KEY_POSITION = "keyPosition";
     private int position;
+    private JewCalendar jewCalendar;
+    private MonthFactory monthFactory;
 
     public static FragmentMonth newInstance(int position){
         FragmentMonth fragmentMonth = new FragmentMonth();
@@ -38,19 +43,26 @@ public class FragmentMonth extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.position = getArguments().getInt(KEY_POSITION);
+        this.jewCalendar = JewCalendarPool.obtain(position);
+        this.monthFactory = new MonthFactory(jewCalendar);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        JewCalendar jewCalendar = new JewCalendar(position);
-        MonthVM monthVM = new MonthVM(jewCalendar);
-
+        MonthVM monthVM = ViewModelProviders.of(this, monthFactory).get(MonthVM.class);
+//        MonthVM monthVM = new MonthVM(jewCalendar);
         MonthItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false));
         binding.recyclerView.setHasFixedSize(true);
         binding.setMonth(monthVM);
         binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
         return binding.getRoot();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        JewCalendarPool.release(position);
     }
 }

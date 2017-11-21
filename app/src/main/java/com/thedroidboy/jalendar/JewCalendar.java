@@ -25,10 +25,6 @@ public class JewCalendar extends JewishCalendar {
         hebrewDateFormatter.setHebrewFormat(true);
     }
 
-//    private List<Day> dayList = new ArrayList<>();
-
-//    private int headOffset, trailOffset;
-
     public JewCalendar(int jewishYear, int jewishMonth, int day) {
         super(jewishYear, jewishMonth, day);
     }
