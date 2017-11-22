@@ -5,16 +5,15 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.thedroidboy.jalendar.DayRecyclerAdapter;
 import com.thedroidboy.jalendar.JewCalendar;
 import com.thedroidboy.jalendar.JewCalendarPool;
 import com.thedroidboy.jalendar.R;
+import com.thedroidboy.jalendar.adapters.RecyclerAdapterMonth;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
@@ -53,10 +52,12 @@ public class FragmentMonth extends Fragment {
         MonthVM monthVM = ViewModelProviders.of(this, monthFactory).get(MonthVM.class);
 //        MonthVM monthVM = new MonthVM(jewCalendar);
         MonthItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false));
         binding.recyclerView.setHasFixedSize(true);
         binding.setMonth(monthVM);
-        binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
+//        binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false));
+//        binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setAdapter(new RecyclerAdapterMonth(monthVM));
         return binding.getRoot();
     }
 
