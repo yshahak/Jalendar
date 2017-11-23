@@ -50,7 +50,6 @@ public class FragmentMonth extends Fragment {
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         MonthVM monthVM = ViewModelProviders.of(this, monthFactory).get(MonthVM.class);
-//        MonthVM monthVM = new MonthVM(jewCalendar);
         MonthItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
         binding.recyclerView.setHasFixedSize(true);
         binding.setMonth(monthVM);
@@ -64,6 +63,6 @@ public class FragmentMonth extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        JewCalendarPool.release(position);
+//        JewCalendarPool.release(position);
     }
 }

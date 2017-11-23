@@ -11,6 +11,7 @@
 <!--
         android:background="@{day.backgroundColor}"-->
         <TextView
+            android:background="@{day.backgroundColor}"
             android:layout_height="100dp"
             android:layout_width="0dp"
             android:gravity="center|top"

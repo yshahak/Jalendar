@@ -20,12 +20,13 @@ public class MonthVM extends ViewModel {
     public static final int INITIAL_OFFSET = 500;
 
 
-    private String monthHebName;
+    private String monthHebName, monthYearName;
     private int daysInMonth, headOffset, trailOffset;
     private List<Day> dayList = new ArrayList<>();
 
     public MonthVM(JewCalendar jewCalendar) {
         setMonthHebName(jewCalendar.getMonthName());
+        setYearHebName(jewCalendar.getYearName());
         setDaysInMonth(jewCalendar.getDaysInJewishMonth());
         setHeadOffset(jewCalendar.getMonthHeadOffset());
         setTrailOffset(jewCalendar.getMonthTrailOffset());
@@ -34,6 +35,10 @@ public class MonthVM extends ViewModel {
 
     public void setMonthHebName(String monthHebName) {
         this.monthHebName = monthHebName;
+    }
+
+    public void setYearHebName(String year) {
+        this.monthYearName = year;
     }
 
     public void setHeadOffset(int headOffset) {
@@ -54,6 +59,10 @@ public class MonthVM extends ViewModel {
 
     public String getMonthHebName() {
         return monthHebName;
+    }
+
+    public String getYearHebName() {
+        return monthYearName;
     }
 
     public List<Day> getDayList() {

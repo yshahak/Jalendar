@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@{month.monthHebName}"
+            android:text="@{month.monthHebName + ' ' + month.yearHebName}"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <android.support.v7.widget.RecyclerView

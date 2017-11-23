@@ -17,12 +17,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
         viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
-        viewPager.setOffscreenPageLimit(3);
-        new Thread(() -> {
-            for (int i = -10; i < 10; i++){
-                JewCalendarPool.obtain(i);
-            }
-        }).start();
+        viewPager.setOffscreenPageLimit(2);
     }
 
 }
