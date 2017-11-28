@@ -26,8 +26,6 @@ import com.thedroidboy.jalendar.model.MonthVM;
 public class FragmentMonth extends Fragment {
 
     private static final String KEY_POSITION = "keyPosition";
-    private int position;
-    private JewCalendar jewCalendar;
     private MonthFactory monthFactory;
 
     public static FragmentMonth newInstance(int position){
@@ -41,8 +39,8 @@ public class FragmentMonth extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.position = getArguments().getInt(KEY_POSITION);
-        this.jewCalendar = JewCalendarPool.obtain(position);
+        int position = getArguments().getInt(KEY_POSITION);
+        JewCalendar jewCalendar = JewCalendarPool.obtain(position);
         this.monthFactory = new MonthFactory(jewCalendar);
     }
 

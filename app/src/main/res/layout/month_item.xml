@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="month"
             type="com.thedroidboy.jalendar.model.MonthVM" />
@@ -13,19 +14,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/month_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@{month.monthHebName + ' ' + month.yearHebName}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        <include layout="@layout/week_headers" />
+
+        <!--
+                <TextView
+                    android:id="@+id/month_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@{month.monthHebName + ' ' + month.yearHebName}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+        -->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layoutDirection="rtl"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layoutDirection="rtl" />
 
     </LinearLayout>
 
