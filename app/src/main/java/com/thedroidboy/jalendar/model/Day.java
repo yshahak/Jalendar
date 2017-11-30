@@ -84,6 +84,10 @@ public class Day {
         return backgroundColor;
     }
 
+    public float getDayAlphe() {
+        return isOutOfMonthRange ? 0.5f : 1f;
+    }
+
     public long getStartDayInMillis() {
         return startDayInMillis;
     }

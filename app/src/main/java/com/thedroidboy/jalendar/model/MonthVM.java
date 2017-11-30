@@ -78,7 +78,6 @@ public class MonthVM extends ViewModel {
     }
 
     public void setMonthDays(JewCalendar monthCalendar) {
-        long start = System.currentTimeMillis();
         int headOffset = getHeadOffset();
         int daysInPrevMonth = monthCalendar.getDaysInPreviousMonth();
         for (int i = daysInPrevMonth - headOffset; i <= daysInPrevMonth; i++) {
@@ -109,6 +108,15 @@ public class MonthVM extends ViewModel {
             day.setBeginAndEnd(dayList.get(dayList.size() - 1));
             dayList.add(day);
             day.setBackgroundColor(Color.GRAY);
+        }
+        int i = 1;
+        while (dayList.size() < 42){
+            Day day = new Day(i);
+            day.setOutOfMonthRange(true);
+            day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+            dayList.add(day);
+            day.setBackgroundColor(Color.GRAY);
+            i++;
         }
 //        Log.d(TAG, "setMonthDays: took " + (System.currentTimeMillis() - start) + " ms");
     }

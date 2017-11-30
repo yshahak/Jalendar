@@ -2,6 +2,8 @@ package com.thedroidboy.jalendar;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -20,6 +22,11 @@ public class SimpleWeekView extends LinearLayout {
 
     public SimpleWeekView(Context context) {
         super(context);
+        init();
+    }
+
+    public SimpleWeekView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
         init();
     }
 

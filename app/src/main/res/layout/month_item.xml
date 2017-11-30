@@ -16,6 +16,42 @@
 
         <include layout="@layout/week_headers" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.thedroidboy.jalendar.SimpleWeekView
+                android:id="@+id/week1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.thedroidboy.jalendar.SimpleWeekView
+                android:id="@+id/week2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.thedroidboy.jalendar.SimpleWeekView
+                android:id="@+id/week3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.thedroidboy.jalendar.SimpleWeekView
+                android:id="@+id/week4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.thedroidboy.jalendar.SimpleWeekView
+                android:id="@+id/week5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.thedroidboy.jalendar.SimpleWeekView
+                android:id="@+id/week6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
         <!--
                 <TextView
                     android:id="@+id/month_label"
@@ -26,11 +62,11 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Title" />
         -->
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layoutDirection="rtl" />
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/recycler_view"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layoutDirection="rtl" />-->
 
     </LinearLayout>
 

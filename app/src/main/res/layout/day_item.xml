@@ -9,18 +9,17 @@
             name="day"
             type="com.thedroidboy.jalendar.model.Day" />
     </data>
-
+<!--        android:alpha="@{day.dayAlphe}"
+-->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:gravity="center|top"
-        android:orientation="vertical"
-        android:background="@{day.backgroundColor}">
+        android:orientation="vertical">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:alpha="0.2"
             android:background="@color/month_other_month_day_number"/>
 
         <TextView

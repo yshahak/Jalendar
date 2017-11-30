@@ -20,7 +20,7 @@
     <color name="month_saturday">#80333333</color>
     <color name="month_sunday">#80333333</color>
     <color name="month_grid_lines">#ffCCCCCC</color>
-    <color name="month_other_month_day_number">#ff939497</color>
+    <color name="month_other_month_day_number">#66939497</color>
     <color name="month_other_bgcolor">#FFEEEEEE</color>
     <color name="month_selected_week_bgcolor">#FFDDDDDD</color>
     <color name="month_today_bgcolor">#FFFFFFFF</color>

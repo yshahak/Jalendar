@@ -30,6 +30,6 @@ public class PagerAdapterMonth extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return Integer.MAX_VALUE;
+        return Integer.MAX_VALUE / 2;
     }
 }
