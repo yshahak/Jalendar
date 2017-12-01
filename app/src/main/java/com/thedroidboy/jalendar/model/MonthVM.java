@@ -3,7 +3,7 @@ package com.thedroidboy.jalendar.model;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Color;
 
-import com.thedroidboy.jalendar.JewCalendar;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,11 +78,14 @@ public class MonthVM extends ViewModel {
     }
 
     public void setMonthDays(JewCalendar monthCalendar) {
+        int currentDay = monthCalendar.getJewishDayOfMonth();
+        monthCalendar.setJewishDayOfMonth(1);
         int headOffset = getHeadOffset();
         int daysInPrevMonth = monthCalendar.getDaysInPreviousMonth();
-        for (int i = daysInPrevMonth - headOffset; i <= daysInPrevMonth; i++) {
+        for (int i = daysInPrevMonth - headOffset; i < daysInPrevMonth; i++) {
             Day day = new Day(i);
             day.setOutOfMonthRange(true);
+            day.setBackgroundColor(Color.GRAY);
             day.setBackgroundColor(Color.GRAY);
             if (dayList.size() == 0) {
                 day.setBeginAndEnd(monthCalendar);
@@ -102,14 +105,14 @@ public class MonthVM extends ViewModel {
             dayList.add(day);
         }
         int monthTrailOffset = monthCalendar.getMonthTrailOffset();
-        for (int i = 1; i <= monthTrailOffset; i++) {
+        int i = 1;
+        for (; i <= monthTrailOffset; i++) {
             Day day = new Day(i);
             day.setOutOfMonthRange(true);
             day.setBeginAndEnd(dayList.get(dayList.size() - 1));
             dayList.add(day);
             day.setBackgroundColor(Color.GRAY);
         }
-        int i = 1;
         while (dayList.size() < 42){
             Day day = new Day(i);
             day.setOutOfMonthRange(true);
@@ -118,6 +121,7 @@ public class MonthVM extends ViewModel {
             day.setBackgroundColor(Color.GRAY);
             i++;
         }
+        monthCalendar.setJewishDayOfMonth(currentDay);
 //        Log.d(TAG, "setMonthDays: took " + (System.currentTimeMillis() - start) + " ms");
     }
 

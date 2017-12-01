@@ -1,5 +1,7 @@
 package com.thedroidboy.jalendar;
 
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
+
 import net.sourceforge.zmanim.hebrewcalendar.HebrewDateFormatter;
 
 import org.junit.Before;

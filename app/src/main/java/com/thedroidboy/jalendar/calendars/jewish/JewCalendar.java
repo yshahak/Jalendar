@@ -1,4 +1,4 @@
-package com.thedroidboy.jalendar;
+package com.thedroidboy.jalendar.calendars.jewish;
 
 import android.os.Parcel;
 

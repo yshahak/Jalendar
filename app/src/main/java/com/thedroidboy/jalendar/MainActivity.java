@@ -1,12 +1,19 @@
 package com.thedroidboy.jalendar;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
@@ -18,11 +25,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewPager = findViewById(R.id.view_pager);
+        validateCalendarPermission();
+        setMonthTitle(0);
+    }
+
+    private void initViewPager() {
         viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
         viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
 //        viewPager.setOffscreenPageLimit(2);
         viewPager.addOnPageChangeListener(this);
-        setMonthTitle(0);
     }
 
     @Override
@@ -63,11 +74,27 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private void setMonthTitle(int realPosition) {
         JewCalendar calendar = JewCalendarPool.obtain(realPosition);
-        setTitle(calendar.getYearName() + " " + calendar.getMonthName());
+        setTitle(calendar.getMonthName() + " " +  calendar.getYearName());
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(100)
+    private void validateCalendarPermission() {
+        String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            initViewPager();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission),100, perms);
+        }
     }
 }

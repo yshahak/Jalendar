@@ -4,6 +4,7 @@ import android.arch.paging.DataSource;
 import android.arch.paging.TiledDataSource;
 import android.util.Log;
 
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.MonthVM;
 
 import java.util.ArrayList;

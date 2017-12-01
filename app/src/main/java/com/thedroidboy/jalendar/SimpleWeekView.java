@@ -6,8 +6,11 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.thedroidboy.jalendar.calendars.google.EventInstance;
 import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 
@@ -42,12 +45,28 @@ public class SimpleWeekView extends LinearLayout {
     }
 
     public void bindDays(List<Day> days){
+        LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < getChildCount(); i++){
             View view = getChildAt(i);
             DayItemBinding binding = (DayItemBinding) view.getTag();
             if (binding != null) {
-                binding.setDay(days.get(i));
+                Day day = days.get(i);
+                binding.setDay(day);
+                ViewGroup container = view.findViewById(R.id.day_container);
+                container.removeAllViews();
+                List<EventInstance> eventInstances = day.getGoogleEventInstances();
+                if (eventInstances == null || eventInstances.size() == 0) {
+                    continue;
+                }
+                for (EventInstance eventInstance : eventInstances){
+                    TextView textView = (TextView) inflater.inflate(R.layout.text_view_event_for_month, container, false);
+                    textView.setText(eventInstance.getEventTitle());
+                    textView.setBackgroundColor(eventInstance.getDisplayColor());
+                    container.addView(textView);
+                    textView.setTag(eventInstance);
+                }
             }
+
         }
     }
 

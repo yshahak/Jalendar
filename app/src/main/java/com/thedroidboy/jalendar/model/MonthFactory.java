@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
-import com.thedroidboy.jalendar.JewCalendar;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
 /**
  * Created by Yaakov Shahak

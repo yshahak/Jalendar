@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 
 /**
  * Created by Yaakov Shahak
