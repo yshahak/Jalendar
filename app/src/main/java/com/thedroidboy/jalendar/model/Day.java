@@ -4,7 +4,6 @@ package com.thedroidboy.jalendar.model;
 import android.graphics.Color;
 
 import com.thedroidboy.jalendar.calendars.google.EventInstance;
-import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
 import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
 
@@ -44,13 +43,6 @@ public class Day {
     public Day(int dayInMonth) {
         this.dayInMonth = dayInMonth;
         this.label = hebrewDateFormatter.formatHebrewNumber(dayInMonth);
-    }
-
-    public Day(JewCalendar jewishCalendar) {
-        this.dayInMonth = jewishCalendar.getJewishDayOfMonth();
-        id = jewishCalendar.monthHashCode() + dayInMonth;
-        this.label = hebrewDateFormatter.formatHebrewNumber(dayInMonth);
-        setBeginAndEnd(jewishCalendar);
     }
 
     public void setId(int id) {
@@ -128,6 +120,16 @@ public class Day {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         this.startDayInMillis = calendar.getTimeInMillis();
+        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+    }
+
+    public void setBeginAndEnd(JewishCalendar jewishCalendar, int offset) {
+        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        this.startDayInMillis = calendar.getTimeInMillis() - TimeUnit.DAYS.toMillis(offset);
         this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
     }
 

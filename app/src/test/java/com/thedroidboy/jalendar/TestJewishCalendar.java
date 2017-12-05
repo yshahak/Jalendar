@@ -18,7 +18,7 @@ public class TestJewishCalendar {
 
     @Before
     public void init() {
-        calendar = new JewCalendar(4);
+        calendar = new JewCalendar(-1);
     }
 
     private HebrewDateFormatter hebrewDateFormatter = new HebrewDateFormatter();
@@ -37,11 +37,15 @@ public class TestJewishCalendar {
     @Test
     public void testGetMonthHead() {
         int currentDayOfMonth = calendar.getJewishDayOfMonth();
-        int remain = currentDayOfMonth % 7;
         int currentDayOfWeek = calendar.getDayOfWeek();
-
+        int moveToFirst = currentDayOfWeek - currentDayOfMonth + 1;
+        while (moveToFirst < 1){
+            moveToFirst += 7;
+        }
+        print("move:" + moveToFirst);
         print(hebrewDateFormatter.format(calendar));
-        print("head:" + Math.abs(remain - currentDayOfWeek));
+        int head = moveToFirst - 1;
+        print("head:" + Math.abs(head));
 
     }
 

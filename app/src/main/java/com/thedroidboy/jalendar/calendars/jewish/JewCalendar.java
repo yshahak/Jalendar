@@ -61,25 +61,25 @@ public class JewCalendar extends JewishCalendar {
     public void shiftDay(int offset) {
         if (offset > 0) {
             for (int i = 0; i < offset; i++) {
-                shiftDayForward();
+                forward();
             }
         } else if (offset < 0) {
             for (int i = offset * (-1); i > 0; i--) {
-                shiftDayBackword();
+                back();
             }
         }
     }
 
-    private void shiftMonthForward(int offset) {
-        int currentMonth = getJewishMonth();
-        int next = getJewishMonth() + 1;
-        if (next == 7) {
-            setJewishYear(getJewishYear() + 1);
-        } else if (next == 14 || (next == 13 && !isJewishLeapYear())) {
-            next = 1;
-        }
-        setJewishMonth(next);
-    }
+//    private void shiftMonthForward(int offset) {
+//        int currentMonth = getJewishMonth();
+//        int next = getJewishMonth() + 1;
+//        if (next == 7) {
+//            setJewishYear(getJewishYear() + 1);
+//        } else if (next == 14 || (next == 13 && !isJewishLeapYear())) {
+//            next = 1;
+//        }
+//        setJewishMonth(next);
+//    }
 
     public void shiftMonthForward() {
         int next = getJewishMonth() + 1;
@@ -99,24 +99,6 @@ public class JewCalendar extends JewishCalendar {
             setJewishYear(getJewishYear() - 1);
         }
         setJewishMonth(previous);
-    }
-
-    private void shiftDayForward() {
-        int next = getJewishDayOfMonth() + 1;
-        if (next == 31 || (next == 30 && !isFullMonth())) {
-            next = 1;
-            shiftMonthForward();
-        }
-        setJewishDayOfMonth(next);
-    }
-
-    private void shiftDayBackword() {
-        int previous = getJewishDayOfMonth() - 1;
-        if (previous == 0) {
-            shiftMonthBackword();
-            previous = isFullMonth() ? 30 : 29;
-        }
-        setJewishDayOfMonth(previous);
     }
 
 
@@ -141,8 +123,11 @@ public class JewCalendar extends JewishCalendar {
         //calculate head
         int currentDayOfMonth = getJewishDayOfMonth();
         int currentDayOfWeek = getDayOfWeek();
-        int remain = currentDayOfMonth % 7;
-        return Math.abs(remain - currentDayOfWeek);
+        int moveToFirst = currentDayOfWeek - currentDayOfMonth + 1;
+        while (moveToFirst < 1){
+            moveToFirst += 7;
+        }
+        return moveToFirst - 1;
     }
 
     public int getMonthTrailOffset() {
@@ -151,7 +136,7 @@ public class JewCalendar extends JewishCalendar {
         int currentDayOfMonth = getJewishDayOfMonth();
         int currentDayOfWeek = getDayOfWeek();
         int remain = (totalDays - currentDayOfMonth + currentDayOfWeek) % 7;
-        return (7- remain);
+        return remain == 0 ? remain : (7 - remain);
     }
 
     public void setHour(int hour) {
@@ -175,10 +160,10 @@ public class JewCalendar extends JewishCalendar {
     public int getDaysInPreviousMonth() {
         int year = getJewishYear();
         int month = getJewishMonth() - 1;
-        if (month == 6){
+        if (month == 6) {
             year--;
         }
-        return month != 2 && month != 4 && month != 6 && (month != 8 || isCheshvanLong(year)) && (month != 9 || !isKislevShort(year)) && month != 10 && (month != 12 || isJewishLeapYear(year)) && month != 13?30:29;
+        return month != 2 && month != 4 && month != 6 && (month != 8 || isCheshvanLong(year)) && (month != 9 || !isKislevShort(year)) && month != 10 && (month != 12 || isJewishLeapYear(year)) && month != 13 ? 30 : 29;
     }
 
     private static boolean isCheshvanLong(int year) {
@@ -341,7 +326,7 @@ public class JewCalendar extends JewishCalendar {
 
     public long getEndOfMonth() {
         JewCalendar copy = (JewCalendar) clone();
-        copy.shiftMonthForward(1);
+        copy.shiftMonthForward();
         copy.setJewishDate(copy.getJewishYear(), copy.getJewishMonth(), 1);
 //        System.out.println(hebrewDateFormatter.format(copy));
         Date date = copy.getTime(true);

@@ -83,12 +83,12 @@ public class MonthVM extends ViewModel {
         int headOffset = getHeadOffset();
         int daysInPrevMonth = monthCalendar.getDaysInPreviousMonth();
         for (int i = daysInPrevMonth - headOffset; i < daysInPrevMonth; i++) {
-            Day day = new Day(i);
+            Day day = new Day(i + 1);
             day.setOutOfMonthRange(true);
             day.setBackgroundColor(Color.GRAY);
             day.setBackgroundColor(Color.GRAY);
             if (dayList.size() == 0) {
-                day.setBeginAndEnd(monthCalendar);
+                day.setBeginAndEnd(monthCalendar, headOffset);
             } else {
                 day.setBeginAndEnd(dayList.get(dayList.size() - 1));
             }
