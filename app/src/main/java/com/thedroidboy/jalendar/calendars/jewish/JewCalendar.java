@@ -334,6 +334,25 @@ public class JewCalendar extends JewishCalendar {
         return date.getTime();
     }
 
+    public int getLastDayOfGregorianMonth() {
+        int year = getGregorianYear();
+        switch(getGregorianMonth()) {
+            case 2:
+                return (year % 4 != 0 || year % 100 == 0) && year % 400 != 0?28:29;
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            default:
+                return 31;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                return 30;
+        }
+    }
 
     public int monthHashCode() {
         return (getJewishYear() - 5700) * 1000 + getJewishMonth() * 100;

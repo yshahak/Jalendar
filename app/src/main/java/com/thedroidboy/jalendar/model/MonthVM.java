@@ -80,6 +80,8 @@ public class MonthVM extends ViewModel {
     public void setMonthDays(JewCalendar monthCalendar) {
         int currentDay = monthCalendar.getJewishDayOfMonth();
         monthCalendar.setJewishDayOfMonth(1);
+        int loazyDay = monthCalendar.getGregorianDayOfMonth();
+        int daysInLoaziMonth = monthCalendar.getLastDayOfGregorianMonth();
         int headOffset = getHeadOffset();
         int daysInPrevMonth = monthCalendar.getDaysInPreviousMonth();
         for (int i = daysInPrevMonth - headOffset; i < daysInPrevMonth; i++) {
@@ -92,6 +94,10 @@ public class MonthVM extends ViewModel {
             } else {
                 day.setBeginAndEnd(dayList.get(dayList.size() - 1));
             }
+            day.setLoazyDayOfMonth(loazyDay++);
+            if (loazyDay == daysInLoaziMonth){
+                loazyDay = 1;
+            }
             dayList.add(day);
         }
         int daysSum = monthCalendar.getDaysInJewishMonth();
@@ -102,6 +108,10 @@ public class MonthVM extends ViewModel {
             } else {
                 day.setBeginAndEnd(dayList.get(dayList.size() - 1));
             }
+            day.setLoazyDayOfMonth(loazyDay++);
+            if (loazyDay == daysInLoaziMonth){
+                loazyDay = 1;
+            }
             dayList.add(day);
         }
         int monthTrailOffset = monthCalendar.getMonthTrailOffset();
@@ -110,6 +120,10 @@ public class MonthVM extends ViewModel {
             Day day = new Day(i);
             day.setOutOfMonthRange(true);
             day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+            day.setLoazyDayOfMonth(loazyDay++);
+            if (loazyDay == daysInLoaziMonth){
+                loazyDay = 1;
+            }
             dayList.add(day);
             day.setBackgroundColor(Color.GRAY);
         }
@@ -117,6 +131,10 @@ public class MonthVM extends ViewModel {
             Day day = new Day(i);
             day.setOutOfMonthRange(true);
             day.setBeginAndEnd(dayList.get(dayList.size() - 1));
+            day.setLoazyDayOfMonth(loazyDay++);
+            if (loazyDay == daysInLoaziMonth){
+                loazyDay = 1;
+            }
             dayList.add(day);
             day.setBackgroundColor(Color.GRAY);
             i++;

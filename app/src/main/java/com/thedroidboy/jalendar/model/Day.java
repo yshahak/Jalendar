@@ -9,6 +9,7 @@ import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +35,7 @@ public class Day {
     private long startDayInMillis;
     private long endDayInMillis;
     private int dayInMonth;
+    private int loazyDayOfMonth;
     private boolean isOutOfMonthRange;
     private int backgroundColor = Color.TRANSPARENT;
 
@@ -53,14 +55,6 @@ public class Day {
         this.label = label;
     }
 
-    public void setStartDayInMillis(long startDayInMillis) {
-        this.startDayInMillis = startDayInMillis;
-    }
-
-    public void setEndDayInMillis(long endDayInMillis) {
-        this.endDayInMillis = endDayInMillis;
-    }
-
     public void setDayInMonth(int dayInMonth) {
         this.dayInMonth = dayInMonth;
     }
@@ -71,6 +65,10 @@ public class Day {
 
     public String getLabel() {
         return label;
+    }
+
+    public String getLoaziLabel() {
+        return Integer.toString(loazyDayOfMonth);
     }
 
     public void setBackgroundColor(int backgroundColor) {
@@ -130,7 +128,12 @@ public class Day {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         this.startDayInMillis = calendar.getTimeInMillis() - TimeUnit.DAYS.toMillis(offset);
+        this.loazyDayOfMonth = new Date(this.startDayInMillis).getDay();
         this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+    }
+
+    public void setLoazyDayOfMonth(int day) {
+        this.loazyDayOfMonth = day;
     }
 
     public void setBeginAndEnd(Day day) {

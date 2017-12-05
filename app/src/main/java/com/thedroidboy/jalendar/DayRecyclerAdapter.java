@@ -9,6 +9,7 @@ import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.MonthVM;
 
+
 /**
  * Created by Yaakov Shahak
  * on 05/11/2017.
