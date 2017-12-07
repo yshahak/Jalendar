@@ -1,6 +1,9 @@
 package com.thedroidboy.jalendar.model;
 
 import android.arch.lifecycle.ViewModel;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.graphics.Color;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -12,26 +15,45 @@ import java.util.List;
  * Created by Yaakov Shahak
  * on 05/11/2017.
  */
-
+@Entity
 public class MonthVM extends ViewModel {
 
     private static final String TAG = "MonthVM";
 
-    public static final int INITIAL_OFFSET = 500;
-
-
-    private String monthHebName, monthYearName;
-    private int daysInMonth, headOffset, trailOffset;
+    @PrimaryKey
+    private final int monthHashCode;
+    private final String monthHebLabel;
+    private final String monthEnLabel;
+    private final int daysInMonth, headOffset, trailOffset;
+    @Ignore
+    private String monthHebName;
+    @Ignore
+    private String monthYearName;
+    @Ignore
     private List<Day> dayList = new ArrayList<>();
 
+    public MonthVM(int monthHashCode, String monthHebLabel, String monthEnLabel, int daysInMonth, int headOffset, int trailOffset) {
+        this.monthHashCode = monthHashCode;
+        this.monthHebLabel = monthHebLabel;
+        this.monthEnLabel = monthEnLabel;
+        this.daysInMonth = daysInMonth;
+        this.headOffset = headOffset;
+        this.trailOffset = trailOffset;
+    }
+
     public MonthVM(JewCalendar jewCalendar) {
-        setMonthHebName(jewCalendar.getMonthName());
-        setYearHebName(jewCalendar.getYearName());
-        setDaysInMonth(jewCalendar.getDaysInJewishMonth());
-        setHeadOffset(jewCalendar.getMonthHeadOffset());
-        setTrailOffset(jewCalendar.getMonthTrailOffset());
+        this.monthHashCode = jewCalendar.monthHashCode();
+        this.monthHebLabel = jewCalendar.getHebMonthName() + " " + jewCalendar.getYearHebName();
+        this.monthEnLabel = jewCalendar.getEnMonthName() + " " + jewCalendar.getYearEnName();
+        this.daysInMonth = jewCalendar.getDaysInJewishMonth();
+        this.headOffset = jewCalendar.getMonthHeadOffset();
+        this.trailOffset = jewCalendar.getMonthTrailOffset();
+
+        setMonthHebName(jewCalendar.getHebMonthName());
+        setYearHebName(jewCalendar.getYearHebName());
         setMonthDays(jewCalendar);
     }
+
 
     public void setMonthHebName(String monthHebName) {
         this.monthHebName = monthHebName;
@@ -39,18 +61,6 @@ public class MonthVM extends ViewModel {
 
     public void setYearHebName(String year) {
         this.monthYearName = year;
-    }
-
-    public void setHeadOffset(int headOffset) {
-        this.headOffset = headOffset;
-    }
-
-    public void setTrailOffset(int trailOffset) {
-        this.trailOffset = trailOffset;
-    }
-
-    public void setDaysInMonth(int daysInMonth) {
-        this.daysInMonth = daysInMonth;
     }
 
     public int getDaysInMonth() {
@@ -142,5 +152,6 @@ public class MonthVM extends ViewModel {
         monthCalendar.setJewishDayOfMonth(currentDay);
 //        Log.d(TAG, "setMonthDays: took " + (System.currentTimeMillis() - start) + " ms");
     }
+
 
 }

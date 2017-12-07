@@ -4,6 +4,7 @@ import android.arch.paging.DataSource;
 import android.arch.paging.TiledDataSource;
 import android.util.Log;
 
+import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.MonthVM;
 
@@ -29,8 +30,8 @@ public class CalendarDataSource extends TiledDataSource<MonthVM> {
         Log.d(TAG, "positions;" + startPosition + "|" + count);
         List<MonthVM> monthVMS = new ArrayList<>();
         for (int i = 0 ; i < count ; i++){
-            JewCalendar jewCalendar = new JewCalendar(startPosition - MonthVM.INITIAL_OFFSET);
-            Log.d(TAG, jewCalendar.getMonthName());
+            JewCalendar jewCalendar = new JewCalendar(startPosition - PagerAdapterMonth.INITIAL_OFFSET);
+            Log.d(TAG, jewCalendar.getHebMonthName());
             MonthVM monthVM = new MonthVM(jewCalendar);
             monthVMS.add(monthVM);
             startPosition++;

@@ -18,11 +18,13 @@ import java.util.Locale;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class JewCalendar extends JewishCalendar {
 
-    public static HebrewDateFormatter hebrewDateFormatter = new HebrewDateFormatter();
+    public static HebrewDateFormatter hebrewHebDateFormatter = new HebrewDateFormatter();
+    public static HebrewDateFormatter hebrewEnDateFormatter = new HebrewDateFormatter();
     private static JewCalendar calculatorCalendar = new JewCalendar();
 
     static {
-        hebrewDateFormatter.setHebrewFormat(true);
+        hebrewHebDateFormatter.setHebrewFormat(true);
+        hebrewEnDateFormatter.setHebrewFormat(false);
     }
 
     public JewCalendar(int jewishYear, int jewishMonth, int day) {
@@ -124,7 +126,7 @@ public class JewCalendar extends JewishCalendar {
         int currentDayOfMonth = getJewishDayOfMonth();
         int currentDayOfWeek = getDayOfWeek();
         int moveToFirst = currentDayOfWeek - currentDayOfMonth + 1;
-        while (moveToFirst < 1){
+        while (moveToFirst < 1) {
             moveToFirst += 7;
         }
         return moveToFirst - 1;
@@ -145,12 +147,20 @@ public class JewCalendar extends JewishCalendar {
         }
     }
 
-    public String getYearName() {
-        return hebrewDateFormatter.formatHebrewNumber(getJewishYear());
+    public String getYearHebName() {
+        return hebrewHebDateFormatter.formatHebrewNumber(getJewishYear());
     }
 
-    public String getMonthName() {
-        return hebrewDateFormatter.formatMonth(this);
+    public String getYearEnName() {
+        return hebrewEnDateFormatter.formatHebrewNumber(getJewishYear());
+    }
+
+    public String getHebMonthName() {
+        return hebrewHebDateFormatter.formatMonth(this);
+    }
+
+    public String getEnMonthName(){
+        return hebrewEnDateFormatter.formatMonth(this);
     }
 
     public boolean isFullMonth() {
@@ -179,7 +189,7 @@ public class JewCalendar extends JewishCalendar {
     }
 
     public String getDayLabel() {
-        return hebrewDateFormatter.formatHebrewNumber(getJewishDayOfMonth());
+        return hebrewHebDateFormatter.formatHebrewNumber(getJewishDayOfMonth());
     }
 
     public long getBeginOfDay() {
@@ -318,7 +328,7 @@ public class JewCalendar extends JewishCalendar {
     public long getBeginOfMonth() {
         JewCalendar copy = (JewCalendar) clone();
         copy.setJewishDate(getJewishYear(), getJewishMonth(), 1);
-//        System.out.println(hebrewDateFormatter.format(copy));
+//        System.out.println(hebrewHebDateFormatter.format(copy));
         Date date = copy.getTime(true);
 //        System.out.println(simpleDateFormat.format(date));
         return date.getTime();
@@ -328,7 +338,7 @@ public class JewCalendar extends JewishCalendar {
         JewCalendar copy = (JewCalendar) clone();
         copy.shiftMonthForward();
         copy.setJewishDate(copy.getJewishYear(), copy.getJewishMonth(), 1);
-//        System.out.println(hebrewDateFormatter.format(copy));
+//        System.out.println(hebrewHebDateFormatter.format(copy));
         Date date = copy.getTime(true);
 //        System.out.println(simpleDateFormat.format(date));
         return date.getTime();
@@ -336,9 +346,9 @@ public class JewCalendar extends JewishCalendar {
 
     public int getLastDayOfGregorianMonth() {
         int year = getGregorianYear();
-        switch(getGregorianMonth()) {
+        switch (getGregorianMonth()) {
             case 2:
-                return (year % 4 != 0 || year % 100 == 0) && year % 400 != 0?28:29;
+                return (year % 4 != 0 || year % 100 == 0) && year % 400 != 0 ? 28 : 29;
             case 3:
             case 5:
             case 7:
@@ -355,6 +365,6 @@ public class JewCalendar extends JewishCalendar {
     }
 
     public int monthHashCode() {
-        return (getJewishYear() - 5700) * 1000 + getJewishMonth() * 100;
+        return (getJewishYear()) * 100 + getJewishMonth();
     }
 }

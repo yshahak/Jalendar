@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewDateFormatter;
+import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
 
 
 /**
@@ -44,7 +44,7 @@ public class Day {
 
     public Day(int dayInMonth) {
         this.dayInMonth = dayInMonth;
-        this.label = hebrewDateFormatter.formatHebrewNumber(dayInMonth);
+        this.label = hebrewHebDateFormatter.formatHebrewNumber(dayInMonth);
     }
 
     public void setId(int id) {

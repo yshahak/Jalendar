@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private void setMonthTitle(int realPosition) {
         JewCalendar calendar = JewCalendarPool.obtain(realPosition);
-        setTitle(calendar.getMonthName() + " " +  calendar.getYearName());
+        setTitle(calendar.getHebMonthName() + " " +  calendar.getYearHebName());
     }
 
     @Override
