@@ -6,7 +6,7 @@
 
         <variable
             name="month"
-            type="com.thedroidboy.jalendar.model.MonthVM" />
+            type="com.thedroidboy.jalendar.model.Month" />
     </data>
 
     <LinearLayout

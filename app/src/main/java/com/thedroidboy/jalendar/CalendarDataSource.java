@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
-import com.thedroidboy.jalendar.model.MonthVM;
+import com.thedroidboy.jalendar.model.Month;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * on 05/11/2017.
  */
 
-public class CalendarDataSource extends TiledDataSource<MonthVM> {
+public class CalendarDataSource extends TiledDataSource<Month> {
 
     private static final String TAG = CalendarDataSource.class.getSimpleName();
 
@@ -26,16 +26,16 @@ public class CalendarDataSource extends TiledDataSource<MonthVM> {
     }
 
     @Override
-    public List<MonthVM> loadRange(int startPosition, int count) {
+    public List<Month> loadRange(int startPosition, int count) {
         Log.d(TAG, "positions;" + startPosition + "|" + count);
-        List<MonthVM> monthVMS = new ArrayList<>();
+        List<Month> months = new ArrayList<>();
         for (int i = 0 ; i < count ; i++){
             JewCalendar jewCalendar = new JewCalendar(startPosition - PagerAdapterMonth.INITIAL_OFFSET);
             Log.d(TAG, jewCalendar.getHebMonthName());
-            MonthVM monthVM = new MonthVM(jewCalendar);
-            monthVMS.add(monthVM);
+            Month month = new Month(jewCalendar);
+            months.add(month);
             startPosition++;
         }
-        return monthVMS;
+        return months;
     }
 }

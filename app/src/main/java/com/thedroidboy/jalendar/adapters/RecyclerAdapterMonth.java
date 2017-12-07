@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.thedroidboy.jalendar.SimpleWeekView;
-import com.thedroidboy.jalendar.model.MonthVM;
+import com.thedroidboy.jalendar.model.Month;
 
 /**
  * Created by Yaakov Shahak
@@ -15,10 +15,10 @@ import com.thedroidboy.jalendar.model.MonthVM;
 public class RecyclerAdapterMonth extends RecyclerView.Adapter<RecyclerAdapterMonth.WeekViewHolder> {
 
     private static final String TAG = RecyclerAdapterMonth.class.getSimpleName();
-    private final MonthVM monthVM;
+    private final Month month;
 
-    public RecyclerAdapterMonth(MonthVM monthVM) {
-        this.monthVM = monthVM;
+    public RecyclerAdapterMonth(Month month) {
+        this.month = month;
     }
 
     @Override
@@ -31,12 +31,12 @@ public class RecyclerAdapterMonth extends RecyclerView.Adapter<RecyclerAdapterMo
     @Override
     public void onBindViewHolder(WeekViewHolder holder, int position) {
         int normalPosition = position * 7;
-        ((SimpleWeekView)holder.itemView).bindDays(monthVM.getDayList().subList(normalPosition, normalPosition + 7));
+        ((SimpleWeekView)holder.itemView).bindDays(month.getDayList().subList(normalPosition, normalPosition + 7));
     }
 
     @Override
     public int getItemCount() {
-        return monthVM.getDayList().size() / 7;
+        return month.getDayList().size() / 7;
     }
 
     static class WeekViewHolder extends RecyclerView.ViewHolder{

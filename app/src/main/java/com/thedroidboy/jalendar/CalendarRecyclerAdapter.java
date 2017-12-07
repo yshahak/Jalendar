@@ -6,12 +6,12 @@ package com.thedroidboy.jalendar;
  */
 
 public class CalendarRecyclerAdapter{
-//        extends PagedListAdapter<MonthVM, CalendarRecyclerAdapter.CalendarViewHolder> {
+//        extends PagedListAdapter<Month, CalendarRecyclerAdapter.CalendarViewHolder> {
 //
 //    private static final String TAG = CalendarRecyclerAdapter.class.getSimpleName();
 //
 //    protected CalendarRecyclerAdapter() {
-//        super(MonthVM.DIFF_CALLBACK);
+//        super(Month.DIFF_CALLBACK);
 //    }
 //
 //    @Override
@@ -23,7 +23,7 @@ public class CalendarRecyclerAdapter{
 //
 //    @Override
 //    public void onBindViewHolder(CalendarViewHolder holder, int position) {
-//        MonthVM monthVM = getItem(position);
+//        Month monthVM = getItem(position);
 //        if (monthVM != null) {
 //            holder.bindTo(monthVM);
 //        }
@@ -40,7 +40,7 @@ public class CalendarRecyclerAdapter{
 //
 //        }
 //
-//        void bindTo(MonthVM monthVM) {
+//        void bindTo(Month monthVM) {
 //            binding.setMonth(monthVM);
 //            binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
 //        }
