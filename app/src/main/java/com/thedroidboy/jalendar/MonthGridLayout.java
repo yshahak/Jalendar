@@ -9,7 +9,7 @@ import android.widget.GridLayout;
 
 import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
-import com.thedroidboy.jalendar.model.MonthVM;
+import com.thedroidboy.jalendar.model.Month;
 
 /**
  * Created by Yaakov Shahak
@@ -19,35 +19,35 @@ import com.thedroidboy.jalendar.model.MonthVM;
 public class MonthGridLayout extends GridLayout {
 
 
-    private MonthVM monthVM;
+    private Month month;
 
     public MonthGridLayout(Context context) {
         super(context);
     }
 
-    public MonthGridLayout(Context context, MonthVM monthVM) {
+    public MonthGridLayout(Context context, Month month) {
         super(context);
-        this.monthVM = monthVM;
+        this.month = month;
     }
 
-    public MonthGridLayout(Context context, AttributeSet attrs, MonthVM monthVM) {
+    public MonthGridLayout(Context context, AttributeSet attrs, Month month) {
         super(context, attrs);
-        this.monthVM = monthVM;
+        this.month = month;
     }
 
-    public MonthGridLayout(Context context, AttributeSet attrs, int defStyleAttr, MonthVM monthVM) {
+    public MonthGridLayout(Context context, AttributeSet attrs, int defStyleAttr, Month month) {
         super(context, attrs, defStyleAttr);
-        this.monthVM = monthVM;
+        this.month = month;
     }
 
-    public void setMonthVM(MonthVM monthVM) {
-        this.monthVM = monthVM;
+    public void setMonth(Month month) {
+        this.month = month;
         setDays();
     }
 
     private void setDays(){
         LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
-        for (Day day : monthVM.getDayList()){
+        for (Day day : month.getDayList()){
             DayItemBinding binding = DataBindingUtil.inflate(inflater, R.layout.day_item, this, false);
             binding.setDay(day);
         }

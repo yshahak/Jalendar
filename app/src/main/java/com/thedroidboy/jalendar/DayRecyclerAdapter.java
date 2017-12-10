@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
-import com.thedroidboy.jalendar.model.MonthVM;
+import com.thedroidboy.jalendar.model.Month;
 
 
 /**
@@ -18,10 +18,10 @@ import com.thedroidboy.jalendar.model.MonthVM;
 public class DayRecyclerAdapter extends RecyclerView.Adapter<DayRecyclerAdapter.DayViewHolder> {
 
     private static final String TAG = DayRecyclerAdapter.class.getSimpleName();
-    private final MonthVM monthVM;
+    private final Month month;
 
-    public DayRecyclerAdapter(MonthVM monthVM) {
-        this.monthVM = monthVM;
+    public DayRecyclerAdapter(Month month) {
+        this.month = month;
     }
 
     @Override
@@ -33,12 +33,12 @@ public class DayRecyclerAdapter extends RecyclerView.Adapter<DayRecyclerAdapter.
 
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
-        holder.bindTo(monthVM.getDayList().get(position));
+        holder.bindTo(month.getDayList().get(position));
     }
 
     @Override
     public int getItemCount() {
-        return monthVM.getDayList().size();
+        return month.getDayList().size();
     }
 
     static class DayViewHolder extends RecyclerView.ViewHolder{
