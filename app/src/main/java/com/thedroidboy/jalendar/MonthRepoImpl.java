@@ -13,14 +13,12 @@ import java.util.List;
  * Created by $Yaakov Shahak on 12/7/2017.
  */
 
-class MonthRepoImpl implements MonthRepo {
+public class MonthRepoImpl implements MonthRepo {
 
     private final MonthDAO monthDAO;
-    private final JewCalendar jewCalendar;
 
-    MonthRepoImpl(MonthDAO monthDAO, JewCalendar jewCalendar) {
+    public MonthRepoImpl(MonthDAO monthDAO) {
         this.monthDAO = monthDAO;
-        this.jewCalendar = jewCalendar;
     }
 
     @Override
@@ -34,12 +32,13 @@ class MonthRepoImpl implements MonthRepo {
     }
 
     @Override
-    public LiveData<Month> getMonth(int monthHashCode) {
-        LiveData<Month> monthLiveData = monthDAO.getMonth(monthHashCode);
-        if (monthLiveData != null){
+    public LiveData<Month> getMonth(JewCalendar jewCalendar) {
+        LiveData<Month> monthLiveData = monthDAO.getMonth(jewCalendar.monthHashCode());
+        if (monthLiveData.getValue() != null){
             return monthLiveData;
         }
         Month month = new Month(jewCalendar);
+        new Thread(() -> insertMonth(month)).start();
         final MutableLiveData<Month> data = new MutableLiveData<>();
         data.setValue(month);
         return data;

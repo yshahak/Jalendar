@@ -16,9 +16,9 @@ import android.view.ViewGroup;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
+import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
-
 
 
 /**
@@ -48,7 +48,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         int position = getArguments().getInt(KEY_POSITION);
         JewCalendar jewCalendar = JewCalendarPool.obtain(position);
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-        monthVM.init(jewCalendar);
+//        monthVM.init(jewCalendar, monthRepo);
     }
 
     @Nullable

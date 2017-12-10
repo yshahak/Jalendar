@@ -13,17 +13,13 @@ import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 public class MonthVM extends ViewModel {
 
     private LiveData<Month> month;
-    private final MonthRepo monthRepo;
 
-    public MonthVM(MonthRepo monthRepo) {
-        this.monthRepo = monthRepo;
-    }
 
-    public void init(JewCalendar jewCalendar){
+    public void init(JewCalendar jewCalendar, MonthRepo monthRepo){
         if (this.month != null) {
             return;
         }
-        this.month = monthRepo.getMonth(jewCalendar.monthHashCode());
+        this.month = monthRepo.getMonth(jewCalendar);
     }
 
     public LiveData<Month> getMonth() {

@@ -49,6 +49,8 @@ dependencies {
     implementation 'com.google.dagger:dagger-android-support:2.12'
     // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.12'
+
+
     implementation 'pub.devrel:easypermissions:1.0.1'
 
     implementation "android.arch.persistence.room:runtime:1.0.0"
