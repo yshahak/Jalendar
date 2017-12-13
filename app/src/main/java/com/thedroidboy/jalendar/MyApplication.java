@@ -6,6 +6,7 @@ import android.app.Application;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
+import com.thedroidboy.jalendar.dagger.DaggerAppComponent;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,11 @@ public class MyApplication extends Application implements HasActivityInjector {
         super.onCreate();
         JewCalendarPool.init();
         setupLeakCanary();
+        DaggerAppComponent
+                .builder()
+                .application(this)
+                .build()
+                .inject(this);
     }
 
     protected RefWatcher setupLeakCanary() {
