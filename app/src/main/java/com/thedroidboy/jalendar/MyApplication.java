@@ -1,7 +1,7 @@
 package com.thedroidboy.jalendar;
 
-import android.app.Activity;
 import android.app.Application;
+import android.support.v4.app.Fragment;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
@@ -12,17 +12,17 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 /**
  * Created by Yaakov Shahak
  * on 23/11/2017.
  */
 
-public class MyApplication extends Application implements HasActivityInjector {
+public class MyApplication extends Application implements HasSupportFragmentInjector {
 
     @Inject
-    DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
+    DispatchingAndroidInjector<Fragment> dispatchingFragmentInjector;
 
     @Override
     public void onCreate() {
@@ -44,7 +44,7 @@ public class MyApplication extends Application implements HasActivityInjector {
     }
 
     @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return dispatchingActivityInjector;
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingFragmentInjector;
     }
 }

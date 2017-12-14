@@ -20,6 +20,8 @@ import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
 
+import dagger.android.support.AndroidSupportInjection;
+
 
 /**
  * Created by Yaakov Shahak
@@ -44,6 +46,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
         JewCalendar jewCalendar = JewCalendarPool.obtain(position);
