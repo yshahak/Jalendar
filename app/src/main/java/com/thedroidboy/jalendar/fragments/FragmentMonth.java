@@ -13,12 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
+
+import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 
@@ -35,6 +38,8 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     private MonthFactory monthFactory;
     private MonthVM monthVM;
     private MonthItemBinding binding;
+    @Inject
+    MonthRepo monthRepo;
 
     public static FragmentMonth newInstance(int position){
         FragmentMonth fragmentMonth = new FragmentMonth();
@@ -50,8 +55,9 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
         JewCalendar jewCalendar = JewCalendarPool.obtain(position);
+        Log.d(TAG, "onCreate: pos="+ position + " | calendar=" + jewCalendar.getJewishYear());
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-//        monthVM.init(jewCalendar, monthRepo);
+        monthVM.init(jewCalendar, monthRepo);
     }
 
     @Nullable

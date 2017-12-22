@@ -3,6 +3,7 @@ package com.thedroidboy.jalendar;
 import android.app.Application;
 import android.support.v4.app.Fragment;
 
+import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
@@ -27,6 +28,7 @@ public class MyApplication extends Application implements HasSupportFragmentInje
     @Override
     public void onCreate() {
         super.onCreate();
+        Stetho.initializeWithDefaults(this);
         JewCalendarPool.init();
         setupLeakCanary();
         DaggerAppComponent

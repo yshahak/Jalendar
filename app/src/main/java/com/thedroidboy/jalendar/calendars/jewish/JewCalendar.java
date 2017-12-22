@@ -18,6 +18,7 @@ import java.util.Locale;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class JewCalendar extends JewishCalendar {
 
+    private static final String TAG = JewCalendar.class.getSimpleName();
     public static HebrewDateFormatter hebrewHebDateFormatter = new HebrewDateFormatter();
     public static HebrewDateFormatter hebrewEnDateFormatter = new HebrewDateFormatter();
     private static JewCalendar calculatorCalendar = new JewCalendar();

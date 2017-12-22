@@ -27,7 +27,6 @@ public class JewCalendarPool {
             }
         };
         thread.start();
-//        thread.run();
     }
 
     public static JewCalendar obtain(int position) {

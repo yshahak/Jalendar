@@ -22,18 +22,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewPager = findViewById(R.id.view_pager);
-        validateCalendarPermission();
+//        validateCalendarPermission();
+        initViewPager();
         setMonthTitle(0);
     }
 
     private void initViewPager() {
         viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
         viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
-//        viewPager.setOffscreenPageLimit(2);
         viewPager.addOnPageChangeListener(this);
     }
 
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private void validateCalendarPermission() {
         String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            initViewPager();
+
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission),100, perms);
         }
