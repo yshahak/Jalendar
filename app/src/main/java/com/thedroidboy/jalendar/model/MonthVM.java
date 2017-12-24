@@ -2,7 +2,6 @@ package com.thedroidboy.jalendar.model;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -26,3 +25,4 @@ public class MonthVM extends ViewModel {
         return month;
     }
 }
+//

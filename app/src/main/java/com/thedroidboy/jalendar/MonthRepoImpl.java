@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
+import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.model.DayDAO;
 import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthDAO;
 
@@ -18,14 +20,22 @@ public class MonthRepoImpl implements MonthRepo {
 
     public static final String TAG = MonthRepoImpl.class.getSimpleName();
     private final MonthDAO monthDAO;
+    private final DayDAO dayDAO;
 
-    public MonthRepoImpl(MonthDAO monthDAO) {
+
+    public MonthRepoImpl(MonthDAO monthDAO, DayDAO dayDAO) {
         this.monthDAO = monthDAO;
+        this.dayDAO = dayDAO;
     }
 
     @Override
     public void insertMonth(Month month) {
         monthDAO.insertMonth(month);
+    }
+
+    @Override
+    public void insertMonthDays(List<Day> monthDays) {
+        dayDAO.insertMonthDays(monthDays);
     }
 
     @Override
@@ -41,7 +51,10 @@ public class MonthRepoImpl implements MonthRepo {
         }
         Month month = new Month(jewCalendar);
         Log.d(TAG, "getMonth: " + month.getMonthHebLabel());
-        new Thread(() -> insertMonth(month)).start();
+        new Thread(() -> {
+            insertMonth(month);
+            insertMonthDays(month.getDayList());
+        }).start();
         final MutableLiveData<Month> data = new MutableLiveData<>();
         data.setValue(month);
         return data;

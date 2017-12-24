@@ -1,24 +1,21 @@
 package com.thedroidboy.jalendar.model;
 
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.graphics.Color;
 
 import com.thedroidboy.jalendar.calendars.google.EventInstance;
 
-import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar;
-
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
 
 
 /**
  * Created by yshahak on 09/10/2016.
  */
+@Entity
 public class Day {
 
     public static final String ID = "id";
@@ -27,40 +24,44 @@ public class Day {
     public static final String END_DAY_IN_MILLIS = "endDayInMillis";
     public static final String DAY_IN_MONTH = "dayInMonth";
     public static final String IS_OUT_OF_MONTH_RANGE = "isOutOfMonthRange";
-    private static Calendar calendar = Calendar.getInstance();
+
+    @Ignore
     private List<EventInstance> googleEventInstances = new ArrayList<>();
 
-    int id;
-    private String label;
-    private long startDayInMillis;
-    private long endDayInMillis;
-    private int dayInMonth;
-    private int loazyDayOfMonth;
+    @PrimaryKey
+    private final long id;
+    private final String label;
+    private final long startDayInMillis;
+    private final long endDayInMillis;
+    private final int dayInMonth;
+    private final int loazyDayOfMonth;
+    @Ignore
     private boolean isOutOfMonthRange;
+    @Ignore
     private int backgroundColor = Color.TRANSPARENT;
 
-    public Day() {
-    }
-
-    public Day(int dayInMonth) {
-        this.dayInMonth = dayInMonth;
-        this.label = hebrewHebDateFormatter.formatHebrewNumber(dayInMonth);
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setLabel(String label) {
+    public Day(long id, int dayInMonth, String label, long startDayInMillis, long endDayInMillis,int loazyDayOfMonth) {
+        this.id = startDayInMillis;
         this.label = label;
-    }
-
-    public void setDayInMonth(int dayInMonth) {
         this.dayInMonth = dayInMonth;
+        this.startDayInMillis = startDayInMillis;
+        this.endDayInMillis = endDayInMillis;
+        this.loazyDayOfMonth = loazyDayOfMonth;
     }
 
-    public int getId() {
+//    public Day(int dayInMonth) {
+//        this.dayInMonth = dayInMonth;
+//        this.label = hebrewHebDateFormatter.formatHebrewNumber(dayInMonth);
+//    }
+
+
+    public long getId() {
         return id;
+    }
+
+
+    public int getLoazyDayOfMonth() {
+        return loazyDayOfMonth;
     }
 
     public String getLabel() {
@@ -111,35 +112,35 @@ public class Day {
         return googleEventInstances;
     }
 
-    public void setBeginAndEnd(JewishCalendar jewishCalendar) {
-        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        this.startDayInMillis = calendar.getTimeInMillis();
-        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
-    }
+//    public void setBeginAndEnd(JewishCalendar jewishCalendar) {
+//        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//        calendar.set(Calendar.MILLISECOND, 0);
+//        this.startDayInMillis = calendar.getTimeInMillis();
+//        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+//    }
+//
+//    public void setBeginAndEnd(JewishCalendar jewishCalendar, int offset) {
+//        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//        calendar.set(Calendar.MILLISECOND, 0);
+//        this.startDayInMillis = calendar.getTimeInMillis() - TimeUnit.DAYS.toMillis(offset);
+//        this.loazyDayOfMonth = new Date(this.startDayInMillis).getDay();
+//        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+//    }
 
-    public void setBeginAndEnd(JewishCalendar jewishCalendar, int offset) {
-        calendar.set(jewishCalendar.getGregorianYear(), jewishCalendar.getGregorianMonth(), jewishCalendar.getGregorianDayOfMonth());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        this.startDayInMillis = calendar.getTimeInMillis() - TimeUnit.DAYS.toMillis(offset);
-        this.loazyDayOfMonth = new Date(this.startDayInMillis).getDay();
-        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
-    }
-
-    public void setLoazyDayOfMonth(int day) {
-        this.loazyDayOfMonth = day;
-    }
-
-    public void setBeginAndEnd(Day day) {
-        this.startDayInMillis = day.endDayInMillis;
-        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
-    }
+//    public void setLoazyDayOfMonth(int day) {
+//        this.loazyDayOfMonth = day;
+//    }
+//
+//    public void setBeginAndEnd(Day day) {
+//        this.startDayInMillis = day.endDayInMillis;
+//        this.endDayInMillis = startDayInMillis + TimeUnit.DAYS.toMillis(1);
+//    }
 
     @Override
     public String toString() {

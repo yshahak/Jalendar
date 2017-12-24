@@ -3,6 +3,7 @@ package com.thedroidboy.jalendar;
 import android.arch.lifecycle.LiveData;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
+import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.Month;
 
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 public interface MonthRepo {
 
     void insertMonth(Month month);
+
+    void insertMonthDays(List<Day> monthDays);
 
     LiveData<List<Month>> getMonthes(int monthHashCode, int sum);
 
