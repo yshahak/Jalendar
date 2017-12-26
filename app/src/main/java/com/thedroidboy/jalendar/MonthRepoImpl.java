@@ -47,16 +47,24 @@ public class MonthRepoImpl implements MonthRepo {
     public LiveData<Month> getMonth(JewCalendar jewCalendar) {
         LiveData<Month> monthLiveData = monthDAO.getMonth(jewCalendar.monthHashCode());
         if (monthLiveData.getValue() != null){
+            addDaysToMonth(monthLiveData.getValue());
             return monthLiveData;
         }
         Month month = new Month(jewCalendar);
         Log.d(TAG, "getMonth: " + month.getMonthHebLabel());
+        final MutableLiveData<Month> data = new MutableLiveData<>();
         new Thread(() -> {
             insertMonth(month);
             insertMonthDays(month.getDayList());
         }).start();
-        final MutableLiveData<Month> data = new MutableLiveData<>();
         data.setValue(month);
         return data;
+    }
+
+    private void addDaysToMonth(Month month) {
+        long start = month.getStartMonthInMsIncludeOffset();
+        long end = month.getEndMonthInMsIncludeOffset();
+        List<Day> monthDays = dayDAO.getDaysInSegmant(start, end);
+        month.setDayList(monthDays);
     }
 }

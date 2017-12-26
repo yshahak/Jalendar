@@ -10,6 +10,7 @@ import com.thedroidboy.jalendar.calendars.google.EventInstance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -17,6 +18,9 @@ import java.util.List;
  */
 @Entity
 public class Day {
+
+    public static final long DAY_IN_MS = TimeUnit.DAYS.toMillis(1);
+
 
     public static final String ID = "id";
     public static final String LABEL = "label";
@@ -28,11 +32,11 @@ public class Day {
     @Ignore
     private List<EventInstance> googleEventInstances = new ArrayList<>();
 
-    @PrimaryKey
-    private final long id;
+//    private final long id;
     private final String label;
+    @PrimaryKey
     private final long startDayInMillis;
-    private final long endDayInMillis;
+//    private final long endDayInMillis;
     private final int dayInMonth;
     private final int loazyDayOfMonth;
     @Ignore
@@ -40,12 +44,12 @@ public class Day {
     @Ignore
     private int backgroundColor = Color.TRANSPARENT;
 
-    public Day(long id, int dayInMonth, String label, long startDayInMillis, long endDayInMillis,int loazyDayOfMonth) {
-        this.id = startDayInMillis;
+    public Day(int dayInMonth, String label, long startDayInMillis,int loazyDayOfMonth) {
+//        this.id = startDayInMillis;
         this.label = label;
         this.dayInMonth = dayInMonth;
         this.startDayInMillis = startDayInMillis;
-        this.endDayInMillis = endDayInMillis;
+//        this.endDayInMillis = endDayInMillis;
         this.loazyDayOfMonth = loazyDayOfMonth;
     }
 
@@ -55,9 +59,9 @@ public class Day {
 //    }
 
 
-    public long getId() {
-        return id;
-    }
+//    public long getId() {
+//        return id;
+//    }
 
 
     public int getLoazyDayOfMonth() {
@@ -97,7 +101,7 @@ public class Day {
     }
 
     public long getEndDayInMillis() {
-        return endDayInMillis;
+        return startDayInMillis + DAY_IN_MS;
     }
 
     public void setOutOfMonthRange(boolean outOfMonthRange) {
@@ -145,10 +149,9 @@ public class Day {
     @Override
     public String toString() {
         return "Day{" +
-                "\tid=" + id +
                 "\t label='" + label + '\'' +
+                "\t loazyDay='" + loazyDayOfMonth + '\'' +
                 "\t startDayInMillis=" + startDayInMillis +
-                "\t endDayInMillis=" + endDayInMillis +
                 "\t dayInMonth=" + dayInMonth +
                 "\t isOutOfMonthRange=" + isOutOfMonthRange +
                 "\t backgroundColor=" + backgroundColor +

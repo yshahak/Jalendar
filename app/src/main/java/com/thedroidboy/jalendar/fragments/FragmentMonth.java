@@ -18,8 +18,11 @@ import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
+import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -83,12 +86,17 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     private void bindMonth(MonthItemBinding binding) {
         int position = 0;
-//        binding.week1.bindDays(monthVM.getDayList().subList(position,  position += 7));
-//        binding.week2.bindDays(monthVM.getDayList().subList(position,  position += 7));
-//        binding.week3.bindDays(monthVM.getDayList().subList(position,  position += 7));
-//        binding.week4.bindDays(monthVM.getDayList().subList(position,  position += 7));
-//        binding.week5.bindDays(monthVM.getDayList().subList(position,  position += 7));
-//        binding.week6.bindDays(monthVM.getDayList().subList(position,  position += 7));
+        List<Day> dayList;
+        if (monthVM.getMonth().getValue() != null) {
+            dayList = monthVM.getMonth().getValue().getDayList();
+            binding.week1.bindDays(dayList.subList(position,  position += 7));
+            binding.week2.bindDays(dayList.subList(position,  position += 7));
+            binding.week3.bindDays(dayList.subList(position,  position += 7));
+            binding.week4.bindDays(dayList.subList(position,  position += 7));
+            binding.week5.bindDays(dayList.subList(position,  position += 7));
+            binding.week6.bindDays(dayList.subList(position,  position += 7));
+        }
+
     }
 
     @Override

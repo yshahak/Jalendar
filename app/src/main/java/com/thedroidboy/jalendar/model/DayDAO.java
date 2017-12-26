@@ -26,6 +26,9 @@ public interface DayDAO {
     @Query("SELECT * FROM Day")
     List<Day> getAllDays();
 
+    @Query("SELECT * FROM DAY WHERE startDayInMillis >= :start AND startDayInMillis <= :end ORDER BY startDayInMillis ASC")
+    List<Day> getDaysInSegmant(long start, long end);
+
 //    @Query("SELECT * FROM Month WHERE monthHashCode >= :monthCodeStart ORDER BY monthHashCode ASC LIMIT :sum")
 //    LiveData<List<Month>> getMonthSegment(int monthCodeStart, int sum);
 //
