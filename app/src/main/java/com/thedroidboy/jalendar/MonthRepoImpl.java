@@ -44,27 +44,47 @@ public class MonthRepoImpl implements MonthRepo {
     }
 
     @Override
-    public LiveData<Month> getMonth(JewCalendar jewCalendar) {
-        LiveData<Month> monthLiveData = monthDAO.getMonth(jewCalendar.monthHashCode());
-        if (monthLiveData.getValue() != null){
-            addDaysToMonth(monthLiveData.getValue());
-            return monthLiveData;
+    public MutableLiveData<Month> getMonth(JewCalendar jewCalendar) {
+        int monthCode = jewCalendar.monthHashCode();
+        Log.d(TAG, "getMonth: " + monthCode);
+        LiveData<Month> monthLiveData = monthDAO.getMonth(monthCode);
+        MutableLiveData<Month> mutableLiveData = new MutableLiveData<>();
+        Month month = monthLiveData.getValue();
+        mutableLiveData.setValue(month);
+        if (month != null){
+            addDaysToMonth(month);
         }
+        return mutableLiveData;
+//        Log.d(TAG, "getMonth: didn't found one in db");
+//        Month month = new Month(jewCalendar);
+//        final MutableLiveData<Month> data = new MutableLiveData<>();
+//        new Thread(() -> {
+//            insertMonth(month);
+//            insertMonthDays(month.getDayList());
+//        }).start();
+//        data.setValue(month);
+//        return data;
+    }
+
+    @Override
+    public void pullMonth(JewCalendar jewCalendar, MutableLiveData<Month> monthLiveData) {
+        Log.d(TAG, "getMonth: didn't found one in db");
         Month month = new Month(jewCalendar);
-        Log.d(TAG, "getMonth: " + month.getMonthHebLabel());
-        final MutableLiveData<Month> data = new MutableLiveData<>();
         new Thread(() -> {
             insertMonth(month);
             insertMonthDays(month.getDayList());
         }).start();
-        data.setValue(month);
-        return data;
+        monthLiveData.setValue(month);
     }
 
     private void addDaysToMonth(Month month) {
         long start = month.getStartMonthInMsIncludeOffset();
         long end = month.getEndMonthInMsIncludeOffset();
         List<Day> monthDays = dayDAO.getDaysInSegmant(start, end);
+        for (Day monthDay : monthDays) {
+            boolean outOfMonthRange = monthDay.getStartDayInMillis() < month.getStartMonthInMs() || monthDay.getEndDayInMillis() > month.getEndMonthInMs();
+            monthDay.setOutOfMonthRange(outOfMonthRange);
+        }
         month.setDayList(monthDays);
     }
 }

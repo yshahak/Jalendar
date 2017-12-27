@@ -17,8 +17,9 @@
         <include layout="@layout/week_headers" />
 
         <LinearLayout
+            android:id="@+id/month_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <com.thedroidboy.jalendar.SimpleWeekView

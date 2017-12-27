@@ -3,6 +3,8 @@ package com.thedroidboy.jalendar.dagger;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.thedroidboy.jalendar.AppDatabase;
 import com.thedroidboy.jalendar.MonthRepo;
@@ -32,6 +34,11 @@ public class AppModule {
     @Provides @Singleton
     AppDatabase provideAppDataBase(Context context){
         return Room.databaseBuilder(context, AppDatabase.class, "jalendar").build();
+    }
+
+    @Provides
+    SharedPreferences provideSharedPrefs(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Provides

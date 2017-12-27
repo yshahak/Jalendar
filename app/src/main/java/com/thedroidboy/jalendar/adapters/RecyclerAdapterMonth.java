@@ -31,7 +31,7 @@ public class RecyclerAdapterMonth extends RecyclerView.Adapter<RecyclerAdapterMo
     @Override
     public void onBindViewHolder(WeekViewHolder holder, int position) {
         int normalPosition = position * 7;
-        ((SimpleWeekView)holder.itemView).bindDays(month.getDayList().subList(normalPosition, normalPosition + 7));
+        ((SimpleWeekView)holder.itemView).bindDays(month.getDayList().subList(normalPosition, normalPosition + 7), 0);
     }
 
     @Override

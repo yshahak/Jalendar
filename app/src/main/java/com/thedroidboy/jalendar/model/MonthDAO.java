@@ -27,7 +27,7 @@ public interface MonthDAO {
     @Query("SELECT * FROM Month WHERE monthHashCode >= :monthCodeStart ORDER BY monthHashCode ASC LIMIT :sum")
     LiveData<List<Month>> getMonthSegment(int monthCodeStart, int sum);
 
-    @Query("SELECT * FROM Month WHERE monthHashCode LIKE :monthCode")
+    @Query("SELECT * FROM Month WHERE monthHashCode = :monthCode LIMIT 1")
     LiveData<Month> getMonth(int monthCode);
 
 }

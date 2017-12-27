@@ -146,7 +146,10 @@ public class Month {
             calendar.forward();
             if (jewishDayOfMonth == 1){
                 beginOfMonth = startDayInMs;
+            }  if (beginOfMonth == 0 || dayList.size() > headOffset + daysInMonth){ // headset
+                day.setOutOfMonthRange(true);
             }
+
         }
          return beginOfMonth;
     }

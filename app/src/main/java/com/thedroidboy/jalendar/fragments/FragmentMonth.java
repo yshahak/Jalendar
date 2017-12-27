@@ -1,6 +1,8 @@
 package com.thedroidboy.jalendar.fragments;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.R;
@@ -19,6 +22,7 @@ import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
 
@@ -43,6 +47,8 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     private MonthItemBinding binding;
     @Inject
     MonthRepo monthRepo;
+    @Inject
+    SharedPreferences prefs;
 
     public static FragmentMonth newInstance(int position){
         FragmentMonth fragmentMonth = new FragmentMonth();
@@ -67,13 +73,17 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
-        monthVM.getMonth().observe(this, month -> {
+        LiveData<Month> monthLiveData = monthVM.getMonth();
+        monthLiveData.observe(this, month -> {
             if (month != null) {
                 Log.d(TAG, "onCreateView: " + month.getMonthHebLabel());
                 binding.setMonth(month);
                 bindMonth(binding);
+            } else {
+                monthVM.pull();
             }
         });
+        getCellHeight();
 //        binding.recyclerView.setHasFixedSize(true);
 
 //        binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false));
@@ -84,17 +94,35 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         return binding.getRoot();
     }
 
+    private float getCellHeight() {
+        float cellHeight = prefs.getFloat("cellHeight", 0);
+        if (cellHeight == 0) {
+            binding.monthContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    binding.monthContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    int height = binding.monthContainer.getMeasuredHeight();
+                    float cellHeight = height / 6f;
+                    prefs.edit().putFloat("cellHeight", cellHeight).apply();
+                    bindMonth(binding);
+                }
+            });
+        }
+        return cellHeight;
+    }
+
     private void bindMonth(MonthItemBinding binding) {
         int position = 0;
         List<Day> dayList;
+        float cellHeight = getCellHeight();
         if (monthVM.getMonth().getValue() != null) {
             dayList = monthVM.getMonth().getValue().getDayList();
-            binding.week1.bindDays(dayList.subList(position,  position += 7));
-            binding.week2.bindDays(dayList.subList(position,  position += 7));
-            binding.week3.bindDays(dayList.subList(position,  position += 7));
-            binding.week4.bindDays(dayList.subList(position,  position += 7));
-            binding.week5.bindDays(dayList.subList(position,  position += 7));
-            binding.week6.bindDays(dayList.subList(position,  position += 7));
+            binding.week1.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            binding.week2.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            binding.week3.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            binding.week4.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            binding.week5.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            binding.week6.bindDays(dayList.subList(position,  position += 7), cellHeight);
         }
 
     }

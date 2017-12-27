@@ -44,13 +44,14 @@ public class SimpleWeekView extends LinearLayout {
         }
     }
 
-    public void bindDays(List<Day> days){
+    public void bindDays(List<Day> days, float cellHeight){
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < getChildCount(); i++){
             View view = getChildAt(i);
             DayItemBinding binding = (DayItemBinding) view.getTag();
             if (binding != null) {
                 Day day = days.get(i);
+                day.setCellHeight(cellHeight);
                 binding.setDay(day);
                 ViewGroup container = view.findViewById(R.id.day_container);
                 container.removeAllViews();
