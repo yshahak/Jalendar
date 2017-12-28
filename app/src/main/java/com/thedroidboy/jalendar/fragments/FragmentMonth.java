@@ -38,7 +38,7 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentMonth.class.getSimpleName();
@@ -50,7 +50,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Inject
     SharedPreferences prefs;
 
-    public static FragmentMonth newInstance(int position){
+    public static FragmentMonth newInstance(int position) {
         FragmentMonth fragmentMonth = new FragmentMonth();
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_POSITION, position);
@@ -64,7 +64,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
         JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-        Log.d(TAG, "onCreate: pos="+ position + " | calendar=" + jewCalendar.getJewishYear());
+        Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
         monthVM.init(jewCalendar, monthRepo);
     }
@@ -108,33 +108,33 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
                 }
             });
         }
-        return cellHeight;
-    }
-
-    private void bindMonth(MonthItemBinding binding) {
-        int position = 0;
-        List<Day> dayList;
-        float cellHeight = getCellHeight();
-        if (monthVM.getMonth().getValue() != null) {
-            dayList = monthVM.getMonth().getValue().getDayList();
-            binding.week1.bindDays(dayList.subList(position,  position += 7), cellHeight);
-            binding.week2.bindDays(dayList.subList(position,  position += 7), cellHeight);
-            binding.week3.bindDays(dayList.subList(position,  position += 7), cellHeight);
-            binding.week4.bindDays(dayList.subList(position,  position += 7), cellHeight);
-            binding.week5.bindDays(dayList.subList(position,  position += 7), cellHeight);
-            binding.week6.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            return cellHeight;
         }
 
-    }
+        private void bindMonth(MonthItemBinding binding) {
+            int position = 0;
+            List<Day> dayList;
+            float cellHeight = getCellHeight();
+            if (monthVM.getMonth().getValue() != null) {
+                dayList = monthVM.getMonth().getValue().getDayList();
+                binding.week1.bindDays(dayList.subList(position,  position += 7), cellHeight);
+                binding.week2.bindDays(dayList.subList(position,  position += 7), cellHeight);
+                binding.week3.bindDays(dayList.subList(position,  position += 7), cellHeight);
+                binding.week4.bindDays(dayList.subList(position,  position += 7), cellHeight);
+                binding.week5.bindDays(dayList.subList(position,  position += 7), cellHeight);
+                binding.week6.bindDays(dayList.subList(position,  position += 7), cellHeight);
+            }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
 //        JewCalendarPool.release(position);
-    }
+        }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 //        Day first = monthVM.getDayList().get(0);
 //        Day last = monthVM.getDayList().get(monthVM.getDayList().size() - 1);
 //        Uri uri = GoogleManager.getInstanceUriForInterval(first.getStartDayInMillis(), last.getEndDayInMillis());
@@ -146,17 +146,18 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 //                WHERE_CALENDARS_SELECTED,
 //                WHERE_CALENDARS_ARGS,
 //                CalendarContract.Events.DTSTART + " ASC");
-        return null;
-    }
+            return null;
+        }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 //        EventsHelper.bindCursorToDayList(monthVM.getDayList(), cursor);
-        bindMonth(binding);
-    }
+//            bindMonth(binding);
+        }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
 
-    }
+        }
+//    }
 }

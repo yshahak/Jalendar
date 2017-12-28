@@ -19,15 +19,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
+    private JewCalendar currentJewCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewPager = findViewById(R.id.view_pager);
-//        validateCalendarPermission();
-        initViewPager();
+        viewPager.setOffscreenPageLimit(2);
+        validateCalendarPermission();
+//        initViewPager();
         setMonthTitle(0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        currentJewCalendar =  JewCalendarPool.obtain(0);
     }
 
     private void initViewPager() {
@@ -92,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private void validateCalendarPermission() {
         String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR};
         if (EasyPermissions.hasPermissions(this, perms)) {
-
+            initViewPager();
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission),100, perms);
         }

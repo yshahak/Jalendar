@@ -22,7 +22,6 @@ public class MonthRepoImpl implements MonthRepo {
     private final MonthDAO monthDAO;
     private final DayDAO dayDAO;
 
-
     public MonthRepoImpl(MonthDAO monthDAO, DayDAO dayDAO) {
         this.monthDAO = monthDAO;
         this.dayDAO = dayDAO;
@@ -55,15 +54,6 @@ public class MonthRepoImpl implements MonthRepo {
             addDaysToMonth(month);
         }
         return mutableLiveData;
-//        Log.d(TAG, "getMonth: didn't found one in db");
-//        Month month = new Month(jewCalendar);
-//        final MutableLiveData<Month> data = new MutableLiveData<>();
-//        new Thread(() -> {
-//            insertMonth(month);
-//            insertMonthDays(month.getDayList());
-//        }).start();
-//        data.setValue(month);
-//        return data;
     }
 
     @Override

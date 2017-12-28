@@ -94,8 +94,8 @@ public class Day {
         return (int)cellHeight;
     }
 
-    @BindingAdapter("android:layout_height")
-    public static void setLayoutHeight(View view, int height) {
+    @BindingAdapter("android:minHeight")
+    public static void setMinHeight(View view, int height) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = height;
         view.setLayoutParams(layoutParams);
