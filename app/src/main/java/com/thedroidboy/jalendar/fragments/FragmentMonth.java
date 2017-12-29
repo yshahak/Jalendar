@@ -23,7 +23,6 @@ import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.Month;
-import com.thedroidboy.jalendar.model.MonthFactory;
 import com.thedroidboy.jalendar.model.MonthVM;
 
 import java.util.List;
@@ -42,7 +41,6 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentMonth.class.getSimpleName();
-    private MonthFactory monthFactory;
     private MonthVM monthVM;
     private MonthItemBinding binding;
     @Inject
@@ -79,17 +77,12 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
                 Log.d(TAG, "onCreateView: " + month.getMonthHebLabel());
                 binding.setMonth(month);
                 bindMonth(binding);
+                monthRepo.addMonthEvents(getContext(), monthLiveData);
             } else {
                 monthVM.pull();
             }
         });
         getCellHeight();
-//        binding.recyclerView.setHasFixedSize(true);
-
-//        binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 7, LinearLayoutManager.VERTICAL, false));
-//        binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
-//        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        binding.recyclerView.setAdapter(new RecyclerAdapterMonth(monthVM));
         getLoaderManager().initLoader(0, null, this);
         return binding.getRoot();
     }

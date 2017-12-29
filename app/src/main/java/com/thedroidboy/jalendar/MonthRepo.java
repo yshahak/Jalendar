@@ -1,7 +1,7 @@
 package com.thedroidboy.jalendar;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.Day;
@@ -17,12 +17,14 @@ public interface MonthRepo {
 
     void insertMonth(Month month);
 
-    void pullMonth(JewCalendar jewCalendar, MutableLiveData<Month> monthLiveData);
+    void pullMonth(JewCalendar jewCalendar, LiveData<Month> monthLiveData);
 
     void insertMonthDays(List<Day> monthDays);
 
     LiveData<List<Month>> getMonthes(int monthHashCode, int sum);
 
-    MutableLiveData<Month> getMonth(JewCalendar jewCalendar);
+    LiveData<Month> getMonth(JewCalendar jewCalendar);
+
+    void addMonthEvents(Context context, LiveData<Month> monthLiveData);
 
 }

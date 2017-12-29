@@ -9,51 +9,36 @@
     tools:showIn="@layout/month_item">
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="ראשון"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        style="@style/day_of_week_header" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        style="@style/day_of_week_header"
         android:text="שני"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        style="@style/day_of_week_header"
         android:text="שלישי"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        style="@style/day_of_week_header"
         android:text="רביעי"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        style="@style/day_of_week_header"
         android:text="חמישי"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        style="@style/day_of_week_header"
         android:text="שישי"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        style="@style/day_of_week_header"
         android:text="שבת"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 

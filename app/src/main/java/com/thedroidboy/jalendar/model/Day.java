@@ -25,13 +25,14 @@ public class Day {
     public static final long DAY_IN_MS = TimeUnit.DAYS.toMillis(1);
 
     @Ignore
-    private List<EventInstance> googleEventInstances = new ArrayList<>();
+    private transient List<EventInstance> googleEventInstances = new ArrayList<>();
 
     private final String label;
     @PrimaryKey
     private final long startDayInMillis;
     private final int dayInMonth;
     private final int loazyDayOfMonth;
+
     @Ignore
     private boolean isOutOfMonthRange;
     @Ignore
@@ -83,6 +84,9 @@ public class Day {
     }
 
     public List<EventInstance> getGoogleEventInstances() {
+        if (googleEventInstances == null) {
+            googleEventInstances = new ArrayList<>();
+        }
         return googleEventInstances;
     }
 

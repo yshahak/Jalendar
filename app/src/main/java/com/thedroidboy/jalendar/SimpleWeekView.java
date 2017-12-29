@@ -53,7 +53,7 @@ public class SimpleWeekView extends LinearLayout {
                 Day day = days.get(i);
                 day.setCellHeight(cellHeight);
                 binding.setDay(day);
-                ViewGroup container = view.findViewById(R.id.day_container);
+                ViewGroup container = view.findViewById(R.id.day_events_container);
                 container.removeAllViews();
                 List<EventInstance> eventInstances = day.getGoogleEventInstances();
                 if (eventInstances == null || eventInstances.size() == 0) {

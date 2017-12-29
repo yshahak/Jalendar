@@ -1,8 +1,9 @@
 package com.thedroidboy.jalendar.model;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import android.support.annotation.NonNull;
 
 import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -11,11 +12,15 @@ import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
  * Created by $Yaakov Shahak on 12/7/2017.
  */
 
-public class MonthVM extends ViewModel {
+public class MonthVM extends AndroidViewModel {
 
-    private MutableLiveData<Month> month;
+    private LiveData<Month> month;
     private JewCalendar calendar;
     private MonthRepo monthRepo;
+
+    public MonthVM(@NonNull Application application) {
+        super(application);
+    }
 
     public void init(JewCalendar jewCalendar, MonthRepo monthRepo){
         if (this.month != null) {

@@ -33,8 +33,8 @@ public class Month {
     private String monthHebName;
     @Ignore
     private String monthYearName;
-    @Ignore
-    private List<Day> dayList = new ArrayList<>();
+//    @Ignore
+    private List<Day> dayList;
 
     public Month(int monthHashCode, String monthHebLabel, String monthEnLabel, int daysInMonth, int headOffset, int trailOffset, long startMonthInMs, long endMonthInMs) {
         this.monthHashCode = monthHashCode;
@@ -134,6 +134,7 @@ public class Month {
     }
 
     public long setMonthDays(JewCalendar monthCalendar) {
+        dayList = new ArrayList<>();
         long shift = (monthCalendar.getJewishDayOfMonth() - 1 + headOffset) * DAY_IN_MS;
         JewCalendar calendar = new JewCalendar(new Date(monthCalendar.getTime().getTime() - shift));
         long beginOfMonth = 0;

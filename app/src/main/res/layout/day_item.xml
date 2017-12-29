@@ -9,19 +9,18 @@
             name="day"
             type="com.thedroidboy.jalendar.model.Day" />
     </data>
-<!--        android:alpha="@{day.dayAlphe}"
--->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:minHeight="@{day.cellHeight}"
         android:gravity="center|top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/day_cell_dividers">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/month_other_month_day_number"/>
+        <!--<View-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:background="@color/month_other_month_day_number"/>-->
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -53,7 +52,7 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/day_container"
+            android:id="@+id/day_events_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"/>

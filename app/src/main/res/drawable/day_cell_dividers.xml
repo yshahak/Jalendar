@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:right="-5dp" android:top="-5dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="0.5dp"
+                android:color="@color/month_other_month_day_number" />
+        </shape>
+    </item>
+</layer-list>

@@ -12,4 +12,12 @@
         <item name="android:layoutDirection" tools:targetApi="jelly_bean_mr1">rtl</item>
     </style>
 
+    <style name="day_of_week_header">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+    </style>
+
 </resources>
