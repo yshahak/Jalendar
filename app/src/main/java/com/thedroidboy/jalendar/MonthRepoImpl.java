@@ -88,8 +88,7 @@ public class MonthRepoImpl implements MonthRepo {
     }
 
     @Override
-    public void addMonthEvents(Context context, LiveData<Month> monthLiveData) {
-        Month month = monthLiveData.getValue();
+    public void addMonthEvents(Context context, Month month) {
         if (month != null) {
             List<Day> dayList = month.getDayList();
             Day first = dayList.get(0);
@@ -101,7 +100,6 @@ public class MonthRepoImpl implements MonthRepo {
             Cursor cursor = cr.query(uri, INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
                     CalendarContract.Events.DTSTART + " ASC");
             EventsHelper.bindCursorToDayList(dayList, cursor);
-//            monthLiveData.postValue(month);
         }
     }
 }

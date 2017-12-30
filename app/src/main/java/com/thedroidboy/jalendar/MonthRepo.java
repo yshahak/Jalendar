@@ -25,6 +25,6 @@ public interface MonthRepo {
 
     LiveData<Month> getMonth(JewCalendar jewCalendar);
 
-    void addMonthEvents(Context context, LiveData<Month> monthLiveData);
+    void addMonthEvents(Context context, Month month);
 
 }

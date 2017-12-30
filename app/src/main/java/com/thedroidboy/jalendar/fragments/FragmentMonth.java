@@ -3,7 +3,6 @@ package com.thedroidboy.jalendar.fragments;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.thedroidboy.jalendar.GoogleEventsLoader;
 import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -37,7 +37,7 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<Boolean> {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentMonth.class.getSimpleName();
@@ -70,20 +70,22 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Nullable
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: pos=" + getArguments().getInt(KEY_POSITION));// + "\tstate=" + getLifecycle().getCurrentState().toString()
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
         LiveData<Month> monthLiveData = monthVM.getMonth();
         monthLiveData.observe(this, month -> {
             if (month != null) {
                 Log.d(TAG, "onCreateView: " + month.getMonthHebLabel());
+//                monthRepo.addMonthEvents(getContext(), monthLiveData);
                 binding.setMonth(month);
                 bindMonth(binding);
-                monthRepo.addMonthEvents(getContext(), monthLiveData);
+                getLoaderManager().initLoader(100, null, this);
             } else {
                 monthVM.pull();
             }
         });
         getCellHeight();
-        getLoaderManager().initLoader(0, null, this);
+
         return binding.getRoot();
     }
 
@@ -126,31 +128,18 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 //        JewCalendarPool.release(position);
         }
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//        Day first = monthVM.getDayList().get(0);
-//        Day last = monthVM.getDayList().get(monthVM.getDayList().size() - 1);
-//        Uri uri = GoogleManager.getInstanceUriForInterval(first.getStartDayInMillis(), last.getEndDayInMillis());
-//        String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? "; //AND " +
-//        String[] WHERE_CALENDARS_ARGS = {"1"};//
-//        return new CursorLoader(getActivity(),
-//                uri,
-//                INSTANCE_PROJECTION,
-//                WHERE_CALENDARS_SELECTED,
-//                WHERE_CALENDARS_ARGS,
-//                CalendarContract.Events.DTSTART + " ASC");
-            return null;
-        }
+    @Override
+    public Loader<Boolean> onCreateLoader(int id, Bundle args) {
+        return new GoogleEventsLoader(getContext(), monthRepo, monthVM.getMonth().getValue());
+    }
 
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//        EventsHelper.bindCursorToDayList(monthVM.getDayList(), cursor);
-//            bindMonth(binding);
-        }
+    @Override
+    public void onLoadFinished(Loader<Boolean> loader, Boolean data) {
+        bindMonth(binding);
+    }
 
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
+    @Override
+    public void onLoaderReset(Loader<Boolean> loader) {
 
-        }
-//    }
+    }
 }
