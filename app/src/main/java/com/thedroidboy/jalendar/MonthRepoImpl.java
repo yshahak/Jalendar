@@ -1,7 +1,6 @@
 package com.thedroidboy.jalendar;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +8,6 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 import android.util.Log;
 
-import com.thedroidboy.jalendar.calendars.google.EventsHelper;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.Day;
@@ -54,11 +52,8 @@ public class MonthRepoImpl implements MonthRepo {
     @Override
     public LiveData<Month> getMonth(JewCalendar jewCalendar) {
         int monthCode = jewCalendar.monthHashCode();
-        Log.d(TAG, "getMonth: " + monthCode);
         LiveData<Month> monthLiveData = monthDAO.getMonth(monthCode);
         Month month = monthLiveData.getValue();
-        MutableLiveData<Month> mutableLiveData = new MutableLiveData<>();
-//        mutableLiveData.setValue(month);
         if (month != null){
             addDaysToMonth(month);
         }
@@ -88,18 +83,12 @@ public class MonthRepoImpl implements MonthRepo {
     }
 
     @Override
-    public void addMonthEvents(Context context, Month month) {
-        if (month != null) {
-            List<Day> dayList = month.getDayList();
-            Day first = dayList.get(0);
-            Day last = dayList.get(dayList.size() - 1);
-            Uri uri = GoogleManager.getInstanceUriForInterval(first.getStartDayInMillis(), last.getEndDayInMillis());
-            String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? "; //AND " +
-            String[] WHERE_CALENDARS_ARGS = {"1"};//
-            ContentResolver cr = context.getContentResolver();
-            Cursor cursor = cr.query(uri, INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
-                    CalendarContract.Events.DTSTART + " ASC");
-            EventsHelper.bindCursorToDayList(dayList, cursor);
-        }
+    public Cursor getMonthEventsCursor(Context context, long start, long end) {
+        Uri uri = GoogleManager.getInstanceUriForInterval(start, end);
+        String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? "; //AND " +
+        String[] WHERE_CALENDARS_ARGS = {"1"};//
+        ContentResolver cr = context.getContentResolver();
+        return cr.query(uri, INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
+                CalendarContract.Events.DTSTART + " ASC");
     }
 }

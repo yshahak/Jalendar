@@ -2,6 +2,7 @@ package com.thedroidboy.jalendar;
 
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
+import android.database.Cursor;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.Day;
@@ -25,6 +26,6 @@ public interface MonthRepo {
 
     LiveData<Month> getMonth(JewCalendar jewCalendar);
 
-    void addMonthEvents(Context context, Month month);
+    Cursor getMonthEventsCursor(Context context, long start, long end);
 
 }

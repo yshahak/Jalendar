@@ -37,7 +37,7 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<Boolean> {
+public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>> {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentMonth.class.getSimpleName();
@@ -70,13 +70,11 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Nullable
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: pos=" + getArguments().getInt(KEY_POSITION));// + "\tstate=" + getLifecycle().getCurrentState().toString()
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
         LiveData<Month> monthLiveData = monthVM.getMonth();
         monthLiveData.observe(this, month -> {
             if (month != null) {
                 Log.d(TAG, "onCreateView: " + month.getMonthHebLabel());
-//                monthRepo.addMonthEvents(getContext(), monthLiveData);
                 binding.setMonth(month);
                 bindMonth(binding);
                 getLoaderManager().initLoader(100, null, this);
@@ -103,43 +101,45 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
                 }
             });
         }
-            return cellHeight;
+        return cellHeight;
+    }
+
+    private void bindMonth(MonthItemBinding binding) {
+        int position = 0;
+        List<Day> dayList;
+        float cellHeight = getCellHeight();
+        if (monthVM.getMonth().getValue() != null) {
+            dayList = monthVM.getMonth().getValue().getDayList();
+            binding.week1.bindDays(dayList.subList(position, position += 7), cellHeight);
+            binding.week2.bindDays(dayList.subList(position, position += 7), cellHeight);
+            binding.week3.bindDays(dayList.subList(position, position += 7), cellHeight);
+            binding.week4.bindDays(dayList.subList(position, position += 7), cellHeight);
+            binding.week5.bindDays(dayList.subList(position, position += 7), cellHeight);
+            binding.week6.bindDays(dayList.subList(position, position += 7), cellHeight);
         }
 
-        private void bindMonth(MonthItemBinding binding) {
-            int position = 0;
-            List<Day> dayList;
-            float cellHeight = getCellHeight();
-            if (monthVM.getMonth().getValue() != null) {
-                dayList = monthVM.getMonth().getValue().getDayList();
-                binding.week1.bindDays(dayList.subList(position,  position += 7), cellHeight);
-                binding.week2.bindDays(dayList.subList(position,  position += 7), cellHeight);
-                binding.week3.bindDays(dayList.subList(position,  position += 7), cellHeight);
-                binding.week4.bindDays(dayList.subList(position,  position += 7), cellHeight);
-                binding.week5.bindDays(dayList.subList(position,  position += 7), cellHeight);
-                binding.week6.bindDays(dayList.subList(position,  position += 7), cellHeight);
-            }
-
-        }
-
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-//        JewCalendarPool.release(position);
-        }
-
-    @Override
-    public Loader<Boolean> onCreateLoader(int id, Bundle args) {
-        return new GoogleEventsLoader(getContext(), monthRepo, monthVM.getMonth().getValue());
     }
 
     @Override
-    public void onLoadFinished(Loader<Boolean> loader, Boolean data) {
-        bindMonth(binding);
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
-    public void onLoaderReset(Loader<Boolean> loader) {
+    public Loader<List<Day>> onCreateLoader(int id, Bundle args) {
+        return new GoogleEventsLoader(getContext(), monthRepo, monthVM.getMonth().getValue().getDayList());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Day>> loader, List<Day> data) {
+        if (monthVM.getMonth().getValue() != null) {
+            monthVM.getMonth().getValue().setDayList(data);
+            bindMonth(binding);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Day>> loader) {
 
     }
 }

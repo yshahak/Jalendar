@@ -17,11 +17,6 @@
         android:orientation="vertical"
         android:background="@drawable/day_cell_dividers">
 
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="1dp"-->
-            <!--android:background="@color/month_other_month_day_number"/>-->
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +29,7 @@
                 android:text="@{day.label}"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 android:textStyle="bold"
                 android:textColor="@{day.labelColor}"
                 tools:text="יד" />
@@ -45,7 +40,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="@{day.loaziLabel}"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 android:textColor="@{day.labelColor}"
                 tools:text="יד" />
 
