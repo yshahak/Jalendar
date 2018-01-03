@@ -37,6 +37,7 @@ public class Day {
     private boolean isOutOfMonthRange;
     @Ignore
     private float cellHeight;
+
 //    @Ignore
 //    private int backgroundColor = Color.TRANSPARENT;
 

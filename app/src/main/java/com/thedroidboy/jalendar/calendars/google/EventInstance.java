@@ -20,6 +20,8 @@ public class EventInstance implements Comparable<EventInstance> {
     private String calendarDisplayName;
     private int dayOfMonth;
     private Date beginDate, endDate;
+    private int parallelEventsCount;
+
 
     public EventInstance(long eventId, String eventTitle, boolean allDayEvent, long begin, long end, int displayColor, String calendarDisplayName) {
         this.eventId = eventId;
@@ -90,6 +92,13 @@ public class EventInstance implements Comparable<EventInstance> {
         return endDate;
     }
 
+    public void setParallelEventsCount(int parallelEventsCount) {
+        this.parallelEventsCount = parallelEventsCount;
+    }
+
+    public int getParallelEventsCount() {
+        return parallelEventsCount;
+    }
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.US);
 
     @Override

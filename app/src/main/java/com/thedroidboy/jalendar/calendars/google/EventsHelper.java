@@ -2,11 +2,13 @@ package com.thedroidboy.jalendar.calendars.google;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
+import android.util.SparseIntArray;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.Day;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +28,65 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_TITL
  */
 
 public class EventsHelper {
+
+    public static void computeParallelEventsForDayList(List<Day> dayList){
+        SparseIntArray hoursMap = new SparseIntArray();
+//        HashMap<Integer, Integer> hoursMap = new HashMap<>();
+        Calendar start = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        for (Day day : dayList) {
+            for (EventInstance event : day.getGoogleEventInstances()) {
+                computeEventHourRange(hoursMap, start, end, event);
+            }
+        }
+    }
+
+    public static void computeEventHourRange(SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event) {
+        int startHour;
+        int endHour;
+        int endMinutes;
+        start.setTimeInMillis(event.getBegin());
+        startHour = start.get(Calendar.HOUR_OF_DAY);
+        if (event.isAllDayEvent()){
+            endHour = 23;
+        } else {
+            end.setTimeInMillis(event.getEnd());
+            endMinutes = end.get(Calendar.MINUTE);
+            endHour = end.get(Calendar.HOUR_OF_DAY);
+            if (endMinutes > 10 && endHour != 23){
+                endHour++;
+            }
+        }
+        do {
+            hoursMap.put(startHour, hoursMap.get(startHour) + 1);
+        } while (++startHour < endHour);
+    }
+
+    private static void computeParallelForEvent(SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event){
+        int startHour, endHour, endMinutes;
+        start.setTimeInMillis(event.getBegin());
+        startHour = start.get(Calendar.HOUR_OF_DAY);
+        if (event.isAllDayEvent()){
+            endHour = 23;
+        } else {
+            end.setTimeInMillis(event.getEnd());
+            endMinutes = end.get(Calendar.MINUTE);
+            endHour = end.get(Calendar.HOUR_OF_DAY);
+            if (endMinutes > 10 && endHour != 23){
+                endHour++;
+            }
+        }
+        int max = 0, count;
+        do {
+            count = hoursMap.get(startHour);
+            if (count > max){
+                max = count;
+            }
+        } while (++startHour < endHour);
+        event.setParallelEventsCount(max);
+    }
+
+
 
     public static List<EventInstance> getEvents(Cursor cur) {
         List<EventInstance> list = new ArrayList<>();
