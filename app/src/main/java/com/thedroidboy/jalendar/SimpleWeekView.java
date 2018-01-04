@@ -38,7 +38,7 @@ public class SimpleWeekView extends LinearLayout {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         setWeightSum(7);
         for (int i = 0; i < 7; i++){
-            DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item, this, false);
+            DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item_for_month, this, false);
             binding.getRoot().setTag(binding);
             addView(binding.getRoot());
         }

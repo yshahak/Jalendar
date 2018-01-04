@@ -2,10 +2,12 @@ package com.thedroidboy.jalendar.calendars.google;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.model.Hour;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +40,11 @@ public class EventsHelper {
             for (EventInstance event : day.getGoogleEventInstances()) {
                 computeEventHourRange(hoursMap, start, end, event);
             }
+            SparseArray<Hour> hoursEventsMap = new SparseArray<>();
+            for (EventInstance event : day.getGoogleEventInstances()) {
+                computeParallelForEvent(hoursEventsMap, hoursMap, start, end, event);
+            }
+            day.setHoursEventsMap(hoursEventsMap);
         }
     }
 
@@ -62,7 +69,7 @@ public class EventsHelper {
         } while (++startHour < endHour);
     }
 
-    private static void computeParallelForEvent(SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event){
+    private static void computeParallelForEvent(SparseArray<Hour> hoursEventsMap, SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event){
         int startHour, endHour, endMinutes;
         start.setTimeInMillis(event.getBegin());
         startHour = start.get(Calendar.HOUR_OF_DAY);
@@ -78,6 +85,12 @@ public class EventsHelper {
         }
         int max = 0, count;
         do {
+            Hour hour = hoursEventsMap.get(startHour);
+            if (hour == null) {
+                hour = new Hour(Integer.toString(startHour), new ArrayList<>());
+                hoursEventsMap.put(startHour, hour);
+            }
+            hour.getHourEvents().add(event);
             count = hoursMap.get(startHour);
             if (count > max){
                 max = count;

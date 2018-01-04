@@ -6,6 +6,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -37,6 +38,8 @@ public class Day {
     private boolean isOutOfMonthRange;
     @Ignore
     private float cellHeight;
+    @Ignore
+    private transient SparseArray<Hour> hoursEventsMap;
 
 //    @Ignore
 //    private int backgroundColor = Color.TRANSPARENT;
@@ -97,6 +100,14 @@ public class Day {
 
     public int getCellHeight() {
         return (int)cellHeight;
+    }
+
+    public void setHoursEventsMap(SparseArray<Hour> hoursEventsMap) {
+        this.hoursEventsMap = hoursEventsMap;
+    }
+
+    public SparseArray<Hour> getHoursEventsMap() {
+        return hoursEventsMap;
     }
 
     @BindingAdapter("android:minHeight")

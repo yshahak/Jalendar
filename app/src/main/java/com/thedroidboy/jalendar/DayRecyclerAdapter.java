@@ -27,7 +27,7 @@ public class DayRecyclerAdapter extends RecyclerView.Adapter<DayRecyclerAdapter.
     @Override
     public DayViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item, parent, false);
+        DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item_for_month, parent, false);
         return new DayViewHolder(binding);
     }
 
