@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Jalendar</string>
     <string name="calendar_ask_premission">אנא אשר גישה ליומן</string>
+    <string name="title_activity_day">DayActivity</string>
 </resources>

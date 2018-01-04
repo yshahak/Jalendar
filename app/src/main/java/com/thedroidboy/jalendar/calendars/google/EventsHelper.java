@@ -48,7 +48,7 @@ public class EventsHelper {
         }
     }
 
-    public static void computeEventHourRange(SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event) {
+    private static void computeEventHourRange(SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event) {
         int startHour;
         int endHour;
         int endMinutes;

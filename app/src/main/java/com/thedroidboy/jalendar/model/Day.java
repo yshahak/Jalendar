@@ -6,6 +6,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.databinding.BindingAdapter;
 import android.graphics.Color;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * Created by yshahak on 09/10/2016.
  */
 @Entity
-public class Day {
+public class Day implements Parcelable {
 
     public static final long DAY_IN_MS = TimeUnit.DAYS.toMillis(1);
 
@@ -127,4 +129,42 @@ public class Day {
                 "\t isOutOfMonthRange=" + isOutOfMonthRange +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.label);
+        dest.writeLong(this.startDayInMillis);
+        dest.writeInt(this.dayInMonth);
+        dest.writeInt(this.loazyDayOfMonth);
+        dest.writeByte(this.isOutOfMonthRange ? (byte) 1 : (byte) 0);
+        dest.writeFloat(this.cellHeight);
+        dest.writeSparseArray((SparseArray) this.hoursEventsMap);
+    }
+
+    protected Day(Parcel in) {
+        this.label = in.readString();
+        this.startDayInMillis = in.readLong();
+        this.dayInMonth = in.readInt();
+        this.loazyDayOfMonth = in.readInt();
+        this.isOutOfMonthRange = in.readByte() != 0;
+        this.cellHeight = in.readFloat();
+        this.hoursEventsMap = in.readSparseArray(Hour.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<Day> CREATOR = new Parcelable.Creator<Day>() {
+        @Override
+        public Day createFromParcel(Parcel source) {
+            return new Day(source);
+        }
+
+        @Override
+        public Day[] newArray(int size) {
+            return new Day[size];
+        }
+    };
 }

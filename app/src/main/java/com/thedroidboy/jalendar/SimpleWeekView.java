@@ -1,6 +1,7 @@
 package com.thedroidboy.jalendar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -21,7 +22,7 @@ import java.util.List;
  * on 22/11/2017.
  */
 
-public class SimpleWeekView extends LinearLayout {
+public class SimpleWeekView extends LinearLayout implements View.OnClickListener {
 
     public SimpleWeekView(Context context) {
         super(context);
@@ -38,7 +39,8 @@ public class SimpleWeekView extends LinearLayout {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         setWeightSum(7);
         for (int i = 0; i < 7; i++){
-            DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item_for_month, this, false);
+
+            DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item, this, false);
             binding.getRoot().setTag(binding);
             addView(binding.getRoot());
         }
@@ -51,6 +53,8 @@ public class SimpleWeekView extends LinearLayout {
             DayItemBinding binding = (DayItemBinding) view.getTag();
             if (binding != null) {
                 Day day = days.get(i);
+                view.setTag(R.string.app_name, day);
+                view.setOnClickListener(this);
                 day.setCellHeight(cellHeight);
                 binding.setDay(day);
                 ViewGroup container = view.findViewById(R.id.day_events_container);
@@ -71,7 +75,15 @@ public class SimpleWeekView extends LinearLayout {
         }
     }
 
-
+    @Override
+    public void onClick(View view) {
+        Day day = (Day) view.getTag(R.string.app_name);
+        if (day != null) {
+            Intent intent = new Intent(getContext(), DayActivity.class);
+            intent.putExtra("day", day);
+            getContext().startActivity(intent);
+        }
+    }
 
 
 }
