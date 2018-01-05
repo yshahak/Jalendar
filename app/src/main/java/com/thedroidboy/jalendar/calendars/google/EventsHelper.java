@@ -14,10 +14,12 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_BEGIN_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_DISPLAY_NAME_INDEX;
+import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_TIME_ZONE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_DISPLAY_COLOR_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_END_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_EVENT_ID;
@@ -32,40 +34,46 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_TITL
 public class EventsHelper {
 
     public static void computeParallelEventsForDayList(List<Day> dayList){
-        SparseIntArray hoursMap = new SparseIntArray();
-//        HashMap<Integer, Integer> hoursMap = new HashMap<>();
+
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
         for (Day day : dayList) {
+            SparseArray<Hour> hoursMap = new SparseArray<>();
+            hoursMap.put(-1, new Hour("all day", new ArrayList<>()));
+            int i = 0;
+            while (i < 24){
+                hoursMap.put(i, new Hour(Integer.toString(i), new ArrayList<>()));
+                i++;
+            }
             for (EventInstance event : day.getGoogleEventInstances()) {
                 computeEventHourRange(hoursMap, start, end, event);
             }
-            SparseArray<Hour> hoursEventsMap = new SparseArray<>();
-            for (EventInstance event : day.getGoogleEventInstances()) {
-                computeParallelForEvent(hoursEventsMap, hoursMap, start, end, event);
-            }
-            day.setHoursEventsMap(hoursEventsMap);
+//            for (EventInstance event : day.getGoogleEventInstances()) {
+//                computeParallelForEvent(hoursEventsMap, hoursMap, start, end, event);
+//            }
+            day.setHoursEventsMap(hoursMap);
         }
     }
 
-    private static void computeEventHourRange(SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event) {
-        int startHour;
-        int endHour;
-        int endMinutes;
+    private static void computeEventHourRange(SparseArray<Hour> hoursMap, Calendar start, Calendar end, EventInstance event) {
+
+        if (event.isAllDayEvent()){
+            List<EventInstance> list = hoursMap.get(-1).getHourEvents();
+            list.add(event);
+            return;
+        }
+        int startHour, endHour, endMinutes;
         start.setTimeInMillis(event.getBegin());
         startHour = start.get(Calendar.HOUR_OF_DAY);
-        if (event.isAllDayEvent()){
-            endHour = 23;
-        } else {
-            end.setTimeInMillis(event.getEnd());
-            endMinutes = end.get(Calendar.MINUTE);
-            endHour = end.get(Calendar.HOUR_OF_DAY);
-            if (endMinutes > 10 && endHour != 23){
-                endHour++;
-            }
+        end.setTimeInMillis(event.getEnd());
+        endMinutes = end.get(Calendar.MINUTE);
+        endHour = end.get(Calendar.HOUR_OF_DAY);
+        if (endMinutes > 10 && endHour != 23){
+            endHour++;
         }
         do {
-            hoursMap.put(startHour, hoursMap.get(startHour) + 1);
+            List<EventInstance> list = hoursMap.get(startHour).getHourEvents();
+            list.add(event);
         } while (++startHour < endHour);
     }
 
@@ -155,6 +163,8 @@ public class EventsHelper {
         String title = cursor.getString(PROJECTION_TITLE_INDEX);
         long start = cursor.getLong((PROJECTION_BEGIN_INDEX));
         long end = cursor.getLong((PROJECTION_END_INDEX));
+        TimeZone timeZone = TimeZone.getTimeZone(cursor.getString(PROJECTION_CALENDAR_TIME_ZONE));
+        long offset = timeZone.getOffset(start);
         String calendarName = cursor.getString(PROJECTION_CALENDAR_DISPLAY_NAME_INDEX);
         int displayColor = cursor.getInt(PROJECTION_DISPLAY_COLOR_INDEX);
 //        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
@@ -163,7 +173,7 @@ public class EventsHelper {
 //            end = start;
         }
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
-        return new EventInstance(eventId, title, allDayEvent, start, end, displayColor, calendarName, dayOfMonth);
+        return new EventInstance(eventId, title, allDayEvent, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
     }
 
     public static String covertDurationToRule(long duration) {

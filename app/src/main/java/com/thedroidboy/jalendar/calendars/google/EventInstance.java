@@ -1,5 +1,7 @@
 package com.thedroidboy.jalendar.calendars.google;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
@@ -10,7 +12,7 @@ import java.util.Locale;
  * Created by yshahak on 14/10/2016.
  */
 
-public class EventInstance implements Comparable<EventInstance> {
+public class EventInstance implements Comparable<EventInstance>,Parcelable {
 
     private long eventId;
     private String eventTitle;
@@ -99,7 +101,7 @@ public class EventInstance implements Comparable<EventInstance> {
     public int getParallelEventsCount() {
         return parallelEventsCount;
     }
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.US);
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.getDefault());
 
     @Override
     public String toString() {
@@ -123,4 +125,52 @@ public class EventInstance implements Comparable<EventInstance> {
         MONTH,
         YEAR
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.eventId);
+        dest.writeString(this.eventTitle);
+        dest.writeByte(this.allDayEvent ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.begin);
+        dest.writeLong(this.end);
+        dest.writeInt(this.displayColor);
+        dest.writeString(this.calendarDisplayName);
+        dest.writeInt(this.dayOfMonth);
+        dest.writeLong(this.beginDate != null ? this.beginDate.getTime() : -1);
+        dest.writeLong(this.endDate != null ? this.endDate.getTime() : -1);
+        dest.writeInt(this.parallelEventsCount);
+    }
+
+    protected EventInstance(Parcel in) {
+        this.eventId = in.readLong();
+        this.eventTitle = in.readString();
+        this.allDayEvent = in.readByte() != 0;
+        this.begin = in.readLong();
+        this.end = in.readLong();
+        this.displayColor = in.readInt();
+        this.calendarDisplayName = in.readString();
+        this.dayOfMonth = in.readInt();
+        long tmpBeginDate = in.readLong();
+        this.beginDate = tmpBeginDate == -1 ? null : new Date(tmpBeginDate);
+        long tmpEndDate = in.readLong();
+        this.endDate = tmpEndDate == -1 ? null : new Date(tmpEndDate);
+        this.parallelEventsCount = in.readInt();
+    }
+
+    public static final Parcelable.Creator<EventInstance> CREATOR = new Parcelable.Creator<EventInstance>() {
+        @Override
+        public EventInstance createFromParcel(Parcel source) {
+            return new EventInstance(source);
+        }
+
+        @Override
+        public EventInstance[] newArray(int size) {
+            return new EventInstance[size];
+        }
+    };
 }

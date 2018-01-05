@@ -4,7 +4,7 @@
         <shape android:shape="rectangle">
             <stroke
                 android:width="0.5dp"
-                android:color="@color/month_other_month_day_number" />
+                android:color="#66939497" />
         </shape>
     </item>
 </layer-list>
