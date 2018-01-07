@@ -6,11 +6,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.thedroidboy.jalendar.calendars.google.EventInstance;
 import com.thedroidboy.jalendar.databinding.ActivityDayBinding;
 import com.thedroidboy.jalendar.databinding.HourItemForDayBinding;
+import com.thedroidboy.jalendar.databinding.TextViewEventForHourBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.Hour;
 
@@ -36,7 +36,7 @@ public class DayActivity extends AppCompatActivity {
         LinearLayout dayContainer = findViewById(R.id.hourContainer);
         LayoutInflater inflater = LayoutInflater.from(this);
         for(int i = 0; i < 23; i++) {
-            HourItemForDayBinding binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.hour_item_for_day, dayContainer, true);
+            HourItemForDayBinding binding = DataBindingUtil.inflate(inflater, R.layout.hour_item_for_day, dayContainer, true);
             Hour hour = day.getHoursEventsMap().get(i);
             binding.setHour(hour);
             List<EventInstance> eventInstances = hour.getHourEvents();
@@ -44,11 +44,11 @@ public class DayActivity extends AppCompatActivity {
                 continue;
             }
             for (EventInstance eventInstance : eventInstances){
-                TextView textView = (TextView) inflater.inflate(R.layout.text_view_event_for_hour, binding.hourEventContainer, false);
-                textView.setText(eventInstance.getEventTitle());
-                textView.setBackgroundColor(eventInstance.getDisplayColor());
-                binding.hourEventContainer.addView(textView);
-                textView.setTag(eventInstance);
+                TextViewEventForHourBinding eventBinding = DataBindingUtil.inflate(inflater, R.layout.text_view_event_for_hour, binding.hourEventContainer, true);
+                eventBinding.setEvent(eventInstance);
+                eventBinding.hourLabel.setText(eventInstance.getEventTitle());
+                eventBinding.hourLabel.setBackgroundColor(eventInstance.getDisplayColor());
+                eventBinding.hourLabel.setTag(eventInstance);
             }
         }
     }

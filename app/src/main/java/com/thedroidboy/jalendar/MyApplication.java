@@ -22,12 +22,14 @@ import dagger.android.support.HasSupportFragmentInjector;
 
 public class MyApplication extends Application implements HasSupportFragmentInjector {
 
+    private static MyApplication instance;
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingFragmentInjector;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         Stetho.initializeWithDefaults(this);
         JewCalendarPool.init();
         setupLeakCanary();
@@ -48,5 +50,9 @@ public class MyApplication extends Application implements HasSupportFragmentInje
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return dispatchingFragmentInjector;
+    }
+
+    public static MyApplication getInstance(){
+        return instance;
     }
 }

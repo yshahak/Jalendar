@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="0dp"
-    android:layout_weight="1"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:layout_margin="1dp"
-    android:maxLines="1"
-    android:textSize="10sp"
-    android:textStyle="bold"/>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_weight="1">
+
+    <data>
+
+        <variable
+            name="event"
+            type="com.thedroidboy.jalendar.calendars.google.EventInstance" />
+    </data>
+
+    <TextView
+        android:id="@+id/hour_label"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:minHeight="@{event.cellHeight}"
+        android:layout_gravity="top"
+        android:layout_marginTop="@{event.eventTopMargin}"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+</layout>
+

@@ -1,12 +1,20 @@
 package com.thedroidboy.jalendar.calendars.google;
 
+import android.databinding.BindingAdapter;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import com.thedroidboy.jalendar.MyApplication;
+import com.thedroidboy.jalendar.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by yshahak on 14/10/2016.
@@ -102,6 +110,36 @@ public class EventInstance implements Comparable<EventInstance>,Parcelable {
         return parallelEventsCount;
     }
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.getDefault());
+
+    public float getCellHeight() {
+        int cell = MyApplication.getInstance().getResources().getDimensionPixelSize(R.dimen.event_in_day);
+        int minutes = (int) TimeUnit.MILLISECONDS.toMinutes(end - begin);
+        if (minutes >= 60){
+            return cell;
+        }
+        return (cell * (minutes / 60f));
+    }
+
+    @BindingAdapter("android:minHeight")
+    public static void setMinHeight(View view, float height) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        layoutParams.height =(int)height;
+        view.setLayoutParams(layoutParams);
+    }
+
+    public float getEventTopMargin() {
+
+        int cell = MyApplication.getInstance().getResources().getDimensionPixelSize(R.dimen.event_in_day);
+        int minutes = (int) (TimeUnit.MILLISECONDS.toMinutes(begin) % 60);
+        return (cell * (minutes / 60f));
+    }
+
+    @BindingAdapter("android:layout_marginTop")
+    public static void setLayoutMarginTop(View view, float margin) {
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
+        layoutParams.topMargin = (int) margin;
+        view.setLayoutParams(layoutParams);
+    }
 
     @Override
     public String toString() {
