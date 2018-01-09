@@ -1,6 +1,6 @@
 package com.thedroidboy.jalendar;
 
-import com.thedroidboy.jalendar.calendars.google.EventInstance;
+import com.thedroidboy.jalendar.model.EventInstanceForDay;
 
 import org.junit.Test;
 
@@ -22,9 +22,9 @@ public class TestEventsHelper {
         HashMap<Integer, Integer> hourMap = new HashMap<>();
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
-        EventInstance eventInstance = new EventInstance(1, "test", false, calendar.getTimeInMillis(),
+        EventInstanceForDay eventInstanceForDay = new EventInstanceForDay(1, "test", false, calendar.getTimeInMillis(),
                 calendar.getTimeInMillis() + TimeUnit.HOURS.toMillis(1), 0, "");
-//        EventsHelper.computeEventHourRange(hourMap, start, end, eventInstance);
+//        EventsHelper.computeEventHourRange(hourMap, start, end, eventInstanceForDay);
         for (int i  =0 ; i < 24; i++){
             if (hourMap.get(i) != null){
                 System.out.println("hour=" + i + " |count=" + hourMap.get(i));

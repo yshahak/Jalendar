@@ -3,10 +3,11 @@ package com.thedroidboy.jalendar.calendars.google;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.model.EventForHour;
+import com.thedroidboy.jalendar.model.EventInstanceForDay;
 import com.thedroidboy.jalendar.model.Hour;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_TITL
 
 public class EventsHelper {
 
-    public static void computeParallelEventsForDayList(List<Day> dayList){
+    public static void computeParallelEventsForDayList(List<Day> dayList) {
 
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
@@ -41,124 +42,126 @@ public class EventsHelper {
             SparseArray<Hour> hoursMap = new SparseArray<>();
             hoursMap.put(-1, new Hour("all day", new ArrayList<>()));
             int i = 0;
-            while (i < 24){
+            while (i < 24) {
                 hoursMap.put(i, new Hour(Integer.toString(i), new ArrayList<>()));
                 i++;
             }
-            for (EventInstance event : day.getGoogleEventInstances()) {
+            for (EventInstanceForDay event : day.getGoogleEventInstanceForDays()) {
                 computeEventHourRange(hoursMap, start, end, event);
             }
-//            for (EventInstance event : day.getGoogleEventInstances()) {
+//            for (EventInstanceForDay event : day.getGoogleEventInstanceForDays()) {
 //                computeParallelForEvent(hoursEventsMap, hoursMap, start, end, event);
 //            }
             day.setHoursEventsMap(hoursMap);
         }
     }
 
-    private static void computeEventHourRange(SparseArray<Hour> hoursMap, Calendar start, Calendar end, EventInstance event) {
+    private static void computeEventHourRange(SparseArray<Hour> hoursMap, Calendar start, Calendar end, EventInstanceForDay event) {
 
-        if (event.isAllDayEvent()){
-            List<EventInstance> list = hoursMap.get(-1).getHourEvents();
-            list.add(event);
-            return;
-        }
-        int startHour, endHour, endMinutes;
-        start.setTimeInMillis(event.getBegin());
-        startHour = start.get(Calendar.HOUR_OF_DAY);
-        end.setTimeInMillis(event.getEnd());
-        endMinutes = end.get(Calendar.MINUTE);
-        endHour = end.get(Calendar.HOUR_OF_DAY);
-        if (endMinutes > 10 && endHour != 23){
-            endHour++;
-        }
-        do {
-            List<EventInstance> list = hoursMap.get(startHour).getHourEvents();
-            list.add(event);
-        } while (++startHour < endHour);
-    }
-
-    private static void computeParallelForEvent(SparseArray<Hour> hoursEventsMap, SparseIntArray hoursMap, Calendar start, Calendar end, EventInstance event){
-        int startHour, endHour, endMinutes;
-        start.setTimeInMillis(event.getBegin());
-        startHour = start.get(Calendar.HOUR_OF_DAY);
-        if (event.isAllDayEvent()){
-            endHour = 23;
+        if (event.isAllDayEvent()) {
+            List<EventForHour> list = hoursMap.get(-1).getHourEventForDays();
+            list.add(new EventForHour(event, 0,0,0,0,0));
         } else {
+            int startHour, endHour, startMinute, endMinute;
+            start.setTimeInMillis(event.getBegin());
+            startHour = start.get(Calendar.HOUR_OF_DAY);
+            startMinute = start.get(Calendar.MINUTE);
             end.setTimeInMillis(event.getEnd());
-            endMinutes = end.get(Calendar.MINUTE);
+            endMinute = end.get(Calendar.MINUTE);
             endHour = end.get(Calendar.HOUR_OF_DAY);
-            if (endMinutes > 10 && endHour != 23){
+            if (endMinute > 10 && endHour != 23) {
                 endHour++;
             }
+            int i = startHour;
+            do {
+                EventForHour clone = new EventForHour(event, startHour, endHour -1, i, startMinute, endMinute);
+                List<EventForHour> list = hoursMap.get(i).getHourEventForDays();
+                list.add(clone);
+            } while (++i < endHour);
         }
-        int max = 0, count;
-        do {
-            Hour hour = hoursEventsMap.get(startHour);
-            if (hour == null) {
-                hour = new Hour(Integer.toString(startHour), new ArrayList<>());
-                hoursEventsMap.put(startHour, hour);
-            }
-            hour.getHourEvents().add(event);
-            count = hoursMap.get(startHour);
-            if (count > max){
-                max = count;
-            }
-        } while (++startHour < endHour);
-        event.setParallelEventsCount(max);
     }
 
+//    private static void computeParallelForEvent(SparseArray<Hour> hoursEventsMap, SparseIntArray hoursMap, Calendar start, Calendar end, EventInstanceForDay event) {
+//        int startHour, endHour, endMinutes;
+//        start.setTimeInMillis(event.getBegin());
+//        startHour = start.get(Calendar.HOUR_OF_DAY);
+//        if (event.isAllDayEvent()) {
+//            endHour = 23;
+//        } else {
+//            end.setTimeInMillis(event.getEnd());
+//            endMinutes = end.get(Calendar.MINUTE);
+//            endHour = end.get(Calendar.HOUR_OF_DAY);
+//            if (endMinutes > 10 && endHour != 23) {
+//                endHour++;
+//            }
+//        }
+//        int max = 0, count;
+//        do {
+//            Hour hour = hoursEventsMap.get(startHour);
+//            if (hour == null) {
+//                hour = new Hour(Integer.toString(startHour), new ArrayList<>());
+//                hoursEventsMap.put(startHour, hour);
+//            }
+//            hour.getHourEventForDays().add(event);
+//            count = hoursMap.get(startHour);
+//            if (count > max) {
+//                max = count;
+//            }
+//        } while (++startHour < endHour);
+//        event.setParallelEventsCount(max);
+//    }
 
 
-    public static List<EventInstance> getEvents(Cursor cur) {
-        List<EventInstance> list = new ArrayList<>();
+    public static List<EventInstanceForDay> getEvents(Cursor cur) {
+        List<EventInstanceForDay> list = new ArrayList<>();
         while (cur.moveToNext()) {
-            EventInstance eventInstance = convertCursorToEvent(cur);
-            list.add(eventInstance);
+            EventInstanceForDay eventInstanceForDay = convertCursorToEvent(cur);
+            list.add(eventInstanceForDay);
         }
         cur.close();
         return list;
     }
 
-    public static HashMap<Integer, List<EventInstance>> getEventsMap(Cursor cur){
+    public static HashMap<Integer, List<EventInstanceForDay>> getEventsMap(Cursor cur) {
         if (cur == null) {
             return null;
         }
         @SuppressLint("UseSparseArrays")
-        HashMap<Integer, List<EventInstance>> map = new HashMap<>();
-        if (cur.moveToFirst()){
+        HashMap<Integer, List<EventInstanceForDay>> map = new HashMap<>();
+        if (cur.moveToFirst()) {
             do {
-                EventInstance eventInstance = convertCursorToEvent(cur);
-                int day = eventInstance.getDayOfMonth();
-                List<EventInstance> list = map.get(day);
+                EventInstanceForDay eventInstanceForDay = convertCursorToEvent(cur);
+                int day = eventInstanceForDay.getDayOfMonth();
+                List<EventInstanceForDay> list = map.get(day);
                 if (list == null) {
                     list = new ArrayList<>();
                     map.put(day, list);
                 }
-                list.add(eventInstance);
-            }while (cur.moveToNext());
+                list.add(eventInstanceForDay);
+            } while (cur.moveToNext());
         }
         return map;
     }
 
-    public static void bindCursorToDayList(List<Day> days, Cursor cur){
+    public static void bindCursorToDayList(List<Day> days, Cursor cur) {
         if (cur == null) {
             return;
         }
         long startMonth = days.get(0).getStartDayInMillis();
-        if (cur.moveToFirst()){
+        if (cur.moveToFirst()) {
             do {
-                EventInstance eventInstance = convertCursorToEvent(cur);
-                long startEvent = eventInstance.getBegin();
+                EventInstanceForDay eventInstanceForDay = convertCursorToEvent(cur);
+                long startEvent = eventInstanceForDay.getBegin();
                 long diff = startEvent - startMonth;
                 int index = (int) (diff / TimeUnit.DAYS.toMillis(1));
                 Day day = days.get((Math.abs(index)));
-                day.getGoogleEventInstances().add(eventInstance);
-            }while (cur.moveToNext());
+                day.getGoogleEventInstanceForDays().add(eventInstanceForDay);
+            } while (cur.moveToNext());
         }
     }
 
 
-    public static EventInstance convertCursorToEvent(Cursor cursor) {
+    public static EventInstanceForDay convertCursorToEvent(Cursor cursor) {
         long eventId = cursor.getLong(PROJECTION_EVENT_ID);
         String title = cursor.getString(PROJECTION_TITLE_INDEX);
         long start = cursor.getLong((PROJECTION_BEGIN_INDEX));
@@ -169,17 +172,17 @@ public class EventsHelper {
         int displayColor = cursor.getInt(PROJECTION_DISPLAY_COLOR_INDEX);
 //        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
         boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
-        if (allDayEvent){
+        if (allDayEvent) {
 //            end = start;
         }
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
-        return new EventInstance(eventId, title, allDayEvent, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
+        return new EventInstanceForDay(eventId, title, allDayEvent, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
     }
 
     public static String covertDurationToRule(long duration) {
         long hours = TimeUnit.MILLISECONDS.toHours(duration);
-        String rule = String.format(Locale.US,"PT%SH%SM"
-                ,hours
+        String rule = String.format(Locale.US, "PT%SH%SM"
+                , hours
                 , TimeUnit.MILLISECONDS.toMinutes(duration - TimeUnit.HOURS.toMillis(hours)));
 //        return "PT1H0M";
         return rule;

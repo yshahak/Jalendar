@@ -7,11 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-import com.thedroidboy.jalendar.calendars.google.EventInstance;
 import com.thedroidboy.jalendar.databinding.ActivityDayBinding;
 import com.thedroidboy.jalendar.databinding.HourItemForDayBinding;
 import com.thedroidboy.jalendar.databinding.TextViewEventForHourBinding;
 import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.model.EventForHour;
 import com.thedroidboy.jalendar.model.Hour;
 
 import java.util.List;
@@ -39,16 +39,16 @@ public class DayActivity extends AppCompatActivity {
             HourItemForDayBinding binding = DataBindingUtil.inflate(inflater, R.layout.hour_item_for_day, dayContainer, true);
             Hour hour = day.getHoursEventsMap().get(i);
             binding.setHour(hour);
-            List<EventInstance> eventInstances = hour.getHourEvents();
-            if (eventInstances.size() == 0) {
+            List<EventForHour> eventInstanceForDays = hour.getHourEventForDays();
+            if (eventInstanceForDays.size() == 0) {
                 continue;
             }
-            for (EventInstance eventInstance : eventInstances){
+            for (EventForHour eventInstanceForHour : eventInstanceForDays){
                 TextViewEventForHourBinding eventBinding = DataBindingUtil.inflate(inflater, R.layout.text_view_event_for_hour, binding.hourEventContainer, true);
-                eventBinding.setEvent(eventInstance);
-                eventBinding.hourLabel.setText(eventInstance.getEventTitle());
-                eventBinding.hourLabel.setBackgroundColor(eventInstance.getDisplayColor());
-                eventBinding.hourLabel.setTag(eventInstance);
+                eventBinding.setEvent(eventInstanceForHour);
+                eventBinding.hourLabel.setText(eventInstanceForHour.event.getEventTitle());
+                eventBinding.hourLabel.setBackgroundColor(eventInstanceForHour.event.getDisplayColor());
+                eventBinding.hourLabel.setTag(eventInstanceForHour);
             }
         }
     }

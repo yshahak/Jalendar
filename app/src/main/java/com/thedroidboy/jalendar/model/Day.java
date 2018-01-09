@@ -12,8 +12,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.thedroidboy.jalendar.calendars.google.EventInstance;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +26,7 @@ public class Day implements Parcelable {
     public static final long DAY_IN_MS = TimeUnit.DAYS.toMillis(1);
 
     @Ignore
-    private transient List<EventInstance> googleEventInstances = new ArrayList<>();
+    private transient List<EventInstanceForDay> googleEventInstanceForDays = new ArrayList<>();
 
     private final String label;
     @PrimaryKey
@@ -89,11 +87,11 @@ public class Day implements Parcelable {
         return isOutOfMonthRange;
     }
 
-    public List<EventInstance> getGoogleEventInstances() {
-        if (googleEventInstances == null) {
-            googleEventInstances = new ArrayList<>();
+    public List<EventInstanceForDay> getGoogleEventInstanceForDays() {
+        if (googleEventInstanceForDays == null) {
+            googleEventInstanceForDays = new ArrayList<>();
         }
-        return googleEventInstances;
+        return googleEventInstanceForDays;
     }
 
     public void setCellHeight(float cellHeight) {

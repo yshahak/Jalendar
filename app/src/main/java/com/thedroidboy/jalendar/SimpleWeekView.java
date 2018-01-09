@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.thedroidboy.jalendar.calendars.google.EventInstance;
+import com.thedroidboy.jalendar.model.EventInstanceForDay;
 import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 
@@ -59,16 +59,16 @@ public class SimpleWeekView extends LinearLayout implements View.OnClickListener
                 binding.setDay(day);
                 ViewGroup container = view.findViewById(R.id.day_events_container);
                 container.removeAllViews();
-                List<EventInstance> eventInstances = day.getGoogleEventInstances();
-                if (eventInstances == null || eventInstances.size() == 0) {
+                List<EventInstanceForDay> eventInstanceForDays = day.getGoogleEventInstanceForDays();
+                if (eventInstanceForDays == null || eventInstanceForDays.size() == 0) {
                     continue;
                 }
-                for (EventInstance eventInstance : eventInstances){
+                for (EventInstanceForDay eventInstanceForDay : eventInstanceForDays){
                     TextView textView = (TextView) inflater.inflate(R.layout.text_view_event_for_month, container, false);
-                    textView.setText(eventInstance.getEventTitle());
-                    textView.setBackgroundColor(eventInstance.getDisplayColor());
+                    textView.setText(eventInstanceForDay.getEventTitle());
+                    textView.setBackgroundColor(eventInstanceForDay.getDisplayColor());
                     container.addView(textView);
-                    textView.setTag(eventInstance);
+                    textView.setTag(eventInstanceForDay);
                 }
             }
 

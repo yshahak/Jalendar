@@ -6,7 +6,7 @@
 
         <variable
             name="event"
-            type="com.thedroidboy.jalendar.calendars.google.EventInstance" />
+            type="com.thedroidboy.jalendar.model.EventForHour" />
     </data>
 
     <TextView

@@ -145,7 +145,7 @@ public class Contract {
             title = cur.getString(PROJECTION_TITLE_INDEX);
 
             // Do something with the values.
-            Log.i("TAG", "EventInstance:  " + title);
+            Log.i("TAG", "EventInstanceForDay:  " + title);
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(beginVal);
             DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -191,7 +191,7 @@ public class Contract {
             String title;
             title = cur.getString(PROJECTION_TITLE_INDEX);
             arrayList.add(title);
-            Log.i("TAG", "EventInstance:  " + title);
+            Log.i("TAG", "EventInstanceForDay:  " + title);
         }
         cur.close();
         return arrayList;

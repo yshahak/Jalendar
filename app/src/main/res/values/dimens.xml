@@ -1,4 +1,4 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="event_in_day">62dp</dimen>
+    <dimen name="event_in_day">70dp</dimen>
 </resources>

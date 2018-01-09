@@ -2,23 +2,22 @@ package com.thedroidboy.jalendar.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.thedroidboy.jalendar.calendars.google.EventInstance
 
 /**
  * Created by Yaakov Shahak
  * on 04/01/2018.
  */
-data class Hour(val label: String, val hourEvents: List<EventInstance>) : Parcelable {
+data class Hour(val label: String, val hourEventForDays: List<EventForHour>) : Parcelable {
     constructor(source: Parcel) : this(
             source.readString(),
-            ArrayList<EventInstance>().apply { source.readList(this, EventInstance::class.java.classLoader) }
+            ArrayList<EventForHour>().apply { source.readList(this, EventForHour::class.java.classLoader) }
     )
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(label)
-        writeList(hourEvents)
+        writeList(hourEventForDays)
     }
 
     companion object {
