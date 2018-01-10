@@ -21,6 +21,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     protected String calendarDisplayName;
     protected int dayOfMonth;
     protected int parallelEventsCount;
+    public int weight;
 
 //    public EventInstanceForDay(long eventId, String eventTitle, boolean allDayEvent, long begin, long end, int displayColor, String calendarDisplayName) {
 //        this.eventId = eventId;
@@ -126,6 +127,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         dest.writeString(this.calendarDisplayName);
         dest.writeInt(this.dayOfMonth);
         dest.writeInt(this.parallelEventsCount);
+        dest.writeInt(this.weight);
     }
 
     protected EventInstanceForDay(Parcel in) {
@@ -138,6 +140,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.calendarDisplayName = in.readString();
         this.dayOfMonth = in.readInt();
         this.parallelEventsCount = in.readInt();
+        this.weight = in.readInt();
     }
 
     public static final Parcelable.Creator<EventInstanceForDay> CREATOR = new Parcelable.Creator<EventInstanceForDay>() {

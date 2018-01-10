@@ -18,9 +18,10 @@ import com.thedroidboy.jalendar.R;
 public class EventForHour implements Parcelable {
 
 
+    private static int cellHeight = MyApplication.getInstance().getResources().getDimensionPixelSize(R.dimen.event_in_day);
     public final int startHour, endHour, hour, startMinute, endMinute;
     public final EventInstanceForDay event;
-    private static int cellHeight = MyApplication.getInstance().getResources().getDimensionPixelSize(R.dimen.event_in_day);
+    public int weight;
 
     public EventForHour(EventInstanceForDay event, int startHour, int endHour, int hour, int startMinute, int endMinute) {
         this.event = event;
@@ -47,6 +48,14 @@ public class EventForHour implements Parcelable {
             return 0;
         }
         return (cellHeight * (startMinute / 60f));
+    }
+
+    public String getLabel(){
+        return hour == startHour ? event.eventTitle : "";
+    }
+
+    public int getBackground(){
+        return event.getDisplayColor();
     }
 
     @BindingAdapter("android:minHeight")
@@ -76,6 +85,7 @@ public class EventForHour implements Parcelable {
         dest.writeInt(this.hour);
         dest.writeInt(this.startMinute);
         dest.writeInt(this.endMinute);
+        dest.writeInt(this.weight);
         dest.writeParcelable(this.event, flags);
     }
 
@@ -85,6 +95,7 @@ public class EventForHour implements Parcelable {
         this.hour = in.readInt();
         this.startMinute = in.readInt();
         this.endMinute = in.readInt();
+        this.weight = in.readInt();
         this.event = in.readParcelable(EventInstanceForDay.class.getClassLoader());
     }
 

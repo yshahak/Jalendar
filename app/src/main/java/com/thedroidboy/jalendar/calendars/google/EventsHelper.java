@@ -49,9 +49,7 @@ public class EventsHelper {
             for (EventInstanceForDay event : day.getGoogleEventInstanceForDays()) {
                 computeEventHourRange(hoursMap, start, end, event);
             }
-//            for (EventInstanceForDay event : day.getGoogleEventInstanceForDays()) {
-//                computeParallelForEvent(hoursEventsMap, hoursMap, start, end, event);
-//            }
+            computeParallelForEvent(hoursMap);
             day.setHoursEventsMap(hoursMap);
         }
     }
@@ -81,8 +79,15 @@ public class EventsHelper {
         }
     }
 
-//    private static void computeParallelForEvent(SparseArray<Hour> hoursEventsMap, SparseIntArray hoursMap, Calendar start, Calendar end, EventInstanceForDay event) {
-//        int startHour, endHour, endMinutes;
+    private static void computeParallelForEvent(SparseArray<Hour> hoursEventsMap) {
+        for(int i = 0; i < 23; i++) {
+            List<EventForHour> eventList = hoursEventsMap.get(i).getHourEventForDays();
+            for (EventForHour eventForHour : eventList) {
+                eventForHour.event.weight++;
+                eventForHour.weight++;
+            }
+        }
+        //        int startHour, endHour, endMinutes;
 //        start.setTimeInMillis(event.getBegin());
 //        startHour = start.get(Calendar.HOUR_OF_DAY);
 //        if (event.isAllDayEvent()) {
@@ -109,7 +114,7 @@ public class EventsHelper {
 //            }
 //        } while (++startHour < endHour);
 //        event.setParallelEventsCount(max);
-//    }
+    }
 
 
     public static List<EventInstanceForDay> getEvents(Cursor cur) {

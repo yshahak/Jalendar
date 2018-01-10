@@ -45,9 +45,10 @@ public class DayActivity extends AppCompatActivity {
             }
             for (EventForHour eventInstanceForHour : eventInstanceForDays){
                 TextViewEventForHourBinding eventBinding = DataBindingUtil.inflate(inflater, R.layout.text_view_event_for_hour, binding.hourEventContainer, true);
+                if(eventInstanceForHour.event.weight > binding.hourEventContainer.getWeightSum()){
+                    binding.hourEventContainer.setWeightSum(eventInstanceForHour.event.weight);
+                }
                 eventBinding.setEvent(eventInstanceForHour);
-                eventBinding.hourLabel.setText(eventInstanceForHour.event.getEventTitle());
-                eventBinding.hourLabel.setBackgroundColor(eventInstanceForHour.event.getDisplayColor());
                 eventBinding.hourLabel.setTag(eventInstanceForHour);
             }
         }

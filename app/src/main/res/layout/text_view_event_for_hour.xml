@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_weight="1">
 
     <data>
@@ -14,11 +15,16 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:minHeight="@{event.cellHeight}"
+        android:text="@{event.label}"
         android:layout_gravity="top"
+        android:paddingTop="4dp"
         android:layout_marginTop="@{event.eventTopMargin}"
-        android:gravity="center"
+        android:background="@{event.background}"
+        android:textColor="@android:color/white"
+        android:gravity="center|top"
         android:maxLines="1"
-        android:textSize="10sp"
-        android:textStyle="bold" />
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:ignore="ObsoleteLayoutParam" />
 </layout>
 
