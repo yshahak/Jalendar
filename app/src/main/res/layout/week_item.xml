@@ -17,6 +17,6 @@
             android:textStyle="bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             tools:text="יד"
-            android:text="@{day.label}"/>
+            android:text="@{day.labelDay}"/>
 
 </layout>

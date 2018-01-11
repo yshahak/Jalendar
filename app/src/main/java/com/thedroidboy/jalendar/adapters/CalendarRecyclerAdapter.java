@@ -1,4 +1,4 @@
-package com.thedroidboy.jalendar;
+package com.thedroidboy.jalendar.adapters;
 
 /**
  * Created by Yaakov Shahak
@@ -42,7 +42,7 @@ public class CalendarRecyclerAdapter{
 //
 //        void bindTo(Month monthVM) {
 //            binding.setMonth(monthVM);
-//            binding.recyclerView.setAdapter(new DayRecyclerAdapter(monthVM));
+//            binding.recyclerView.setAdapter(new RecyclerAdapterDay(monthVM));
 //        }
 //    }
 

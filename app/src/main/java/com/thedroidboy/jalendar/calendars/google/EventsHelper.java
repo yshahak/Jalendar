@@ -36,22 +36,22 @@ public class EventsHelper {
 
     public static void computeParallelEventsForDayList(List<Day> dayList) {
 
-        Calendar start = Calendar.getInstance();
-        Calendar end = Calendar.getInstance();
-        for (Day day : dayList) {
-            SparseArray<Hour> hoursMap = new SparseArray<>();
-            hoursMap.put(-1, new Hour("all day", new ArrayList<>()));
-            int i = 0;
-            while (i < 24) {
-                hoursMap.put(i, new Hour(Integer.toString(i), new ArrayList<>()));
-                i++;
-            }
-            for (EventInstanceForDay event : day.getGoogleEventInstanceForDays()) {
-                computeEventHourRange(hoursMap, start, end, event);
-            }
-            computeParallelForEvent(hoursMap);
-            day.setHoursEventsMap(hoursMap);
-        }
+//        Calendar start = Calendar.getInstance();
+//        Calendar end = Calendar.getInstance();
+//        for (Day day : dayList) {
+//            SparseArray<Hour> hoursMap = new SparseArray<>();
+//            hoursMap.put(-1, new Hour("all day", new ArrayList<>()));
+//            int i = 0;
+//            while (i < 24) {
+//                hoursMap.put(i, new Hour(Integer.toString(i), new ArrayList<>()));
+//                i++;
+//            }
+//            for (EventInstanceForDay event : day.getGoogleEventInstanceForDays()) {
+//                computeEventHourRange(hoursMap, start, end, event);
+//            }
+//            computeParallelForEvent(hoursMap);
+//            day.setHoursEventsMap(hoursMap);
+//        }
     }
 
     private static void computeEventHourRange(SparseArray<Hour> hoursMap, Calendar start, Calendar end, EventInstanceForDay event) {
@@ -82,8 +82,10 @@ public class EventsHelper {
     private static void computeParallelForEvent(SparseArray<Hour> hoursEventsMap) {
         for(int i = 0; i < 23; i++) {
             List<EventForHour> eventList = hoursEventsMap.get(i).getHourEventForDays();
+            if (eventList.size() == 1){
+                continue;
+            }
             for (EventForHour eventForHour : eventList) {
-                eventForHour.event.weight++;
                 eventForHour.weight++;
             }
         }

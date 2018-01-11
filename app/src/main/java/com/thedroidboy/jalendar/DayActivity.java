@@ -4,17 +4,12 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
+import com.thedroidboy.jalendar.adapters.RecyclerAdapterDay;
 import com.thedroidboy.jalendar.databinding.ActivityDayBinding;
-import com.thedroidboy.jalendar.databinding.HourItemForDayBinding;
-import com.thedroidboy.jalendar.databinding.TextViewEventForHourBinding;
 import com.thedroidboy.jalendar.model.Day;
-import com.thedroidboy.jalendar.model.EventForHour;
-import com.thedroidboy.jalendar.model.Hour;
-
-import java.util.List;
 
 public class DayActivity extends AppCompatActivity {
 
@@ -33,25 +28,29 @@ public class DayActivity extends AppCompatActivity {
         }
         Day day = this.getIntent().getParcelableExtra("day");
         dayBinding.setSingleDay(day);
-        LinearLayout dayContainer = findViewById(R.id.hourContainer);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        for(int i = 0; i < 23; i++) {
-            HourItemForDayBinding binding = DataBindingUtil.inflate(inflater, R.layout.hour_item_for_day, dayContainer, true);
-            Hour hour = day.getHoursEventsMap().get(i);
-            binding.setHour(hour);
-            List<EventForHour> eventInstanceForDays = hour.getHourEventForDays();
-            if (eventInstanceForDays.size() == 0) {
-                continue;
-            }
-            for (EventForHour eventInstanceForHour : eventInstanceForDays){
-                TextViewEventForHourBinding eventBinding = DataBindingUtil.inflate(inflater, R.layout.text_view_event_for_hour, binding.hourEventContainer, true);
-                if(eventInstanceForHour.event.weight > binding.hourEventContainer.getWeightSum()){
-                    binding.hourEventContainer.setWeightSum(eventInstanceForHour.event.weight);
-                }
-                eventBinding.setEvent(eventInstanceForHour);
-                eventBinding.hourLabel.setTag(eventInstanceForHour);
-            }
-        }
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        dayBinding.dayRecyclerView.setLayoutManager(layoutManager);
+        dayBinding.dayRecyclerView.setAdapter(new RecyclerAdapterDay(day));
+
+//        LinearLayout dayContainer = findViewById(R.id.hourContainer);
+//        LayoutInflater inflater = LayoutInflater.from(this);
+//        for(int i = 0; i < 23; i++) {
+//            HourItemForDayBinding binding = DataBindingUtil.inflate(inflater, R.layout.hour_item_for_day, dayContainer, true);
+//            Hour hour = day.getHoursEventsMap().get(i);
+//            binding.setHour(hour);
+//            List<EventForHour> eventInstanceForDays = hour.getHourEventForDays();
+//            if (eventInstanceForDays.size() == 0) {
+//                continue;
+//            }
+//            for (EventForHour eventInstanceForHour : eventInstanceForDays){
+//                TextViewEventForHourBinding eventBinding = DataBindingUtil.inflate(inflater, R.layout.text_view_event_for_hour, binding.hourEventContainer, true);
+//                if(eventInstanceForHour.event.weight > binding.hourEventContainer.getWeightSum()){
+//                    binding.hourEventContainer.setWeightSum(eventInstanceForHour.event.weight);
+//                }
+//                eventBinding.setEvent(eventInstanceForHour);
+//                eventBinding.hourLabel.setTag(eventInstanceForHour);
+//            }
+//        }
     }
 
 }

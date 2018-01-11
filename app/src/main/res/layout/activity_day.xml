@@ -14,6 +14,7 @@
         tools:context="com.thedroidboy.jalendar.DayActivity">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
@@ -23,13 +24,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:title="@{singleDay.label}"
+                app:title="@{singleDay.labelDayAndMonth}"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
         </android.support.design.widget.AppBarLayout>
 
-        <include
-            android:id="@+id/content"
-            layout="@layout/content_day" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/day_recycler_view"
+            android:layout_width="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="match_parent"/>
+
+
+        <!--<include-->
+            <!--android:id="@+id/content"-->
+            <!--layout="@layout/content_day" />-->
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

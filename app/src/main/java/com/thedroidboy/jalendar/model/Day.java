@@ -8,7 +8,6 @@ import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,9 +25,10 @@ public class Day implements Parcelable {
     public static final long DAY_IN_MS = TimeUnit.DAYS.toMillis(1);
 
     @Ignore
-    private transient List<EventInstanceForDay> googleEventInstanceForDays = new ArrayList<>();
+    private List<EventInstanceForDay> googleEventInstanceForDays = new ArrayList<>();
 
-    private final String label;
+    private final String labelDay;
+    private final String labelDayAndMonth;
     @PrimaryKey
     private final long startDayInMillis;
     private final int dayInMonth;
@@ -38,14 +38,15 @@ public class Day implements Parcelable {
     private boolean isOutOfMonthRange;
     @Ignore
     private float cellHeight;
-    @Ignore
-    private transient SparseArray<Hour> hoursEventsMap;
+//    @Ignore
+//    private transient SparseArray<Hour> hoursEventsMap;
 
 //    @Ignore
 //    private int backgroundColor = Color.TRANSPARENT;
 
-    public Day(int dayInMonth, String label, long startDayInMillis,int loazyDayOfMonth) {
-        this.label = label;
+    public Day(int dayInMonth, String labelDay, String labelDayAndMonth, long startDayInMillis, int loazyDayOfMonth) {
+        this.labelDay = labelDay;
+        this.labelDayAndMonth = labelDayAndMonth;
         this.dayInMonth = dayInMonth;
         this.startDayInMillis = startDayInMillis;
         this.loazyDayOfMonth = loazyDayOfMonth;
@@ -55,8 +56,8 @@ public class Day implements Parcelable {
         return loazyDayOfMonth;
     }
 
-    public String getLabel() {
-        return label;
+    public String getLabelDay() {
+        return labelDay;
     }
 
     public String getLoaziLabel() {
@@ -83,6 +84,10 @@ public class Day implements Parcelable {
         isOutOfMonthRange = outOfMonthRange;
     }
 
+    public String getLabelDayAndMonth() {
+        return labelDayAndMonth;
+    }
+
     public boolean isOutOfMonthRange() {
         return isOutOfMonthRange;
     }
@@ -102,13 +107,13 @@ public class Day implements Parcelable {
         return (int)cellHeight;
     }
 
-    public void setHoursEventsMap(SparseArray<Hour> hoursEventsMap) {
-        this.hoursEventsMap = hoursEventsMap;
-    }
-
-    public SparseArray<Hour> getHoursEventsMap() {
-        return hoursEventsMap;
-    }
+//    public void setHoursEventsMap(SparseArray<Hour> hoursEventsMap) {
+//        this.hoursEventsMap = hoursEventsMap;
+//    }
+//
+//    public SparseArray<Hour> getHoursEventsMap() {
+//        return hoursEventsMap;
+//    }
 
     @BindingAdapter("android:minHeight")
     public static void setMinHeight(View view, int height) {
@@ -120,13 +125,14 @@ public class Day implements Parcelable {
     @Override
     public String toString() {
         return "Day{" +
-                "\t label='" + label + '\'' +
+                "\t labelDay='" + labelDay + '\'' +
                 "\t loazyDay='" + loazyDayOfMonth + '\'' +
                 "\t startDayInMillis=" + startDayInMillis +
                 "\t dayInMonth=" + dayInMonth +
                 "\t isOutOfMonthRange=" + isOutOfMonthRange +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -135,23 +141,25 @@ public class Day implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.label);
+        dest.writeTypedList(this.googleEventInstanceForDays);
+        dest.writeString(this.labelDay);
+        dest.writeString(this.labelDayAndMonth);
         dest.writeLong(this.startDayInMillis);
         dest.writeInt(this.dayInMonth);
         dest.writeInt(this.loazyDayOfMonth);
         dest.writeByte(this.isOutOfMonthRange ? (byte) 1 : (byte) 0);
         dest.writeFloat(this.cellHeight);
-        dest.writeSparseArray((SparseArray) this.hoursEventsMap);
     }
 
     protected Day(Parcel in) {
-        this.label = in.readString();
+        this.googleEventInstanceForDays = in.createTypedArrayList(EventInstanceForDay.CREATOR);
+        this.labelDay = in.readString();
+        this.labelDayAndMonth = in.readString();
         this.startDayInMillis = in.readLong();
         this.dayInMonth = in.readInt();
         this.loazyDayOfMonth = in.readInt();
         this.isOutOfMonthRange = in.readByte() != 0;
         this.cellHeight = in.readFloat();
-        this.hoursEventsMap = in.readSparseArray(Hour.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<Day> CREATOR = new Parcelable.Creator<Day>() {
