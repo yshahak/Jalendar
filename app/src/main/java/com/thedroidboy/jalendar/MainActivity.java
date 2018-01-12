@@ -3,10 +3,15 @@ package com.thedroidboy.jalendar;
 import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -19,7 +24,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
-    private JewCalendar currentJewCalendar;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle mDrawertToggle;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,15 +34,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         viewPager = findViewById(R.id.view_pager);
         viewPager.setOffscreenPageLimit(2);
+        toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         validateCalendarPermission();
-//        initViewPager();
         setMonthTitle(0);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        currentJewCalendar =  JewCalendarPool.obtain(0);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        setDrawerMenu();
     }
 
     private void initViewPager() {
@@ -45,9 +51,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawertToggle.syncState();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -67,6 +79,30 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         while (viewPager.getCurrentItem() != position){
             viewPager.setCurrentItem(viewPager.getCurrentItem() + sign, true);
         }
+    }
+
+    /**
+     * setting the drawer category menu of the store
+     */
+    private void setDrawerMenu() {
+        mDrawertToggle = new ActionBarDrawerToggle(this,
+                drawerLayout,
+                toolbar,
+                0,
+                0) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                syncState();
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                syncState();
+            }
+        };
+        drawerLayout.setDrawerListener(mDrawertToggle);
     }
 
     @Override

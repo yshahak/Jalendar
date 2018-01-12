@@ -1,6 +1,7 @@
 package com.thedroidboy.jalendar.adapters;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -23,6 +24,10 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
 
     public RecyclerAdapterDay(Day day) {
         this.day = day;
+        if (day.getGoogleEventInstanceForDays().size() == 0){
+            day.getGoogleEventInstanceForDays().add(new EventInstanceForDay(-1, "אין אירועים ליום זה",
+                    false, -1, -1, Color.TRANSPARENT, "", -1));
+        }
     }
 
     @Override

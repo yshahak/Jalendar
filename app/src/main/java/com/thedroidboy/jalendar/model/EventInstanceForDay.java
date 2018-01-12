@@ -67,6 +67,9 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     }
 
     public String getEventTime(){
+        if (begin == -1){
+            return "";
+        }
         return simpleEventFormat.format(begin) + " - " + simpleEventFormat.format(end);
     }
 

@@ -142,8 +142,8 @@ public class Month {
             long startDayInMs = dayList.size() == 0 ? calendar.getBeginOfDay() : dayList.get(dayList.size() - 1).getEndDayInMillis();
             int jewishDayOfMonth = calendar.getJewishDayOfMonth();
             String dayLabel = hebrewHebDateFormatter.formatHebrewNumber(jewishDayOfMonth);
-            String monthLabel = hebrewHebDateFormatter.formatMonth(monthCalendar);
-            Day day = new Day(jewishDayOfMonth, dayLabel, dayLabel + " " + monthLabel
+            String monthLabel = hebrewHebDateFormatter.formatMonth(calendar);
+            Day day = new Day(calendar.dayHashCode(), jewishDayOfMonth, dayLabel, dayLabel + " " + monthLabel
                     , startDayInMs, calendar.getGregorianDayOfMonth());
             dayList.add(day);
             calendar.forward();

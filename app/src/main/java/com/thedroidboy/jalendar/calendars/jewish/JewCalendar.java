@@ -392,4 +392,8 @@ public class JewCalendar extends JewishCalendar {
     public int monthHashCode() {
         return (getJewishYear()) * 100 + getJewishMonth();
     }
+
+    public int dayHashCode() {
+        return monthHashCode() + getJewishDayOfMonth();
+    }
 }

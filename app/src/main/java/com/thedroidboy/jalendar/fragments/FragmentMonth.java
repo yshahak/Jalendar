@@ -47,6 +47,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     MonthRepo monthRepo;
     @Inject
     SharedPreferences prefs;
+    private int currentDayOfMonth = -1;
 
     public static FragmentMonth newInstance(int position) {
         FragmentMonth fragmentMonth = new FragmentMonth();
@@ -63,8 +64,12 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         int position = getArguments().getInt(KEY_POSITION);
         JewCalendar jewCalendar = JewCalendarPool.obtain(position);
         Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
+        if (position == 0){
+            currentDayOfMonth = jewCalendar.dayHashCode();
+        }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
         monthVM.init(jewCalendar, monthRepo);
+
     }
 
     @Nullable
@@ -74,7 +79,6 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         LiveData<Month> monthLiveData = monthVM.getMonth();
         monthLiveData.observe(this, month -> {
             if (month != null) {
-                Log.d(TAG, "onCreateView: " + month.getMonthHebLabel());
                 binding.setMonth(month);
                 bindMonth(binding);
                 getLoaderManager().initLoader(100, null, this);
@@ -83,7 +87,6 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             }
         });
         getCellHeight();
-
         return binding.getRoot();
     }
 
@@ -110,12 +113,12 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         float cellHeight = getCellHeight();
         if (monthVM.getMonth().getValue() != null) {
             dayList = monthVM.getMonth().getValue().getDayList();
-            binding.week1.bindDays(dayList.subList(position, position += 7), cellHeight);
-            binding.week2.bindDays(dayList.subList(position, position += 7), cellHeight);
-            binding.week3.bindDays(dayList.subList(position, position += 7), cellHeight);
-            binding.week4.bindDays(dayList.subList(position, position += 7), cellHeight);
-            binding.week5.bindDays(dayList.subList(position, position += 7), cellHeight);
-            binding.week6.bindDays(dayList.subList(position, position += 7), cellHeight);
+            binding.week1.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
+            binding.week2.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
+            binding.week3.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
+            binding.week4.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
+            binding.week5.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
+            binding.week6.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
         }
 
     }

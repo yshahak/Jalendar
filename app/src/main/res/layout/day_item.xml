@@ -9,39 +9,40 @@
             name="day"
             type="com.thedroidboy.jalendar.model.Day" />
     </data>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:minHeight="@{day.cellHeight}"
+        android:background="@{day.currentDay ? @drawable/current_day_in_month_bg : @drawable/day_cell_dividers}"
         android:gravity="center|top"
-        android:orientation="vertical"
-        android:background="@drawable/day_cell_dividers">
+        android:minHeight="@{day.cellHeight}"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="4dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{day.labelDay}"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
+                android:text="@{day.labelDay}"
+                android:textColor="@{day.labelColor}"
                 android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="@{day.labelColor}"
                 tools:text="יד" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:text="@{day.loaziLabel}"
-                android:textSize="10sp"
                 android:textColor="@{day.labelColor}"
+                android:textSize="10sp"
                 tools:text="יד" />
 
         </RelativeLayout>
@@ -50,7 +51,7 @@
             android:id="@+id/day_events_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
 
     </LinearLayout>
 

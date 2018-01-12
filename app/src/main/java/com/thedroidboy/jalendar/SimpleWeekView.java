@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import java.util.List;
  */
 
 public class SimpleWeekView extends LinearLayout implements View.OnClickListener {
+
+    private static final String TAG = SimpleWeekView.class.getSimpleName();
 
     public SimpleWeekView(Context context) {
         super(context);
@@ -46,13 +49,14 @@ public class SimpleWeekView extends LinearLayout implements View.OnClickListener
         }
     }
 
-    public void bindDays(List<Day> days, float cellHeight){
+    public void bindDays(List<Day> days, float cellHeight, int currentDayOfMonth){
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < getChildCount(); i++){
             View view = getChildAt(i);
             DayItemBinding binding = (DayItemBinding) view.getTag();
             if (binding != null) {
                 Day day = days.get(i);
+                day.setCurrentDay(currentDayOfMonth != -1 && day.getDayHashCode() == currentDayOfMonth);
                 view.setTag(R.string.app_name, day);
                 view.setOnClickListener(this);
                 day.setCellHeight(cellHeight);
