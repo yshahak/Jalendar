@@ -33,7 +33,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">12sp</item>
         <item name="android:padding">4dp</item>
-        <item name="android:layout_gravity">right|center_vertical</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
     </style>
 
 </resources>

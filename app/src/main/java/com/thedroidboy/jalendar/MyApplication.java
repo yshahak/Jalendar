@@ -1,5 +1,6 @@
 package com.thedroidboy.jalendar;
 
+import android.app.Activity;
 import android.app.Application;
 import android.support.v4.app.Fragment;
 
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
 /**
@@ -20,11 +22,12 @@ import dagger.android.support.HasSupportFragmentInjector;
  * on 23/11/2017.
  */
 
-public class MyApplication extends Application implements HasSupportFragmentInjector {
+public class MyApplication extends Application implements HasSupportFragmentInjector, HasActivityInjector {
 
     private static MyApplication instance;
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingFragmentInjector;
+    @Inject DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
 
     @Override
     public void onCreate() {
@@ -52,7 +55,14 @@ public class MyApplication extends Application implements HasSupportFragmentInje
         return dispatchingFragmentInjector;
     }
 
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingActivityInjector;
+    }
+
     public static MyApplication getInstance(){
         return instance;
     }
+
+
 }
