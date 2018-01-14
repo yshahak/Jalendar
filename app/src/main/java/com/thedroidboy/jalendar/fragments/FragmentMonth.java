@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.thedroidboy.jalendar.GoogleEventsLoader;
-import com.thedroidboy.jalendar.MonthRepo;
+import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
@@ -44,7 +44,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     private MonthVM monthVM;
     private MonthItemBinding binding;
     @Inject
-    MonthRepo monthRepo;
+    CalendarRepo calendarRepo;
     @Inject
     SharedPreferences prefs;
     private int currentDayOfMonth = -1;
@@ -68,7 +68,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             currentDayOfMonth = jewCalendar.dayHashCode();
         }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-        monthVM.init(jewCalendar, monthRepo);
+        monthVM.init(jewCalendar, calendarRepo);
 
     }
 
@@ -130,7 +130,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public Loader<List<Day>> onCreateLoader(int id, Bundle args) {
-        return new GoogleEventsLoader(getContext(), monthRepo, monthVM.getMonth().getValue().getDayList());
+        return new GoogleEventsLoader(getContext(), calendarRepo, monthVM.getMonth().getValue().getDayList());
     }
 
     @Override

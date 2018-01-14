@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
-import com.thedroidboy.jalendar.MonthRepo;
+import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
 /**
@@ -16,23 +16,23 @@ public class MonthVM extends AndroidViewModel {
 
     private LiveData<Month> month;
     private JewCalendar calendar;
-    private MonthRepo monthRepo;
+    private CalendarRepo calendarRepo;
 
     public MonthVM(@NonNull Application application) {
         super(application);
     }
 
-    public void init(JewCalendar jewCalendar, MonthRepo monthRepo){
+    public void init(JewCalendar jewCalendar, CalendarRepo calendarRepo){
         if (this.month != null) {
             return;
         }
         this.calendar = jewCalendar;
-        this.monthRepo = monthRepo;
-        this.month = monthRepo.getMonth(jewCalendar);
+        this.calendarRepo = calendarRepo;
+        this.month = calendarRepo.getMonth(jewCalendar);
     }
 
     public void pull(){
-        monthRepo.pullMonth(calendar,  month);
+        calendarRepo.pullMonth(calendar,  month);
     }
 
     public LiveData<Month> getMonth() {

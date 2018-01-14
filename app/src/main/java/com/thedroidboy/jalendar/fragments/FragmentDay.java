@@ -9,14 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.GoogleEventsLoader;
-import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
@@ -44,17 +43,17 @@ public class FragmentDay extends Fragment implements LoaderManager.LoaderCallbac
     private MonthVM monthVM;
     private MonthItemBinding binding;
     @Inject
-    MonthRepo monthRepo;
+    CalendarRepo calendarRepo;
     @Inject
     SharedPreferences prefs;
     private int currentDayOfMonth = -1;
 
     public static FragmentDay newInstance(int position) {
-        FragmentDay fragmentMonth = new FragmentDay();
+        FragmentDay fragmentDay = new FragmentDay();
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_POSITION, position);
-        fragmentMonth.setArguments(bundle);
-        return fragmentMonth;
+        fragmentDay.setArguments(bundle);
+        return fragmentDay;
     }
 
     @Override
@@ -62,13 +61,12 @@ public class FragmentDay extends Fragment implements LoaderManager.LoaderCallbac
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
-        JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-        Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
+        JewCalendar jewCalendar = JewCalendarPool.obtain(0);
         if (position == 0){
             currentDayOfMonth = jewCalendar.dayHashCode();
         }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-        monthVM.init(jewCalendar, monthRepo);
+        monthVM.init(jewCalendar, calendarRepo);
 
     }
 
@@ -130,7 +128,7 @@ public class FragmentDay extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public Loader<List<Day>> onCreateLoader(int id, Bundle args) {
-        return new GoogleEventsLoader(getContext(), monthRepo, monthVM.getMonth().getValue().getDayList());
+        return new GoogleEventsLoader(getContext(), calendarRepo, monthVM.getMonth().getValue().getDayList());
     }
 
     @Override

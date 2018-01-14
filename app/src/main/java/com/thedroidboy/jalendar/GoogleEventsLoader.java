@@ -15,13 +15,13 @@ import java.util.List;
 
 public class GoogleEventsLoader extends AsyncTaskLoader<List<Day>> {
 
-    private final MonthRepo monthRepo;
+    private final CalendarRepo calendarRepo;
     private final List<Day> dayList;
     private Cursor cursor;
 
-    public GoogleEventsLoader(Context context, MonthRepo monthRepo, List<Day> dayList) {
+    public GoogleEventsLoader(Context context, CalendarRepo calendarRepo, List<Day> dayList) {
         super(context);
-        this.monthRepo = monthRepo;
+        this.calendarRepo = calendarRepo;
         this.dayList = dayList;
     }
 
@@ -30,7 +30,7 @@ public class GoogleEventsLoader extends AsyncTaskLoader<List<Day>> {
         if (dayList != null && dayList.size() > 0) {
             long first = dayList.get(0).getStartDayInMillis();
             long last = dayList.get(dayList.size() - 1).getEndDayInMillis();
-            this.cursor =  monthRepo.getMonthEventsCursor(getContext(), first, last);
+            this.cursor =  calendarRepo.getMonthEventsCursor(getContext(), first, last);
             EventsHelper.bindCursorToDayList(dayList, cursor);
 //            EventsHelper.computeParallelEventsForDayList(dayList);
         }

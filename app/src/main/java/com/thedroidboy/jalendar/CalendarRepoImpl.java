@@ -23,13 +23,13 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.INSTANCE_PROJEC
  * Created by $Yaakov Shahak on 12/7/2017.
  */
 
-public class MonthRepoImpl implements MonthRepo {
+public class CalendarRepoImpl implements CalendarRepo {
 
-    public static final String TAG = MonthRepoImpl.class.getSimpleName();
+    public static final String TAG = CalendarRepoImpl.class.getSimpleName();
     private final MonthDAO monthDAO;
     private final DayDAO dayDAO;
 
-    public MonthRepoImpl(MonthDAO monthDAO, DayDAO dayDAO) {
+    public CalendarRepoImpl(MonthDAO monthDAO, DayDAO dayDAO) {
         this.monthDAO = monthDAO;
         this.dayDAO = dayDAO;
     }

@@ -14,7 +14,7 @@ import java.util.List;
  * Created by $Yaakov Shahak on 12/7/2017.
  */
 
-public interface MonthRepo {
+public interface CalendarRepo {
 
     void insertMonth(Month month);
 
