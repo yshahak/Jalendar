@@ -80,9 +80,10 @@ public class FragmentDay extends Fragment implements LoaderManager.LoaderCallbac
                 binding.setMonth(month);
                 bindMonth(binding);
                 getLoaderManager().initLoader(100, null, this);
-            } else {
-                monthVM.pull();
             }
+//            thiselse {
+//                monthVM.pull();
+//            }
         });
         getCellHeight();
         return binding.getRoot();

@@ -52,7 +52,7 @@ public class CalendarRepoImpl implements CalendarRepo {
                 i++;
             }
             List<Month> monthList = monthDAO.getMonthSegmentBackward(currentMonthHasCode, 10);
-            i = 0;
+            i = -1;
             for (Month month : monthList) {
                 monthMap.put(i, month);
                 i--;
