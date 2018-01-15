@@ -1,11 +1,14 @@
 package com.thedroidboy.jalendar.dagger;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
+import com.thedroidboy.jalendar.MainActivity;
 import com.thedroidboy.jalendar.fragments.FragmentMonth;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.android.ActivityKey;
 import dagger.android.AndroidInjector;
 import dagger.multibindings.IntoMap;
 
@@ -14,8 +17,14 @@ import dagger.multibindings.IntoMap;
  * on 10/12/2017.
  */
 
-@Module (subcomponents = FragmentMonthSubComponent.class)
+@Module (subcomponents = {FragmentMonthSubComponent.class, MainActivitySubComponent.class})
 public abstract class BuildersModule {
+
+    @Binds
+    @IntoMap
+    @ActivityKey(MainActivity.class)
+    abstract AndroidInjector.Factory<? extends Activity>
+    bindMainActivityInjectorFactory(MainActivitySubComponent.Builder builder);
 
     @Binds
     @IntoMap

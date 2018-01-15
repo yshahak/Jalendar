@@ -25,16 +25,16 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.INSTANCE_PROJEC
  * Created by $Yaakov Shahak on 12/7/2017.
  */
 
-public class MonthRepoImpl implements MonthRepo {
+public class CalendarRepoImpl implements CalendarRepo {
 
-    public static final String TAG = MonthRepoImpl.class.getSimpleName();
+    public static final String TAG = CalendarRepoImpl.class.getSimpleName();
     private final MonthDAO monthDAO;
     private final DayDAO dayDAO;
     private final JewCalendar jewCalendar;
     private SparseArray<Month> monthMap;
     private boolean threadIsRunning = true;
 
-    public MonthRepoImpl(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
+    public CalendarRepoImpl(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
         this.monthDAO = monthDAO;
         this.dayDAO = dayDAO;
         this.jewCalendar = jewCalendar;

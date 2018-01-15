@@ -14,9 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.GoogleEventsLoader;
 import com.thedroidboy.jalendar.R;
-import com.thedroidboy.jalendar.CalendarRepo;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.Day;
@@ -35,10 +36,10 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>> {
+public class FragmentDay extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>> {
 
     private static final String KEY_POSITION = "keyPosition";
-    private static final String TAG = FragmentMonth.class.getSimpleName();
+    private static final String TAG = FragmentDay.class.getSimpleName();
     private MonthVM monthVM;
     private MonthItemBinding binding;
     @Inject
@@ -47,12 +48,12 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     SharedPreferences prefs;
     private int currentDayOfMonth = -1;
 
-    public static FragmentMonth newInstance(int position) {
-        FragmentMonth fragmentMonth = new FragmentMonth();
+    public static FragmentDay newInstance(int position) {
+        FragmentDay fragmentDay = new FragmentDay();
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_POSITION, position);
-        fragmentMonth.setArguments(bundle);
-        return fragmentMonth;
+        fragmentDay.setArguments(bundle);
+        return fragmentDay;
     }
 
     @Override
@@ -60,14 +61,12 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
-//        JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-//        Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
+        JewCalendar jewCalendar = JewCalendarPool.obtain(0);
         if (position == 0){
-            currentDayOfMonth = JewCalendarPool.obtain(position).dayHashCode();
+            currentDayOfMonth = jewCalendar.dayHashCode();
         }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-//        monthVM.init(jewCalendar, calendarRepo);
-        monthVM.init(position, calendarRepo);
+        monthVM.init(jewCalendar, calendarRepo);
 
     }
 
@@ -81,6 +80,8 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
                 binding.setMonth(month);
                 bindMonth(binding);
                 getLoaderManager().initLoader(100, null, this);
+            } else {
+                monthVM.pull();
             }
         });
         getCellHeight();
