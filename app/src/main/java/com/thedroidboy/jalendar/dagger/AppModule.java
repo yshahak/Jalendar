@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import com.thedroidboy.jalendar.AppDatabase;
 import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.MonthRepoImpl;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.DayDAO;
 import com.thedroidboy.jalendar.model.MonthDAO;
 
@@ -51,8 +52,14 @@ public class AppModule {
         return appDatabase.dayDAO();
     }
 
-    @Provides @Singleton
-    MonthRepo provideMonthRepo(MonthDAO monthDAO, DayDAO dayDAO){
-        return new MonthRepoImpl(monthDAO, dayDAO);
+    @Provides
+    JewCalendar provideJewCalendar(){
+        return new JewCalendar();
     }
+
+    @Provides @Singleton
+    MonthRepo provideMonthRepo(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar){
+        return new MonthRepoImpl(monthDAO, dayDAO, jewCalendar);
+    }
+
 }

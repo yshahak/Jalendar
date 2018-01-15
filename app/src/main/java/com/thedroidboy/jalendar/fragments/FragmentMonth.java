@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.view.ViewTreeObserver;
 import com.thedroidboy.jalendar.GoogleEventsLoader;
 import com.thedroidboy.jalendar.MonthRepo;
 import com.thedroidboy.jalendar.R;
-import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.MonthItemBinding;
 import com.thedroidboy.jalendar.model.Day;
@@ -62,13 +60,13 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
-        JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-        Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
+//        JewCalendar jewCalendar = JewCalendarPool.obtain(position);
+//        Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
         if (position == 0){
-            currentDayOfMonth = jewCalendar.dayHashCode();
+            currentDayOfMonth = JewCalendarPool.obtain(position).dayHashCode();
         }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-        monthVM.init(jewCalendar, monthRepo);
+        monthVM.init(position, monthRepo);
 
     }
 
@@ -82,8 +80,6 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
                 binding.setMonth(month);
                 bindMonth(binding);
                 getLoaderManager().initLoader(100, null, this);
-            } else {
-                monthVM.pull();
             }
         });
         getCellHeight();

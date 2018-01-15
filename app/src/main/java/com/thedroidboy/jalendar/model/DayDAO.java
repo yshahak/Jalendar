@@ -30,9 +30,9 @@ public interface DayDAO {
     List<Day> getDaysInSegmant(long start, long end);
 
 //    @Query("SELECT * FROM Month WHERE monthHashCode >= :monthCodeStart ORDER BY monthHashCode ASC LIMIT :sum")
-//    LiveData<List<Month>> getMonthSegment(int monthCodeStart, int sum);
+//    LiveData<List<Month>> getMonthSegmentForward(int monthCodeStart, int sum);
 //
 //    @Query("SELECT * FROM Month WHERE monthHashCode LIKE :monthCode")
-//    LiveData<Month> getMonth(int monthCode);
+//    LiveData<Month> getMonthByCalendar(int monthCode);
 
 }

@@ -18,13 +18,15 @@ public interface MonthRepo {
 
     void insertMonth(Month month);
 
-    void pullMonth(JewCalendar jewCalendar, LiveData<Month> monthLiveData);
+    void pullMonth(JewCalendar jewCalendar);
 
     void insertMonthDays(List<Day> monthDays);
 
-    LiveData<List<Month>> getMonthes(int monthHashCode, int sum);
+    List<Month> getMonthes(int monthHashCode, int sum);
 
-    LiveData<Month> getMonth(JewCalendar jewCalendar);
+    LiveData<Month> getMonthByCalendar(JewCalendar jewCalendar);
+
+    LiveData<Month> getMonthByPosition(int position);
 
     Cursor getMonthEventsCursor(Context context, long start, long end);
 

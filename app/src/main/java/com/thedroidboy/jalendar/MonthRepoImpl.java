@@ -1,12 +1,14 @@
 package com.thedroidboy.jalendar;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -28,10 +30,55 @@ public class MonthRepoImpl implements MonthRepo {
     public static final String TAG = MonthRepoImpl.class.getSimpleName();
     private final MonthDAO monthDAO;
     private final DayDAO dayDAO;
+    private final JewCalendar jewCalendar;
+    private SparseArray<Month> monthMap;
+    private boolean threadIsRunning = true;
 
-    public MonthRepoImpl(MonthDAO monthDAO, DayDAO dayDAO) {
+    public MonthRepoImpl(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
         this.monthDAO = monthDAO;
         this.dayDAO = dayDAO;
+        this.jewCalendar = jewCalendar;
+        init();
+    }
+
+    private void init(){
+        new Thread(() -> {
+            monthMap = new SparseArray<>();
+            int i = 0;
+            int currentMonthHasCode = jewCalendar.monthHashCode();
+            List<Month> list = monthDAO.getMonthSegmentForward(currentMonthHasCode, 10);
+            for (Month month : list) {
+                monthMap.put(i, month);
+                i++;
+            }
+            List<Month> monthList = monthDAO.getMonthSegmentBackward(currentMonthHasCode, 10);
+            i = 0;
+            for (Month month : monthList) {
+                monthMap.put(i, month);
+                i--;
+            }
+            Log.d(TAG, "init:" + monthMap.toString());
+            threadIsRunning = false;
+        }).start();
+    }
+
+    private void getMonth(int position, MutableLiveData<Month> liveData){
+        new Thread(() -> {
+            while (threadIsRunning){
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Month month = monthMap.get(position);
+            if (month == null) {
+                jewCalendar.shiftMonth(position);
+                pullMonth(jewCalendar);
+                month = monthMap.get(position);
+            }
+            liveData.postValue(month);
+        }).start();
     }
 
     @Override
@@ -45,12 +92,19 @@ public class MonthRepoImpl implements MonthRepo {
     }
 
     @Override
-    public LiveData<List<Month>> getMonthes(int monthHashCode, int sum) {
-        return monthDAO.getMonthSegment(monthHashCode, sum);
+    public List<Month> getMonthes(int monthHashCode, int sum) {
+        return monthDAO.getMonthSegmentForward(monthHashCode, sum);
     }
 
     @Override
-    public LiveData<Month> getMonth(JewCalendar jewCalendar) {
+    public LiveData<Month> getMonthByPosition(int position) {
+        MutableLiveData<Month> liveData = new MutableLiveData<>();
+        getMonth(position, liveData);
+        return liveData;
+    }
+
+    @Override
+    public LiveData<Month> getMonthByCalendar(JewCalendar jewCalendar) {
         int monthCode = jewCalendar.monthHashCode();
         LiveData<Month> monthLiveData = monthDAO.getMonth(monthCode);
         Month month = monthLiveData.getValue();
@@ -61,14 +115,14 @@ public class MonthRepoImpl implements MonthRepo {
     }
 
     @Override
-    public void pullMonth(JewCalendar jewCalendar, LiveData<Month> monthLiveData) {
-        Log.d(TAG, "getMonth: didn't found one in db");
+    public void pullMonth(JewCalendar jewCalendar) {
+        Log.d(TAG, "getMonthByCalendar: didn't found one in db");
         Month month = new Month(jewCalendar);
+        monthMap.put(jewCalendar.getCurrentPosition(), month);
         new Thread(() -> {
             insertMonth(month);
             insertMonthDays(month.getDayList());
         }).start();
-//        monthLiveData.setValue(month);
     }
 
     private void addDaysToMonth(Month month) {

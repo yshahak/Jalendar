@@ -28,12 +28,20 @@ public class MonthVM extends AndroidViewModel {
         }
         this.calendar = jewCalendar;
         this.monthRepo = monthRepo;
-        this.month = monthRepo.getMonth(jewCalendar);
+        this.month = monthRepo.getMonthByCalendar(jewCalendar);
     }
 
-    public void pull(){
-        monthRepo.pullMonth(calendar,  month);
+    public void init(int position, MonthRepo monthRepo){
+        if (this.month != null) {
+            return;
+        }
+        this.monthRepo = monthRepo;
+        this.month = monthRepo.getMonthByPosition(position);
     }
+
+//    public void pull(){
+//        monthRepo.pullMonth(calendar);
+//    }
 
     public LiveData<Month> getMonth() {
         return month;

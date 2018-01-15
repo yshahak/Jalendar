@@ -22,6 +22,7 @@ public class JewCalendar extends JewishCalendar {
     public static HebrewDateFormatter hebrewHebDateFormatter = new HebrewDateFormatter();
     public static HebrewDateFormatter hebrewEnDateFormatter = new HebrewDateFormatter();
     private static JewCalendar calculatorCalendar = new JewCalendar();
+    private int currentPosition;
 
     static {
         hebrewHebDateFormatter.setHebrewFormat(true);
@@ -49,15 +50,17 @@ public class JewCalendar extends JewishCalendar {
     }
 
     public JewCalendar shiftMonth(int offset) {
-        if (offset > 0) {
-            for (int i = 0; i < offset; i++) {
+        int diff = offset - currentPosition;
+        if (diff > 0) {
+            for (int i = 0; i < diff; i++) {
                 shiftMonthForward();
             }
-        } else if (offset < 0) {
-            for (int i = offset * (-1); i > 0; i--) {
+        } else if (diff < 0) {
+            for (int i = diff * (-1); i > 0; i--) {
                 shiftMonthBackword();
             }
         }
+        this.currentPosition = offset;
         return this;
     }
 
@@ -73,7 +76,11 @@ public class JewCalendar extends JewishCalendar {
         }
     }
 
-//    private void shiftMonthForward(int offset) {
+    public int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    //    private void shiftMonthForward(int offset) {
 //        int currentMonth = getJewishMonth();
 //        int next = getJewishMonth() + 1;
 //        if (next == 7) {
