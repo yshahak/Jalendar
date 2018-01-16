@@ -12,6 +12,7 @@ import android.util.SparseArray;
 
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayDAO;
 import com.thedroidboy.jalendar.model.Month;
@@ -73,6 +74,7 @@ public class CalendarRepoImpl implements CalendarRepo {
             }
             Month month = monthMap.get(position);
             if (month == null) {
+                JewCalendar jewCalendar = JewCalendarPool.obtain(position);
                 jewCalendar.shiftMonth(position);
                 pullMonth(jewCalendar);
                 month = monthMap.get(position);
@@ -98,6 +100,7 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     @Override
     public LiveData<Month> getMonthByPosition(int position) {
+        Log.d(TAG, "getMonthByPosition: " + position);
         MutableLiveData<Month> liveData = new MutableLiveData<>();
         getMonth(position, liveData);
         return liveData;
