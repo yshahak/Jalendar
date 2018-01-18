@@ -14,9 +14,6 @@ import java.util.List;
 @Dao
 public interface DayDAO {
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    void insertMonthes(Month... months);
-//
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDay(Day month);
 
@@ -26,13 +23,14 @@ public interface DayDAO {
     @Query("SELECT * FROM Day")
     List<Day> getAllDays();
 
-    @Query("SELECT * FROM DAY WHERE startDayInMillis >= :start AND startDayInMillis <= :end ORDER BY startDayInMillis ASC")
+    @Query("SELECT * FROM DAY WHERE startDayInMillis >= :start AND startDayInMillis <= :end ORDER BY dayHashCode ASC")
     List<Day> getDaysInSegmant(long start, long end);
 
-//    @Query("SELECT * FROM Month WHERE monthHashCode >= :monthCodeStart ORDER BY monthHashCode ASC LIMIT :sum")
-//    LiveData<List<Month>> getMonthSegmentForward(int monthCodeStart, int sum);
-//
-//    @Query("SELECT * FROM Month WHERE monthHashCode LIKE :monthCode")
-//    LiveData<Month> getMonthByCalendar(int monthCode);
+    @Query("SELECT * FROM Day WHERE dayHashCode >= :dayCodeStart ORDER BY dayHashCode ASC LIMIT :sum")
+    List<Day> getDaySegmentForward(int dayCodeStart, int sum);
+
+    @Query("SELECT * FROM Day WHERE dayHashCode < :dayCodeStart ORDER BY dayHashCode DESC LIMIT :sum")
+    List<Day> getDaySegmentBackward(int dayCodeStart, int sum);
+
 
 }

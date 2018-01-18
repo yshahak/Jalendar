@@ -33,6 +33,7 @@ public class CalendarRepoImpl implements CalendarRepo {
     private final DayDAO dayDAO;
     private final JewCalendar jewCalendar;
     private SparseArray<Month> monthMap;
+    private SparseArray<Day> dayMap;
     private boolean threadIsRunning = true;
 
     public CalendarRepoImpl(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
@@ -44,23 +45,44 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     private void init(){
         new Thread(() -> {
-            monthMap = new SparseArray<>();
-            int i = 0;
-            int currentMonthHasCode = jewCalendar.monthHashCode();
-            List<Month> list = monthDAO.getMonthSegmentForward(currentMonthHasCode, 10);
-            for (Month month : list) {
-                monthMap.put(i, month);
-                i++;
-            }
-            List<Month> monthList = monthDAO.getMonthSegmentBackward(currentMonthHasCode, 10);
-            i = -1;
-            for (Month month : monthList) {
-                monthMap.put(i, month);
-                i--;
-            }
-            Log.d(TAG, "init:" + monthMap.toString());
+            initMonthMap();
+            initDayMap();
             threadIsRunning = false;
         }).start();
+    }
+
+    private void initMonthMap() {
+        monthMap = new SparseArray<>();
+        int i = 0;
+        int currentMonthHasCode = jewCalendar.monthHashCode();
+        List<Month> list = monthDAO.getMonthSegmentForward(currentMonthHasCode, 10);
+        for (Month month : list) {
+            monthMap.put(i, month);
+            i++;
+        }
+        List<Month> monthList = monthDAO.getMonthSegmentBackward(currentMonthHasCode, 10);
+        i = -1;
+        for (Month month : monthList) {
+            monthMap.put(i, month);
+            i--;
+        }
+    }
+
+    private void initDayMap() {
+        dayMap = new SparseArray<>();
+        int i = 0;
+        int currentDayHasCode = jewCalendar.dayHashCode();
+        List<Day> list = dayDAO.getDaySegmentForward(currentDayHasCode, 10);
+        for (Day day : list) {
+            dayMap.put(i, day);
+            i++;
+        }
+        List<Day> dayList = dayDAO.getDaySegmentBackward(currentDayHasCode, 10);
+        i = -1;
+        for (Day day : dayList) {
+            dayMap.put(i, day);
+            i--;
+        }
     }
 
     private void getMonth(int position, MutableLiveData<Month> liveData){
@@ -80,6 +102,20 @@ public class CalendarRepoImpl implements CalendarRepo {
                 month = monthMap.get(position);
             }
             liveData.postValue(month);
+        }).start();
+    }
+
+    private void getDay(int position, MutableLiveData<Day> liveData){
+        new Thread(() -> {
+            while (threadIsRunning){
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Day day = dayMap.get(position);
+            liveData.postValue(day);
         }).start();
     }
 
@@ -103,6 +139,14 @@ public class CalendarRepoImpl implements CalendarRepo {
         Log.d(TAG, "getMonthByPosition: " + position);
         MutableLiveData<Month> liveData = new MutableLiveData<>();
         getMonth(position, liveData);
+        return liveData;
+    }
+
+    @Override
+    public LiveData<Day> getDayByPosition(int position) {
+        Log.d(TAG, "getDayByPosition: " + position);
+        MutableLiveData<Day> liveData = new MutableLiveData<>();
+        getDay(position, liveData);
         return liveData;
     }
 

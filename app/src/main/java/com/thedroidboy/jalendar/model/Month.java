@@ -135,7 +135,7 @@ public class Month {
 
     public long setMonthDays(JewCalendar monthCalendar) {
         dayList = new ArrayList<>();
-        long shift = (monthCalendar.getJewishDayOfMonth() - 1 + headOffset) * DAY_IN_MS;
+        long shift = (monthCalendar.getJewishDayOfMonth() - 1 + headOffset) * DAY_IN_MS;//moving calendar to the previous month
         JewCalendar calendar = new JewCalendar(new Date(monthCalendar.getTime().getTime() - shift));
         long beginOfMonth = 0;
         while (dayList.size() < 42){

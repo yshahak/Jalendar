@@ -28,6 +28,8 @@ public interface CalendarRepo {
 
     LiveData<Month> getMonthByPosition(int position);
 
+    LiveData<Day> getDayByPosition(int position);
+
     Cursor getMonthEventsCursor(Context context, long start, long end);
 
 }

@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.thedroidboy.jalendar.adapters.PagerAdapterDay;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
 import com.thedroidboy.jalendar.calendars.google.CalendarAccount;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
@@ -83,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void initViewPager() {
-        viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
+//        viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
+        viewPager.setAdapter(new PagerAdapterDay(getSupportFragmentManager()));
         viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
         viewPager.addOnPageChangeListener(this);
     }

@@ -18,6 +18,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
+import static com.thedroidboy.jalendar.AppDatabase.MIGRATION_1_2;
+
 /**
  * Created by Yaakov Shahak
  * on 10/12/2017.
@@ -27,38 +29,42 @@ import dagger.Provides;
 public class AppModule {
 
 
-    @Provides @Singleton
-    Context provideContext(Application application){
+    @Provides
+    @Singleton
+    Context provideContext(Application application) {
         return application;
     }
 
-    @Provides @Singleton
-    AppDatabase provideAppDataBase(Context context){
-        return Room.databaseBuilder(context, AppDatabase.class, "jalendar").build();
+    @Provides
+    @Singleton
+    AppDatabase provideAppDataBase(Context context) {
+        return Room.databaseBuilder(context, AppDatabase.class, "jalendar").addMigrations(MIGRATION_1_2)
+                .build();
     }
 
     @Provides
-    SharedPreferences provideSharedPrefs(Context context){
+    SharedPreferences provideSharedPrefs(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Provides
-    MonthDAO provideMonthDAO(AppDatabase appDatabase){
+    MonthDAO provideMonthDAO(AppDatabase appDatabase) {
         return appDatabase.monthDAO();
     }
 
     @Provides
-    DayDAO provideDayDAO(AppDatabase appDatabase){
+    DayDAO provideDayDAO(AppDatabase appDatabase) {
         return appDatabase.dayDAO();
     }
 
     @Provides
-    JewCalendar provideJewCalendar(){
+    JewCalendar provideJewCalendar() {
         return new JewCalendar();
     }
 
-    @Provides @Singleton
-    CalendarRepo provideMonthRepo(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar){
+    @Provides
+    @Singleton
+    CalendarRepo provideMonthRepo(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
         return new CalendarRepoImpl(monthDAO, dayDAO, jewCalendar);
     }
 }

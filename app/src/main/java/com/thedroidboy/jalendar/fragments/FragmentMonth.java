@@ -60,8 +60,6 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
-//        JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-//        Log.d(TAG, "onCreate: pos=" + position + " | calendar=" + jewCalendar.getJewishYear());
         if (position == 0){
             currentDayOfMonth = JewCalendarPool.obtain(position).dayHashCode();
         }

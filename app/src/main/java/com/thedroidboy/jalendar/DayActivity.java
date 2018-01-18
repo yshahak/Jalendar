@@ -31,26 +31,6 @@ public class DayActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         dayBinding.dayRecyclerView.setLayoutManager(layoutManager);
         dayBinding.dayRecyclerView.setAdapter(new RecyclerAdapterDay(day));
-
-//        LinearLayout dayContainer = findViewById(R.id.hourContainer);
-//        LayoutInflater inflater = LayoutInflater.from(this);
-//        for(int i = 0; i < 23; i++) {
-//            HourItemForDayBinding binding = DataBindingUtil.inflate(inflater, R.layout.hour_item_for_day, dayContainer, true);
-//            Hour hour = day.getHoursEventsMap().get(i);
-//            binding.setHour(hour);
-//            List<EventForHour> eventInstanceForDays = hour.getHourEventForDays();
-//            if (eventInstanceForDays.size() == 0) {
-//                continue;
-//            }
-//            for (EventForHour eventInstanceForHour : eventInstanceForDays){
-//                TextViewEventForHourBinding eventBinding = DataBindingUtil.inflate(inflater, R.layout.text_view_event_for_hour, binding.hourEventContainer, true);
-//                if(eventInstanceForHour.event.weight > binding.hourEventContainer.getWeightSum()){
-//                    binding.hourEventContainer.setWeightSum(eventInstanceForHour.event.weight);
-//                }
-//                eventBinding.setEvent(eventInstanceForHour);
-//                eventBinding.hourLabel.setTag(eventInstanceForHour);
-//            }
-//        }
     }
 
 }
