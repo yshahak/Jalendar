@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,14 +26,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.thedroidboy.jalendar.adapters.PagerAdapterDay;
+import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
 import com.thedroidboy.jalendar.calendars.google.CalendarAccount;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
-import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
-import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ID_I
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_OWNER_ACCOUNT_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISIBLE_INDEX;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private Toolbar toolbar;
     @Inject
     SharedPreferences prefs;
+    private RadioGroup displayChooser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,22 +73,22 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         viewPager = findViewById(R.id.view_pager);
         viewPager.setOffscreenPageLimit(2);
+        viewPager.addOnPageChangeListener(this);
         toolbar = findViewById(R.id.my_toolbar);
         calendarsList = findViewById(R.id.calender_list);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        validateCalendarPermission();
-        setMonthTitle(0);
+        displayChooser = findViewById(R.id.radio_group_display);
+        displayChooser.setOnCheckedChangeListener(this);validateCalendarPermission();
         drawerLayout = findViewById(R.id.drawer_layout);
         setDrawerMenu();
     }
 
     private void initViewPager() {
-//        viewPager.setAdapter(new PagerAdapterMonth(getSupportFragmentManager()));
-        viewPager.setAdapter(new PagerAdapterDay(getSupportFragmentManager()));
+        viewPager.setAdapter(new PagerAdapterBase(getSupportFragmentManager()));
         viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
-        viewPager.addOnPageChangeListener(this);
+        viewPager.post(() -> onPageSelected(PagerAdapterMonth.INITIAL_OFFSET));
     }
 
     @Override
@@ -118,6 +119,21 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         int sign = current > position ? -1: 1;
         while (viewPager.getCurrentItem() != position){
             viewPager.setCurrentItem(viewPager.getCurrentItem() + sign, true);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+//        }
+//        else if (backToMonthDisplay) {
+//            CalendarPagerAdapter.displayState = CalendarPagerAdapter.DISPLAY.MONTH;
+//            displayChooser.check(R.id.display_month);
+//            backToMonthDisplay = false;
+//
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -152,13 +168,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public void onPageSelected(int position) {
-        int realPosition = position - PagerAdapterMonth.INITIAL_OFFSET;
-        setMonthTitle(realPosition);
-    }
-
-    private void setMonthTitle(int realPosition) {
-        JewCalendar calendar = JewCalendarPool.obtain(realPosition);
-        setTitle(calendar.getHebMonthName() + " " +  calendar.getYearHebName());
+        PagerAdapterBase adapter = (PagerAdapterBase) viewPager.getAdapter();
+        setTitle(adapter.getPageTitle(position));
     }
 
     @Override
@@ -285,4 +296,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public HashMap<String, List<CalendarAccount>> accountListNames = new HashMap<>();
 
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        drawerLayout.closeDrawers();
+        switch (checkedId) {
+            case R.id.display_month:
+                ((PagerAdapterBase)viewPager.getAdapter()).setDisplayState(PagerAdapterBase.DISPLAY.MONTH);
+                break;
+            case R.id.display_day:
+                ((PagerAdapterBase)viewPager.getAdapter()).setDisplayState(PagerAdapterBase.DISPLAY.DAY);
+                break;
+        }
+    }
 }

@@ -15,10 +15,11 @@ import android.view.ViewGroup;
 
 import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.R;
+import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.RecyclerAdapterDay;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
-import com.thedroidboy.jalendar.databinding.ActivityDayBinding;
+import com.thedroidboy.jalendar.databinding.FragmentDayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayVM;
 
@@ -32,7 +33,7 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentDay extends Fragment{
+public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTitle {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentDay.class.getSimpleName();
@@ -68,7 +69,7 @@ public class FragmentDay extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ActivityDayBinding dayBinding = DataBindingUtil.inflate(layoutInflater, R.layout.activity_day, container, false);
+        FragmentDayItemBinding dayBinding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_day_item, container, false);
         LiveData<Day> dayLiveData = dayVM.getDayLiveData();
         dayLiveData.observe(this, day -> {
             if (day != null) {
@@ -79,5 +80,16 @@ public class FragmentDay extends Fragment{
             }
         });
         return dayBinding.getRoot();
+    }
+
+    @Override
+    public String getFragmentTitle() {
+        LiveData<Day> dayLiveData = dayVM.getDayLiveData();
+        if (dayLiveData.getValue() != null) {
+            return dayLiveData.getValue().getLabelDayAndMonth();
+        } else {
+            dayLiveData.observe(this, day -> (getActivity()).setTitle(day.getLabelDayAndMonth()));
+        }
+        return "day not known";
     }
 }

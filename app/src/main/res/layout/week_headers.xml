@@ -6,7 +6,7 @@
     android:layoutDirection="rtl"
     android:orientation="horizontal"
     android:weightSum="7"
-    tools:showIn="@layout/month_item">
+    tools:showIn="@layout/fragment_month_item">
 
     <TextView
         android:text="ראשון"

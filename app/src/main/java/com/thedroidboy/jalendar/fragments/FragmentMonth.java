@@ -14,11 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.GoogleEventsLoader;
 import com.thedroidboy.jalendar.R;
-import com.thedroidboy.jalendar.CalendarRepo;
+import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
-import com.thedroidboy.jalendar.databinding.MonthItemBinding;
+import com.thedroidboy.jalendar.databinding.FragmentMonthItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthVM;
@@ -35,12 +36,12 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>> {
+public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>>, PagerAdapterBase.FragmentTitle {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentMonth.class.getSimpleName();
     private MonthVM monthVM;
-    private MonthItemBinding binding;
+    private FragmentMonthItemBinding binding;
     @Inject
     CalendarRepo calendarRepo;
     @Inject
@@ -72,7 +73,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Nullable
     @Override
     public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(layoutInflater, R.layout.month_item, container, false);
+        binding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_month_item, container, false);
         LiveData<Month> monthLiveData = monthVM.getMonth();
         monthLiveData.observe(this, month -> {
             if (month != null) {
@@ -102,7 +103,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         return cellHeight;
     }
 
-    private void bindMonth(MonthItemBinding binding) {
+    private void bindMonth(FragmentMonthItemBinding binding) {
         int position = 0;
         List<Day> dayList;
         float cellHeight = getCellHeight();
@@ -139,5 +140,16 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onLoaderReset(Loader<List<Day>> loader) {
 
+    }
+
+    @Override
+    public String getFragmentTitle() {
+        LiveData<Month> monthLiveData = monthVM.getMonth();
+        if (monthLiveData.getValue() != null) {
+            return monthLiveData.getValue().getMonthHebLabel();
+        } else {
+            monthLiveData.observe(this, month -> (getActivity()).setTitle(month.getMonthHebLabel()));
+        }
+        return "month not known";
     }
 }
