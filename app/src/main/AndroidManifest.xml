@@ -30,6 +30,27 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.thedroidboy.jalendar.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".CreteIvriEventActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.EDIT" />-->
+                <!--<action android:name="android.intent.action.INSERT" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<data android:host="com.android.calendar" />-->
+                <!--<data android:host="calendar" />-->
+                <!--<data android:scheme="content" />-->
+            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/event" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

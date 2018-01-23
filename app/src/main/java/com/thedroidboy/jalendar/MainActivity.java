@@ -30,7 +30,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
-import com.thedroidboy.jalendar.adapters.PagerAdapterMonth;
+import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
 import com.thedroidboy.jalendar.calendars.google.CalendarAccount;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 
@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void initViewPager() {
-        viewPager.setAdapter(new PagerAdapterBase(getSupportFragmentManager()));
-        viewPager.setCurrentItem(PagerAdapterMonth.INITIAL_OFFSET);
-        viewPager.post(() -> onPageSelected(PagerAdapterMonth.INITIAL_OFFSET));
+        viewPager.setAdapter(new PagerAdapterMonthDay(getSupportFragmentManager()));
+        viewPager.setCurrentItem(PagerAdapterMonthDay.INITIAL_OFFSET);
+        viewPager.post(() -> onPageSelected(PagerAdapterMonthDay.INITIAL_OFFSET));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_current_day:
-                movePagerToPosition(PagerAdapterMonth.INITIAL_OFFSET);
+                movePagerToPosition(PagerAdapterMonthDay.INITIAL_OFFSET);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -299,13 +299,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         drawerLayout.closeDrawers();
+        int currentItem = viewPager.getCurrentItem();
         switch (checkedId) {
             case R.id.display_month:
-                ((PagerAdapterBase)viewPager.getAdapter()).setDisplayState(PagerAdapterBase.DISPLAY.MONTH);
+                ((PagerAdapterMonthDay)viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.MONTH);
                 break;
             case R.id.display_day:
-                ((PagerAdapterBase)viewPager.getAdapter()).setDisplayState(PagerAdapterBase.DISPLAY.DAY);
+                ((PagerAdapterMonthDay)viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
                 break;
         }
+        viewPager.post(() -> onPageSelected(currentItem));
     }
 }

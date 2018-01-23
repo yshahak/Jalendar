@@ -2,10 +2,13 @@ package com.thedroidboy.jalendar.fragments;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,8 +20,6 @@ import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.RecyclerAdapterDay;
-import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
-import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.FragmentDayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayVM;
@@ -42,7 +43,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTi
     CalendarRepo calendarRepo;
     @Inject
     SharedPreferences prefs;
-    private int currentDayOfMonth = -1;
+//    private int currentDayOfMonth = -1;
 
     public static FragmentDay newInstance(int position) {
         FragmentDay fragmentDay = new FragmentDay();
@@ -57,10 +58,10 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTi
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
-        if (position == 0){
-            JewCalendar jewCalendar = JewCalendarPool.obtain(0);
-            currentDayOfMonth = jewCalendar.dayHashCode();
-        }
+//        if (position == 0){
+//            JewCalendar jewCalendar = JewCalendarPool.obtain(0);
+//            currentDayOfMonth = jewCalendar.dayHashCode();
+//        }
         dayVM = ViewModelProviders.of(this).get(DayVM.class);
         dayVM.init(position, calendarRepo);
 
@@ -79,6 +80,12 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTi
                 dayBinding.dayRecyclerView.setAdapter(new RecyclerAdapterDay(day));
             }
         });
+        dayBinding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", v -> {
+                    Intent intent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI);
+                    Intent chooser = Intent.createChooser(intent, "Create an new event");
+                    startActivity(chooser);
+                }).show());
         return dayBinding.getRoot();
     }
 
@@ -88,7 +95,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTi
         if (dayLiveData.getValue() != null) {
             return dayLiveData.getValue().getLabelDayAndMonth();
         } else {
-            dayLiveData.observe(this, day -> (getActivity()).setTitle(day.getLabelDayAndMonth()));
+            dayLiveData.observe(this, day -> (getActivity()).setTitle(day != null ? day.getLabelDayAndMonth() : "day is null"));
         }
         return "day not known";
     }

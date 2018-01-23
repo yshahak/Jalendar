@@ -45,16 +45,17 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     private void init(){
         new Thread(() -> {
-            initMonthMap();
+            dayMap = new SparseArray<>();
+            monthMap = new SparseArray<>();
+            initMonthMap(0);
             initDayMap();
             threadIsRunning = false;
         }).start();
     }
 
-    private void initMonthMap() {
-        monthMap = new SparseArray<>();
+    private void initMonthMap(int position) {
         int i = 0;
-        int currentMonthHasCode = jewCalendar.monthHashCode();
+        int currentMonthHasCode = JewCalendarPool.obtain(position).monthHashCode();
         List<Month> list = monthDAO.getMonthSegmentForward(currentMonthHasCode, 10);
         for (Month month : list) {
             monthMap.put(i, month);
@@ -69,15 +70,14 @@ public class CalendarRepoImpl implements CalendarRepo {
     }
 
     private void initDayMap() {
-        dayMap = new SparseArray<>();
         int i = 0;
         int currentDayHasCode = jewCalendar.dayHashCode();
-        List<Day> list = dayDAO.getDaySegmentForward(currentDayHasCode, 10);
+        List<Day> list = dayDAO.getDaySegmentForward(currentDayHasCode, 100);
         for (Day day : list) {
             dayMap.put(i, day);
             i++;
         }
-        List<Day> dayList = dayDAO.getDaySegmentBackward(currentDayHasCode, 10);
+        List<Day> dayList = dayDAO.getDaySegmentBackward(currentDayHasCode, 100);
         i = -1;
         for (Day day : dayList) {
             dayMap.put(i, day);
@@ -96,10 +96,14 @@ public class CalendarRepoImpl implements CalendarRepo {
             }
             Month month = monthMap.get(position);
             if (month == null) {
-                JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-                jewCalendar.shiftMonth(position);
-                pullMonth(jewCalendar);
+                initMonthMap(position);
                 month = monthMap.get(position);
+                if (month == null) {
+                    JewCalendar jewCalendar = JewCalendarPool.obtain(position);
+                    jewCalendar.shiftMonth(position);
+                    pullMonth(jewCalendar);
+                    month = monthMap.get(position);
+                }
             }
             liveData.postValue(month);
         }).start();
@@ -115,6 +119,9 @@ public class CalendarRepoImpl implements CalendarRepo {
                 }
             }
             Day day = dayMap.get(position);
+            if (day == null) {
+
+            }
             liveData.postValue(day);
         }).start();
     }
