@@ -1,106 +1,137 @@
 package com.thedroidboy.jalendar;
 
+import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SwitchCompat;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.databinding.ActivityCreateIvriEventBinding;
+import com.thedroidboy.jalendar.model.EventInstanceForDay;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 import me.angrybyte.numberpicker.view.ActualNumberPicker;
+
+import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
+import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
 
 /**
  * Created by B.E.L on 31/10/2016.
  */
 
-public class CreteIvriEventActivity extends AppCompatActivity {// implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener, PopupMenu.OnMenuItemClickListener {
+public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener, PopupMenu.OnMenuItemClickListener {
 
-    //    public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
+    public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
     public static JewCalendar currentCalendar;
 //    @BindView(R.id.header_btn_save)
-    TextView headerBtnSave;
+//    TextView headerBtnSave;
 //    @BindView(R.id.header_btn_x)
-    ImageView headerBtnX;
+//    ImageView headerBtnX;
 //    @BindView(R.id.header_edit_text_event_title)
-    EditText headerTitleEditText;
+//    EditText headerTitleEditText;
 //    @BindView(R.id.checkbox_all_day_event)
     SwitchCompat switchCompatAllDay;
 //    @BindView(R.id.event_start_day)
-    TextView eventStartDay;
+//    TextView eventStartDay;
 //    @BindView(R.id.event_end_day)
-    TextView eventEndDay;
+//    TextView eventEndDay;
 //    @BindView(R.id.event_start_time)
-    TextView eventStartTime;
+//    TextView eventStartTime;
 //    @BindView(R.id.event_end_time)
-    TextView eventEndTime;
+//    TextView eventEndTime;
 //    @BindView(R.id.event_instances)
-    TextView textViewRepeat;
+//    TextView textViewRepeat;
 //    @BindView(R.id.event_count_title)
     TextView eventCountTitle;
     //    @BindView(R.id.progress_bar)ProgressBar progressBar;
 //    @BindView(R.id.countPicker)
+    private ActivityCreateIvriEventBinding binding;
     ActualNumberPicker eventCountPicker;
-//    @Inject
+    @Inject
+    CalendarRepo calendarRepo;
+    @Inject
+    SharedPreferences prefs;
+
 //    EventsProvider eventsProvider;
 
-//    private PICKER_STATE pickerState;
+    private PICKER_STATE pickerState;
     private SimpleDateFormat sdf;
     private Calendar calendarStartTime, calendarEndTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        ActivityCreateIvriEventBinding dayBinding = DataBindingUtil.setContentView(this, R.layout.activity_create_ivri_event);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_ivri_event);
 
-//        ((MyApplication)getApplication()).getComponent().inject(this);
-//        setContentView(R.layout.activity_create_ivri_event);
-//        ButterKnife.bind(this);
-//        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(dayBinding.myToolbar);
+        setSupportActionBar(binding.myToolbar);
         sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        KeyboardVisibilityEvent.setEventListener(this, this);
 
-//        KeyboardVisibilityEvent.setEventListener(this, this);
-//        textViewRepeat.setTag(R.id.repeat_single);
+//        binding.eventInstances.setTag(R.id.repeat_single);
 
+    }
+
+    private void cretaeEventInstance(){
+        Calendar calendar = Calendar.getInstance();
+        long startEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
+        long endEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0L);
+        long id = calendar.getTimeInMillis();
+        String title = getIntent().getStringExtra(CalendarContract.Events.TITLE);
+        String desc = getIntent().getStringExtra(CalendarContract.Events.DESCRIPTION);
+        String location = getIntent().getStringExtra(CalendarContract.Events.EVENT_LOCATION);
+        int available = getIntent().getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+        String email = getIntent().getStringExtra(Intent.EXTRA_EMAIL);
+        EventInstanceForDay event = new EventInstanceForDay(id, title, startEvent, endEvent, -1, "", 1);
+        binding.setEvent(event);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 //        setDates();
-
     }
 //
-//    private void setDates() {
-////        boolean useCurrentDay = getIntent().getBooleanExtra(EXTRA_USE_CURRENT_DAY, false);
-//        if (currentCalendar == null) {
-//            currentCalendar = new JewCalendar();
-//        }
-//        String date = hebrewDateFormatter.formatHebrewNumber(currentCalendar.getJewishDayOfMonth()) + " " +
-//                hebrewDateFormatter.formatMonth(currentCalendar);
-//        hebrewDateFormatter.setLongWeekFormat(true);
-//        String day = hebrewDateFormatter.formatDayOfWeek(currentCalendar) + " , " + date;
-//        eventStartDay.setText(day);
-//        eventEndDay.setText(day);
-//        calendarStartTime = Calendar.getInstance();
-//        calendarStartTime.setTime(currentCalendar.getTime());
-//        calendarStartTime.set(Calendar.MINUTE, 0);
-//        eventStartTime.setText(sdf.format(calendarStartTime.getTime()));
-//        calendarEndTime = Calendar.getInstance();
-//        calendarEndTime.setTime(currentCalendar.getTime());
-//        calendarEndTime.set(Calendar.MINUTE, 0);
-//        calendarEndTime.set(Calendar.HOUR_OF_DAY, calendarEndTime.get(Calendar.HOUR_OF_DAY) + 1);
-//        eventEndTime.setText(sdf.format(calendarEndTime.getTime()));
-//    }
+    private void setDates() {
+        boolean useCurrentDay = getIntent().getBooleanExtra(EXTRA_USE_CURRENT_DAY, false);
+        if (currentCalendar == null) {
+            currentCalendar = new JewCalendar();
+        }
+        String date = hebrewHebDateFormatter.formatHebrewNumber(currentCalendar.getJewishDayOfMonth()) + " " +
+                hebrewHebDateFormatter.formatMonth(currentCalendar);
+        hebrewHebDateFormatter.setLongWeekFormat(true);
+        String day = hebrewHebDateFormatter.formatDayOfWeek(currentCalendar) + " , " + date;
+        binding.eventStartDay.setText(day);
+        binding.eventEndDay.setText(day);
+        calendarStartTime = Calendar.getInstance();
+        calendarStartTime.setTime(currentCalendar.getTime());
+        calendarStartTime.set(Calendar.MINUTE, 0);
+        binding.eventStartTime.setText(sdf.format(calendarStartTime.getTime()));
+        calendarEndTime = Calendar.getInstance();
+        calendarEndTime.setTime(currentCalendar.getTime());
+        calendarEndTime.set(Calendar.MINUTE, 0);
+        calendarEndTime.set(Calendar.HOUR_OF_DAY, calendarEndTime.get(Calendar.HOUR_OF_DAY) + 1);
+        binding.eventEndTime.setText(sdf.format(calendarEndTime.getTime()));
+    }
 //
 //    @OnClick({R.id.event_start_day, R.id.event_end_day})
 //    void openDayDialog() {
@@ -161,8 +192,8 @@ public class CreteIvriEventActivity extends AppCompatActivity {// implements Tim
 //        popup.show();
 //    }
 //
-//    @Override
-//    public boolean onMenuItemClick(MenuItem item) {
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
 //        textViewRepeat.setText(item.getTitle());
 //        textViewRepeat.setTag(item.getItemId());
 //        if (item.getItemId() != R.id.repeat_single) {
@@ -187,17 +218,17 @@ public class CreteIvriEventActivity extends AppCompatActivity {// implements Tim
 //                eventCountPicker.setValue(10);
 //                break;
 //        }
-//        return false;
-//    }
+        return false;
+    }
 //
 //    @OnClick(R.id.header_btn_x)
 //    void clickX() {
 //        finish();
 //    }
 //
-//    @Override
-//    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
 //        switch (pickerState) {
 //            case STATE_START_TIME:
 //                calendarStartTime.set(Calendar.MINUTE, minute);
@@ -212,18 +243,18 @@ public class CreteIvriEventActivity extends AppCompatActivity {// implements Tim
 //                calendarEndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
 //                eventEndTime.setText(sdf.format(calendarEndTime.getTime()));
 //        }
-//        pickerState = null;
-//    }
-//
-//
-//    private void saveEvent() {
-//        long calID = PreferenceManager.getDefaultSharedPreferences(this).getLong(KEY_HEBREW_ID, -1L);
-//        if (calID == -1L){
-//            return;
-//        }
+        pickerState = null;
+    }
+
+
+    private void saveEvent() {
+        long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
+        if (calID == -1L){
+            return;
+        }
 //        String title = headerTitleEditText.getText().toString();
 //        int repeatId = (int) textViewRepeat.getTag();
-//        ContentResolver contentResolver = getContentResolver();
+        ContentResolver contentResolver = getContentResolver();
 //        EventInstance.Repeat repeat = null;
 //        switch (repeatId){
 //            case R.id.repeat_single:
@@ -247,51 +278,51 @@ public class CreteIvriEventActivity extends AppCompatActivity {// implements Tim
 //        }
 //        long start = calendarStartTime.getTimeInMillis();
 //        eventsProvider.addEvent(contentResolver, title, calID, repeat, start, calendarEndTime.getTimeInMillis() - start, eventCountPicker.getValue());
-////        GoogleManager.addHebrewEventToGoogleServer(this, title, repeatId, calendarStartTime, calendarEndTime, String.valueOf(eventCountPicker.getValue()));
+//        GoogleManager.addHebrewEventToGoogleServer(this, title, repeatId, calendarStartTime, calendarEndTime, String.valueOf(eventCountPicker.getValue()));
 //        MainActivity.recreateFlag = true;
-//        finish();
-//    }
-//
-//    @Override
-//    public void onBackPressed() {
-//        headerBtnSave.setText("שמור");
-//        if (pickerState != null) {
-//            pickerState = null;
-//        }
-//        super.onBackPressed();
-//    }
-//
-//    //KeyBoard visibilty listener
-//    @Override
-//    public void onVisibilityChanged(boolean isOpen) {
-//        headerBtnSave.setText(isOpen ? "בוצע" : "שמור");
-//        headerTitleEditText.setCursorVisible(isOpen);
-//    }
-//
-//    OnDatePickerDialog onDatePickerDismiss = new OnDatePickerDialog() {
-//        @Override
-//        public void onBtnOkPressed() {
-//            setDates();
-//        }
-//
-//        @Override
-//        public void onAttached() {
-////            progressBar.setVisibility(View.GONE);
-//        }
-//    };
-//
-//
-//    private enum PICKER_STATE {
-//        STATE_START_TIME,
-//        STATE_END_TIME,
-//        STATE_START_DATE,
-//        STATE_END_DATE
-//    }
-//
-//    public interface OnDatePickerDialog {
-//        void onBtnOkPressed();
-//
-//        void onAttached();
-//    }
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        binding.headerBtnSave.setText("שמור");
+        if (pickerState != null) {
+            pickerState = null;
+        }
+        super.onBackPressed();
+    }
+
+    //KeyBoard visibilty listener
+    @Override
+    public void onVisibilityChanged(boolean isOpen) {
+        binding.headerBtnSave.setText(isOpen ? "בוצע" : "שמור");
+        binding.headerEditTextEventTitle.setCursorVisible(isOpen);
+    }
+
+    OnDatePickerDialog onDatePickerDismiss = new OnDatePickerDialog() {
+        @Override
+        public void onBtnOkPressed() {
+            setDates();
+        }
+
+        @Override
+        public void onAttached() {
+//            progressBar.setVisibility(View.GONE);
+        }
+    };
+
+
+    private enum PICKER_STATE {
+        STATE_START_TIME,
+        STATE_END_TIME,
+        STATE_START_DATE,
+        STATE_END_DATE
+    }
+
+    public interface OnDatePickerDialog {
+        void onBtnOkPressed();
+
+        void onAttached();
+    }
 
 }

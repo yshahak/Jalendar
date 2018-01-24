@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by yshahak on 14/10/2016.
@@ -15,7 +16,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
 
     protected long eventId;
     protected String eventTitle;
-    protected boolean allDayEvent;
+//    protected boolean allDayEvent;
     protected long begin, end;
     protected int displayColor;
     protected String calendarDisplayName;
@@ -23,10 +24,10 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
 //    protected int parallelEventsCount;
 //    public int weight;
 
-    public EventInstanceForDay(long eventId, String eventTitle, boolean allDayEvent, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
+    public EventInstanceForDay(long eventId, String eventTitle, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
         this.eventId = eventId;
         this.eventTitle = (eventTitle != null && eventTitle.length() > 0) ? eventTitle : "(ללא כותרת)";
-        this.allDayEvent = allDayEvent;
+//        this.allDayEvent = allDayEvent;
         this.begin = begin;
         this.end = end;
         this.displayColor = displayColor;
@@ -43,7 +44,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     }
 
     public boolean isAllDayEvent() {
-        return allDayEvent;
+        return (end - begin) == TimeUnit.DAYS.toMillis(1);
     }
 
     public long getBegin() {
@@ -110,7 +111,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.eventId);
         dest.writeString(this.eventTitle);
-        dest.writeByte(this.allDayEvent ? (byte) 1 : (byte) 0);
+//        dest.writeByte(this.allDayEvent ? (byte) 1 : (byte) 0);
         dest.writeLong(this.begin);
         dest.writeLong(this.end);
         dest.writeInt(this.displayColor);
@@ -121,7 +122,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     protected EventInstanceForDay(Parcel in) {
         this.eventId = in.readLong();
         this.eventTitle = in.readString();
-        this.allDayEvent = in.readByte() != 0;
+//        this.allDayEvent = in.readByte() != 0;
         this.begin = in.readLong();
         this.end = in.readLong();
         this.displayColor = in.readInt();

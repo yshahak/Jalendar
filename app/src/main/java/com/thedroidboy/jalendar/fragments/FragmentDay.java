@@ -24,6 +24,9 @@ import com.thedroidboy.jalendar.databinding.FragmentDayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayVM;
 
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
@@ -82,9 +85,16 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTi
         });
         dayBinding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", v -> {
-                    Intent intent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI);
-                    Intent chooser = Intent.createChooser(intent, "Create an new event");
-                    startActivity(chooser);
+                    if (dayLiveData.getValue() != null) {
+                        long startDay = dayLiveData.getValue().getStartDayInMillis();
+                        int hourNow = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                        Intent intent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI)
+                                .putExtra(CalendarContract.Events.TITLE, "")
+                                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow));
+//                        Intent chooser = Intent.createChooser(intent, "Create an new event");
+                        startActivity(intent);
+                    }
+
                 }).show());
         return dayBinding.getRoot();
     }

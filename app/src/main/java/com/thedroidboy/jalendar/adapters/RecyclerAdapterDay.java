@@ -26,7 +26,7 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
         this.day = day;
         if (day.getGoogleEventInstanceForDays().size() == 0){
             day.getGoogleEventInstanceForDays().add(new EventInstanceForDay(-1, "אין אירועים ליום זה",
-                    false, -1, -1, Color.TRANSPARENT, "", -1));
+                     -1, -1, Color.TRANSPARENT, "", -1));
         }
     }
 

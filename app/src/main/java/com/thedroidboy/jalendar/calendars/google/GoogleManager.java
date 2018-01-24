@@ -20,8 +20,10 @@ import android.util.Log;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -200,5 +202,115 @@ public class GoogleManager {
         ContentUris.appendId(builder, start);
         ContentUris.appendId(builder, end);
         return builder.build();
+    }
+
+    @SuppressWarnings("MissingPermission")
+    public static void addHebrewEventToGoogleServer(Context context, String title, int repeatId, Calendar start, Calendar end, String count){
+//        long calID = PreferenceManager.getDefaultSharedPreferences(context).getLong(KEY_HEBREW_ID, -1L);
+//        if (calID == -1L){
+//            return;
+//        }
+//        ContentValues values;
+//        ContentResolver cr = context.getContentResolver();
+//        switch (repeatId){
+//            case R.id.repeat_single:
+//            case R.id.repeat_daily:
+//            case R.id.repeat_weekly:
+//                values = getContentValueForSingleEvent(title, calID, repeatId, start, end, count);
+//                cr.insert(CalendarContract.Events.CONTENT_URI, values);
+//                break;
+//            case R.id.repeat_monthly:
+//                ContentValues[] contentValues = new ContentValues[Integer.valueOf(count)];
+//                Calendar calStart = (Calendar) start.clone();
+//                Calendar endStart = (Calendar) end.clone();
+//                for (int i = 0 ; i < contentValues.length ; i++) {
+//                    start.setTime(shiftMonth(new JewishCalendar(calStart), i).getTime());
+//                    end.setTime(shiftMonth(new JewishCalendar(endStart), i).getTime());
+//                    contentValues[i] = getContentValueForSingleEvent(title, calID, R.id.repeat_single, start, end, count);
+//                }
+//                cr.bulkInsert(CalendarContract.Events.CONTENT_URI, contentValues);
+//                break;
+//            case R.id.repeat_yearly:
+//                contentValues = new ContentValues[Integer.valueOf(count)];
+//                JewishCalendar jewishCalendarStart = new JewishCalendar(start);
+//                JewishCalendar jewishCalendarEnd = new JewishCalendar(end);
+//                for (int i = 0 ; i < contentValues.length ; i++) {
+//                    Log.d("TAG",  hebrewDateFormatter.formatHebrewNumber(jewishCalendarStart.getJewishYear()) + " , "
+//                            + hebrewDateFormatter.formatMonth(jewishCalendarStart) + " , "
+//                            + hebrewDateFormatter.formatHebrewNumber(jewishCalendarStart.getJewishDayOfMonth()));
+//                    contentValues[i] = getContentValueForSingleEvent(title, calID, R.id.repeat_single, start, end, count);
+//                    jewishCalendarStart.setJewishYear(jewishCalendarStart.getJewishYear() + 1);
+//                    start.setTime(jewishCalendarStart.getTime());
+//                    jewishCalendarEnd.setJewishYear(jewishCalendarEnd.getJewishYear() + 1);
+//                    end.setTime(jewishCalendarEnd.getTime());
+//                }
+//                cr.bulkInsert(CalendarContract.Events.CONTENT_URI, contentValues);
+//                break;
+//        }
+        syncCalendars(context);
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private static ContentValues getContentValueForSingleEvent(String title, long calID, int repeatId, Calendar start, Calendar end, String count){
+        ContentValues values = new ContentValues();
+//        values.put(CalendarContract.Events.DTSTART, start.getTimeInMillis());
+//
+//        switch (repeatId){
+//            case R.id.repeat_single:
+//                values.put(CalendarContract.Events.DTEND, end.getTimeInMillis());
+//                break;
+//            case R.id.repeat_daily:
+//                values.put(CalendarContract.Events.DURATION, "PT1H0M");
+//                values.put(CalendarContract.Events.RRULE, "FREQ=DAILY;COUNT=" + count);//;BYDAY=TU   "FREQ=WEEKLY;BYDAY=TU;UNTIL=20150428"
+//                break;
+//            case R.id.repeat_weekly:
+//                values.put(CalendarContract.Events.DURATION, "PT1H0M");
+//                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=" + count);
+//                break;
+//        }
+//        values.put(CalendarContract.Events.TITLE, title);
+//        values.put(CalendarContract.Events.CALENDAR_ID, calID);
+//        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+        return values;
+    }
+
+//    public static void openEvent(Context context, EventInstance eventInstance){
+//        Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventInstance.getEventId());
+//        Intent intent = new Intent(Intent.ACTION_VIEW)
+//                .setData(uri)
+//                .putExtra(CalendarContract.Events.TITLE, eventInstance.getEventTitle());
+//        ((Activity)context).startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
+//    }
+
+    /**
+     * Fetch a list of the next 10 events from the primary calendar.
+     *
+     * @return List of Strings describing returned events.
+     * @throws IOException
+     */
+    private List<String> getDataFromApi() throws IOException {
+        // List the next 10 events from the primary calendar.
+        List<String> eventStrings = new ArrayList<String>();
+//        DateTime now = new DateTime(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(365));
+//        com.google.api.services.calendar.Calendar mService = null;
+//        CalendarContract.Events events = mService.events().list("primary")
+//                .setMaxResults(10)
+//                .setTimeMin(now)
+//                .setOrderBy("startTime")
+//                .setSingleEvents(true)
+//                .execute();
+//        List<com.google.api.services.calendar.model.Event> items = events.getItems();
+//
+//        for (com.google.api.services.calendar.model.Event event : items) {
+//            DateTime start = event.getStart().getDateTime();
+//            if (start == null) {
+//                 All-day events don't have start times, so just use
+//                 the start date.
+//                start = event.getStart().getDate();
+//            }
+//            eventStrings.add(
+//                    String.format("%s (%s)", event.getSummary(), start));
+//        }
+        return eventStrings;
     }
 }

@@ -3,6 +3,7 @@ package com.thedroidboy.jalendar.dagger;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
+import com.thedroidboy.jalendar.CreteIvriEventActivity;
 import com.thedroidboy.jalendar.MainActivity;
 import com.thedroidboy.jalendar.fragments.FragmentDay;
 import com.thedroidboy.jalendar.fragments.FragmentMonth;
@@ -19,7 +20,7 @@ import dagger.multibindings.IntoMap;
  * on 10/12/2017.
  */
 
-@Module (subcomponents = {FragmentMonthSubComponent.class, FragmentDaySubComponent.class, MainActivitySubComponent.class})
+@Module (subcomponents = {FragmentMonthSubComponent.class, FragmentDaySubComponent.class, MainActivitySubComponent.class, CreateEventActivitySubComponent.class})
 public abstract class BuildersModule {
 
     @Binds
@@ -27,6 +28,12 @@ public abstract class BuildersModule {
     @ActivityKey(MainActivity.class)
     abstract AndroidInjector.Factory<? extends Activity>
     bindMainActivityInjectorFactory(MainActivitySubComponent.Builder builder);
+
+    @Binds
+    @IntoMap
+    @ActivityKey(CreteIvriEventActivity.class)
+    abstract AndroidInjector.Factory<? extends Activity>
+    bindCreateEventActivityInjectorFactory(CreateEventActivitySubComponent.Builder builder);
 
     @Binds
     @IntoMap
@@ -43,6 +50,12 @@ public abstract class BuildersModule {
 interface MainActivitySubComponent  extends AndroidInjector<MainActivity> {
     @Subcomponent.Builder
     abstract class Builder extends AndroidInjector.Builder<MainActivity> {}
+}
+
+@Subcomponent()
+interface CreateEventActivitySubComponent  extends AndroidInjector<CreteIvriEventActivity> {
+    @Subcomponent.Builder
+    abstract class Builder extends AndroidInjector.Builder<CreteIvriEventActivity> {}
 }
 
 @Subcomponent()

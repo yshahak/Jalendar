@@ -178,12 +178,9 @@ public class EventsHelper {
         String calendarName = cursor.getString(PROJECTION_CALENDAR_DISPLAY_NAME_INDEX);
         int displayColor = cursor.getInt(PROJECTION_DISPLAY_COLOR_INDEX);
 //        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
-        boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
-        if (allDayEvent) {
-//            end = start;
-        }
+//        boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
-        return new EventInstanceForDay(eventId, title, allDayEvent, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
+        return new EventInstanceForDay(eventId, title, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
     }
 
     public static String covertDurationToRule(long duration) {
