@@ -37,7 +37,7 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentTitle {
+public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentData {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentDay.class.getSimpleName();

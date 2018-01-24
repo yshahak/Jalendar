@@ -36,7 +36,7 @@ import dagger.android.support.AndroidSupportInjection;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>>, PagerAdapterBase.FragmentTitle {
+public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>>, PagerAdapterBase.FragmentData {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentMonth.class.getSimpleName();
@@ -61,7 +61,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
-        if (position == 0){
+        if (position == 0) {
             currentDayOfMonth = JewCalendarPool.obtain(position).dayHashCode();
         }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
@@ -151,5 +151,13 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             monthLiveData.observe(this, month -> (getActivity()).setTitle(month.getMonthHebLabel()));
         }
         return "month not known";
+    }
+
+    @Override
+    public long getFragmentStartTime() {
+        if (monthVM.getMonth().getValue() != null) {
+            return monthVM.getMonth().getValue().getStartMonthInMs();
+        }
+        return 0;
     }
 }

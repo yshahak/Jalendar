@@ -46,7 +46,7 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter {
     public String getPageTitle(int position) {
         // Do we already have this fragment?
         String name = makeFragmentName(R.id.view_pager, position);
-        FragmentTitle fragmentByTag = (FragmentTitle) mFragmentManager.findFragmentByTag(name);
+        FragmentData fragmentByTag = (FragmentData) mFragmentManager.findFragmentByTag(name);
         if (fragmentByTag != null) {
             return fragmentByTag.getFragmentTitle();
         }
@@ -57,8 +57,11 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter {
         return "android:switcher:" + viewId + ":" + id;
     }
 
-    public interface FragmentTitle {
+    public interface FragmentData {
         String getFragmentTitle();
+        default long getFragmentStartTime(){
+            return 0L;
+        }
     }
 
 

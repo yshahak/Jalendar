@@ -4,9 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
+
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
 
 /**
  * Created by yshahak on 14/10/2016.
@@ -21,8 +26,6 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     protected int displayColor;
     protected String calendarDisplayName;
     protected int dayOfMonth;
-//    protected int parallelEventsCount;
-//    public int weight;
 
     public EventInstanceForDay(long eventId, String eventTitle, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
         this.eventId = eventId;
@@ -71,7 +74,29 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         if (begin == -1){
             return "";
         }
-        return simpleEventFormat.format(begin) + " - " + simpleEventFormat.format(end);
+        return getStartEventHour() + " - " + getEndEventHour();
+    }
+
+     public String getStartEventDate(){
+         JewCalendar calendar = new JewCalendar(new Date(begin));
+         String date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
+                 hebrewHebDateFormatter.formatMonth(calendar);
+         return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date;
+    }
+
+     public String getEndEventDate(){
+         JewCalendar calendar = new JewCalendar(new Date(end));
+         String date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
+                 hebrewHebDateFormatter.formatMonth(calendar);
+         return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date;
+    }
+
+    public String getStartEventHour(){
+        return simpleEventFormat.format(begin);
+    }
+
+    public String getEndEventHour(){
+        return simpleEventFormat.format(end);
     }
 
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.getDefault());

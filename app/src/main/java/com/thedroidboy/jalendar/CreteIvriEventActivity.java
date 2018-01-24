@@ -8,9 +8,9 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -24,7 +24,6 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -32,7 +31,6 @@ import dagger.android.AndroidInjection;
 import me.angrybyte.numberpicker.view.ActualNumberPicker;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
-import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
 
 /**
  * Created by B.E.L on 31/10/2016.
@@ -42,37 +40,12 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
     public static JewCalendar currentCalendar;
-//    @BindView(R.id.header_btn_save)
-//    TextView headerBtnSave;
-//    @BindView(R.id.header_btn_x)
-//    ImageView headerBtnX;
-//    @BindView(R.id.header_edit_text_event_title)
-//    EditText headerTitleEditText;
-//    @BindView(R.id.checkbox_all_day_event)
-    SwitchCompat switchCompatAllDay;
-//    @BindView(R.id.event_start_day)
-//    TextView eventStartDay;
-//    @BindView(R.id.event_end_day)
-//    TextView eventEndDay;
-//    @BindView(R.id.event_start_time)
-//    TextView eventStartTime;
-//    @BindView(R.id.event_end_time)
-//    TextView eventEndTime;
-//    @BindView(R.id.event_instances)
-//    TextView textViewRepeat;
-//    @BindView(R.id.event_count_title)
-    TextView eventCountTitle;
-    //    @BindView(R.id.progress_bar)ProgressBar progressBar;
-//    @BindView(R.id.countPicker)
     private ActivityCreateIvriEventBinding binding;
     ActualNumberPicker eventCountPicker;
     @Inject
     CalendarRepo calendarRepo;
     @Inject
     SharedPreferences prefs;
-
-//    EventsProvider eventsProvider;
-
     private PICKER_STATE pickerState;
     private SimpleDateFormat sdf;
     private Calendar calendarStartTime, calendarEndTime;
@@ -82,11 +55,9 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_ivri_event);
-
         setSupportActionBar(binding.myToolbar);
-        sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         KeyboardVisibilityEvent.setEventListener(this, this);
-
+        calendarStartTime = Calendar.getInstance();
 //        binding.eventInstances.setTag(R.id.repeat_single);
 
     }
@@ -105,49 +76,19 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         binding.setEvent(event);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        setDates();
-    }
-//
-    private void setDates() {
-        boolean useCurrentDay = getIntent().getBooleanExtra(EXTRA_USE_CURRENT_DAY, false);
-        if (currentCalendar == null) {
-            currentCalendar = new JewCalendar();
-        }
-        String date = hebrewHebDateFormatter.formatHebrewNumber(currentCalendar.getJewishDayOfMonth()) + " " +
-                hebrewHebDateFormatter.formatMonth(currentCalendar);
-        hebrewHebDateFormatter.setLongWeekFormat(true);
-        String day = hebrewHebDateFormatter.formatDayOfWeek(currentCalendar) + " , " + date;
-        binding.eventStartDay.setText(day);
-        binding.eventEndDay.setText(day);
-        calendarStartTime = Calendar.getInstance();
-        calendarStartTime.setTime(currentCalendar.getTime());
-        calendarStartTime.set(Calendar.MINUTE, 0);
-        binding.eventStartTime.setText(sdf.format(calendarStartTime.getTime()));
-        calendarEndTime = Calendar.getInstance();
-        calendarEndTime.setTime(currentCalendar.getTime());
-        calendarEndTime.set(Calendar.MINUTE, 0);
-        calendarEndTime.set(Calendar.HOUR_OF_DAY, calendarEndTime.get(Calendar.HOUR_OF_DAY) + 1);
-        binding.eventEndTime.setText(sdf.format(calendarEndTime.getTime()));
-    }
-//
 //    @OnClick({R.id.event_start_day, R.id.event_end_day})
-//    void openDayDialog() {
-//        DialogFragment dialog = new HebrewPickerDialog();
-//        HebrewPickerDialog.onDatePickerDismiss = onDatePickerDismiss;
-//
-//        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
-//
-//    }
+    void openDayDialog() {
+        DialogFragment dialog = new HebrewPickerDialog();
+        HebrewPickerDialog.onDatePickerDismiss = onDatePickerDismiss;
+        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+    }
 //
 //    @OnClick({R.id.event_start_time, R.id.event_end_time})
-//    void openTimeDialog(TextView text) {
+    void openTimeDialog(TextView text) {
 //        DialogFragment newFragment = new TimePickerFragment();
 //        newFragment.show(getSupportFragmentManager(), "timePicker");
 //        pickerState = (text.equals(eventStartTime)) ? PICKER_STATE.STATE_START_TIME : PICKER_STATE.STATE_END_TIME;
-//    }
+    }
 //
 //
 //    @OnClick(R.id.header_btn_save)
@@ -302,7 +243,15 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     OnDatePickerDialog onDatePickerDismiss = new OnDatePickerDialog() {
         @Override
         public void onBtnOkPressed() {
-            setDates();
+//            setDates();
+        }
+
+        @Override
+        public void onBtnOkPressed(long startMonthInMs) {
+            EventInstanceForDay event = binding.getEvent();
+            calendarStartTime.setTimeInMillis(event.getBegin());
+            int hour = calendarStartTime.get(Calendar.HOUR_OF_DAY);
+
         }
 
         @Override
@@ -321,7 +270,9 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     public interface OnDatePickerDialog {
         void onBtnOkPressed();
+        default void onBtnOkPressed(long startMonthInMs){
 
+        }
         void onAttached();
     }
 
