@@ -1,20 +1,18 @@
 package com.thedroidboy.jalendar;
 
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.thedroidboy.jalendar.model.EventInstanceForDay;
 import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.model.EventInstanceForDay;
 
 import java.util.List;
 
@@ -50,7 +48,6 @@ public class SimpleWeekView extends LinearLayout implements View.OnClickListener
     }
 
     public void bindDays(List<Day> days, float cellHeight, int currentDayOfMonth){
-        LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < getChildCount(); i++){
             View view = getChildAt(i);
             DayItemBinding binding = (DayItemBinding) view.getTag();
@@ -67,6 +64,7 @@ public class SimpleWeekView extends LinearLayout implements View.OnClickListener
                 if (eventInstanceForDays == null || eventInstanceForDays.size() == 0) {
                     continue;
                 }
+                LayoutInflater inflater = LayoutInflater.from(getContext());
                 for (EventInstanceForDay eventInstanceForDay : eventInstanceForDays){
                     TextView textView = (TextView) inflater.inflate(R.layout.text_view_event_for_month, container, false);
                     textView.setText(eventInstanceForDay.getEventTitle());
@@ -79,13 +77,27 @@ public class SimpleWeekView extends LinearLayout implements View.OnClickListener
         }
     }
 
+    public void switchHighlight(int currentDayOfMonth){
+        for (int i = 0; i < getChildCount(); i++){
+            View view = getChildAt(i);
+            DayItemBinding binding = (DayItemBinding) view.getTag();
+            if (binding != null) {
+                Day day = (Day) view.getTag(R.string.app_name);
+                day.setCurrentDay(currentDayOfMonth != -1 && day.getDayHashCode() == currentDayOfMonth);
+                binding.setDay(day);
+            }
+        }
+    }
+
     @Override
     public void onClick(View view) {
+        ((OnClickListener) getContext()).onClick(view);//MainAcitivty or CreateIvriEventActivity
         Day day = (Day) view.getTag(R.string.app_name);
         if (day != null) {
-            Intent intent = new Intent(getContext(), DayActivity.class);
-            intent.putExtra("day", day);
-            getContext().startActivity(intent);
+            switchHighlight(day.getDayInMonth());
+//            Intent intent = new Intent(getContext(), DayActivity.class);
+//            intent.putExtra("day", day);
+//            getContext().startActivity(intent);
         }
     }
 

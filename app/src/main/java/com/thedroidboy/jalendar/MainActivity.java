@@ -2,6 +2,7 @@ package com.thedroidboy.jalendar;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
@@ -33,6 +34,7 @@ import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
 import com.thedroidboy.jalendar.calendars.google.CalendarAccount;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
+import com.thedroidboy.jalendar.model.Day;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +56,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ID_I
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_OWNER_ACCOUNT_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISIBLE_INDEX;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener ,View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void initViewPager() {
-        viewPager.setAdapter(new PagerAdapterMonthDay(getSupportFragmentManager()));
+        viewPager.setAdapter(new PagerAdapterMonthDay(getSupportFragmentManager(), true));
         viewPager.setCurrentItem(PagerAdapterMonthDay.INITIAL_OFFSET);
         viewPager.post(() -> onPageSelected(PagerAdapterMonthDay.INITIAL_OFFSET));
     }
@@ -309,5 +311,15 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 break;
         }
         viewPager.post(() -> onPageSelected(currentItem));
+    }
+
+    @Override
+    public void onClick(View view) {
+        Day day = (Day) view.getTag(R.string.app_name);
+        if (day != null) {
+            Intent intent = new Intent(this, DayActivity.class);
+            intent.putExtra("day", day);
+            startActivity(intent);
+        }
     }
 }

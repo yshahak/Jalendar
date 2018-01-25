@@ -87,10 +87,12 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
                 .setAction("Action", v -> {
                     if (dayLiveData.getValue() != null) {
                         long startDay = dayLiveData.getValue().getStartDayInMillis();
-                        int hourNow = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                        Calendar instance = Calendar.getInstance();
+                        int hourNow = instance.get(Calendar.HOUR_OF_DAY);
+                        int minuteNow = (instance.get(Calendar.MINUTE) / 15) * 15;
                         Intent intent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI)
                                 .putExtra(CalendarContract.Events.TITLE, "")
-                                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow));
+                                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow) + TimeUnit.MINUTES.toMillis(minuteNow));
 //                        Intent chooser = Intent.createChooser(intent, "Create an new event");
                         startActivity(intent);
                     }

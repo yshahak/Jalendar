@@ -38,6 +38,34 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.dayOfMonth = dayOfMonth;
     }
 
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
+    }
+
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
+    }
+
+    public void setBegin(long begin) {
+        this.begin = begin;
+    }
+
+    public void setEnd(long end) {
+        this.end = end;
+    }
+
+    public void setDisplayColor(int displayColor) {
+        this.displayColor = displayColor;
+    }
+
+    public void setCalendarDisplayName(String calendarDisplayName) {
+        this.calendarDisplayName = calendarDisplayName;
+    }
+
+    public void setDayOfMonth(int dayOfMonth) {
+        this.dayOfMonth = dayOfMonth;
+    }
+
     public long getEventId() {
         return eventId;
     }

@@ -32,6 +32,7 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter {
     private ArrayList<Fragment.SavedState> mSavedState = new ArrayList<Fragment.SavedState>();
     private ArrayList<Fragment> mFragments = new ArrayList<Fragment>();
     private Fragment mCurrentPrimaryItem = null;
+
     public PagerAdapterBase(FragmentManager fm) {
         super(fm);
         mFragmentManager = fm;
@@ -53,15 +54,24 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter {
         return "fragment not known";
     }
 
+//    public long getFragmentStartTime(int position){
+//        String name = makeFragmentName(R.id.view_pager, position);
+//        FragmentData fragmentByTag = (FragmentData) mFragmentManager.findFragmentByTag(name);
+//        if (fragmentByTag != null) {
+//            return fragmentByTag.getFragmentStartTime();
+//        }
+//        return 0L;
+//    }
+
     private static String makeFragmentName(int viewId, long id) {
         return "android:switcher:" + viewId + ":" + id;
     }
 
     public interface FragmentData {
         String getFragmentTitle();
-        default long getFragmentStartTime(){
-            return 0L;
-        }
+//        default long getFragmentStartTime(){
+//            return 0L;
+//        }
     }
 
 

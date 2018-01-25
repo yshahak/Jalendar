@@ -39,6 +39,7 @@ import dagger.android.support.AndroidSupportInjection;
 public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>>, PagerAdapterBase.FragmentData {
 
     private static final String KEY_POSITION = "keyPosition";
+    private static final String KEY_SHOW_EVENTS = "keyShowEvents";
     private static final String TAG = FragmentMonth.class.getSimpleName();
     private MonthVM monthVM;
     private FragmentMonthItemBinding binding;
@@ -47,11 +48,14 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Inject
     SharedPreferences prefs;
     private int currentDayOfMonth = -1;
+    private float cellHeight;
+    private boolean shouldShowEvents;
 
-    public static FragmentMonth newInstance(int position) {
+    public static FragmentMonth newInstance(int position, boolean shouldShowEvents) {
         FragmentMonth fragmentMonth = new FragmentMonth();
         Bundle bundle = new Bundle();
         bundle.putInt(KEY_POSITION, position);
+        bundle.putBoolean(KEY_SHOW_EVENTS, shouldShowEvents);
         fragmentMonth.setArguments(bundle);
         return fragmentMonth;
     }
@@ -61,11 +65,11 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
+        shouldShowEvents = getArguments().getBoolean(KEY_SHOW_EVENTS);
         if (position == 0) {
             currentDayOfMonth = JewCalendarPool.obtain(position).dayHashCode();
         }
         monthVM = ViewModelProviders.of(this).get(MonthVM.class);
-//        monthVM.init(jewCalendar, calendarRepo);
         monthVM.init(position, calendarRepo);
 
     }
@@ -79,7 +83,9 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             if (month != null) {
                 binding.setMonth(month);
                 bindMonth(binding);
-                getLoaderManager().initLoader(100, null, this);
+                if (shouldShowEvents) {
+                    getLoaderManager().initLoader(100, null, this);
+                }
             }
         });
         getCellHeight();
@@ -87,15 +93,15 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     }
 
     private float getCellHeight() {
-        float cellHeight = prefs.getFloat("cellHeight", 0);
+//        float cellHeight = prefs.getFloat("cellHeight", 0);
         if (cellHeight == 0) {
             binding.monthContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     binding.monthContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     int height = binding.monthContainer.getMeasuredHeight();
-                    float cellHeight = height / 6f;
-                    prefs.edit().putFloat("cellHeight", cellHeight).apply();
+                    cellHeight = height / 6f;
+//                    prefs.edit().putFloat("cellHeight", cellHeight).apply();
                     bindMonth(binding);
                 }
             });
@@ -153,11 +159,11 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         return "month not known";
     }
 
-    @Override
-    public long getFragmentStartTime() {
-        if (monthVM.getMonth().getValue() != null) {
-            return monthVM.getMonth().getValue().getStartMonthInMs();
-        }
-        return 0;
-    }
+//    @Override
+//    public long getFragmentStartTime() {
+//        if (monthVM.getMonth().getValue() != null) {
+//            return monthVM.getMonth().getValue().getStartMonthInMs();
+//        }
+//        return 0;
+//    }
 }

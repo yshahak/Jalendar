@@ -1,6 +1,5 @@
 package com.thedroidboy.jalendar;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -22,7 +21,6 @@ import static com.thedroidboy.jalendar.adapters.PagerAdapterBase.INITIAL_OFFSET;
 
 public class HebrewPickerDialog extends DialogFragment implements ViewPager.OnPageChangeListener {
 
-    public static CreteIvriEventActivity.OnDatePickerDialog onDatePickerDismiss;
     private TextView monthLabel;
     private ViewPager viewPager;
 
@@ -32,25 +30,20 @@ public class HebrewPickerDialog extends DialogFragment implements ViewPager.OnPa
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_month_picker, container, false);
         monthLabel = root.findViewById(R.id.month_label);
         viewPager = root.findViewById(R.id.view_pager);
-        View btnOk = root.findViewById(R.id.btn_ok);
-        btnOk.setOnClickListener(v -> {
-            PagerAdapterBase adapter = (PagerAdapterBase) viewPager.getAdapter();
-            onDatePickerDismiss.onBtnOkPressed();
-            dismiss();
-        });
         View btnCancel = root.findViewById(R.id.btn_cancel);
         btnCancel.setOnClickListener(v -> dismiss());
         viewPager.addOnPageChangeListener(this);
-        viewPager.setAdapter(new PagerAdapterMonthDay(getChildFragmentManager()));
+        viewPager.setAdapter(new PagerAdapterMonthDay(getChildFragmentManager(), false));
         viewPager.setCurrentItem(INITIAL_OFFSET);
+        viewPager.postDelayed(() -> onPageSelected(PagerAdapterMonthDay.INITIAL_OFFSET), 200);
         return root;
     }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        onDatePickerDismiss = null;
-    }
+//
+//    @Override
+//    public void onDismiss(DialogInterface dialog) {
+//        super.onDismiss(dialog);
+//        onDatePickerDismiss = null;
+//    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

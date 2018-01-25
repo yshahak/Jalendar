@@ -22,7 +22,7 @@
                 android:id="@+id/my_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
+                android:background="@color/colorPrimary"
                 android:elevation="4dp"
                 android:padding="8dp"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
@@ -119,6 +119,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:onClick="openDayDialog"
                     tools:text="רביעי, ג' חשון"
                     android:text="@{event.startEventDate}"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -159,6 +160,7 @@
                     android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:text="@{event.endEventDate}"
+                    android:onClick="openDayDialog"
                     tools:text="רביעי, ג' חשון"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
