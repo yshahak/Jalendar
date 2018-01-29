@@ -11,27 +11,27 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.databinding.ActivityCreateIvriEventBinding;
+import com.thedroidboy.jalendar.fragments.HebrewPickerDialog;
+import com.thedroidboy.jalendar.fragments.TimePickerFragment;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.EventInstanceForDay;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
-import me.angrybyte.numberpicker.view.ActualNumberPicker;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 
@@ -45,13 +45,11 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
     public static JewCalendar currentCalendar;
     private ActivityCreateIvriEventBinding binding;
-    ActualNumberPicker eventCountPicker;
     @Inject
     CalendarRepo calendarRepo;
     @Inject
     SharedPreferences prefs;
     private PICKER_STATE pickerState;
-    private SimpleDateFormat sdf;
     private Calendar calendar;
     private DialogFragment hebrewPickerDialog;
 
@@ -64,8 +62,6 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         KeyboardVisibilityEvent.setEventListener(this, this);
         calendar = Calendar.getInstance();
         cretaeEventInstance();
-//        binding.eventInstances.setTag(R.id.repeat_single);
-
     }
 
     private void cretaeEventInstance(){
@@ -85,18 +81,15 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         binding.setEvent(event);
     }
 
-//    @OnClick({R.id.event_start_day, R.id.event_end_day})
     public void openDayDialog(View view) {
         hebrewPickerDialog = new HebrewPickerDialog();
-//        HebrewPickerDialog.onDatePickerDismiss = onDatePickerDismiss;
         hebrewPickerDialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 //
-//    @OnClick({R.id.event_start_time, R.id.event_end_time})
-    void openTimeDialog(TextView text) {
-//        DialogFragment newFragment = new TimePickerFragment();
-//        newFragment.show(getSupportFragmentManager(), "timePicker");
-//        pickerState = (text.equals(eventStartTime)) ? PICKER_STATE.STATE_START_TIME : PICKER_STATE.STATE_END_TIME;
+    public void openTimeDialog(View text) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
+        pickerState = (text.equals(binding.eventStartTime)) ? PICKER_STATE.STATE_START_TIME : PICKER_STATE.STATE_END_TIME;
     }
 //
 //
@@ -114,85 +107,85 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 //    }
 //
 //
-////    @OnClick(R.id.event_instances)
-//    void showPopup(View v) {
-//        PopupMenu popup = new PopupMenu(this, v);
-//        popup.setOnMenuItemClickListener(this);
-//        MenuInflater inflater = popup.getMenuInflater();
-//        inflater.inflate(R.menu.menu_event_instances, popup.getMenu());
-//        int repeatId = (int) textViewRepeat.getTag();
-//        int position = 0;
-//        switch (repeatId) {
-//            case R.id.repeat_single:
-//                break;
-//            case R.id.repeat_daily:
-//                position = 1;
-//                break;
-//            case R.id.repeat_weekly:
-//                position = 2;
-//                break;
-//            case R.id.repeat_monthly:
-//                position = 3;
-//                break;
-//            case R.id.repeat_yearly:
-//                position = 4;
-//                break;
-//        }
-//        popup.getMenu().getItem(position).setChecked(true);
-//        popup.show();
-//    }
-//
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_event_instances, popup.getMenu());
+        int position = 0;
+        switch (binding.getEvent().getRepeatState()) {
+            case SINGLE:
+                break;
+            case DAY:
+                position = 1;
+                break;
+            case WEEK:
+                position = 2;
+                break;
+            case MONTH:
+                position = 3;
+                break;
+            case YEAR:
+                position = 4;
+                break;
+        }
+        popup.getMenu().getItem(position).setChecked(true);
+        popup.show();
+    }
+
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-//        textViewRepeat.setText(item.getTitle());
-//        textViewRepeat.setTag(item.getItemId());
-//        if (item.getItemId() != R.id.repeat_single) {
-//            eventCountPicker.setVisibility(View.VISIBLE);
-//            eventCountTitle.setVisibility(View.VISIBLE);
-//        }
-//        switch (item.getItemId()) {
-//            case R.id.repeat_single:
-//                eventCountPicker.setVisibility(View.GONE);
-//                eventCountTitle.setVisibility(View.GONE);
-//                break;
-//            case R.id.repeat_daily:
-//                eventCountPicker.setValue(365);
-//                break;
-//            case R.id.repeat_weekly:
-//                eventCountPicker.setValue(36);
-//                break;
-//            case R.id.repeat_monthly:
-//                eventCountPicker.setValue(12);
-//                break;
-//            case R.id.repeat_yearly:
-//                eventCountPicker.setValue(10);
-//                break;
-//        }
-        return false;
+        EventInstanceForDay event = binding.getEvent();
+        switch (item.getItemId()) {
+            case R.id.repeat_single:
+                event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
+                break;
+            case R.id.repeat_daily:
+                event.setRepeatState(EventInstanceForDay.Repeat.DAY);
+                break;
+            case R.id.repeat_weekly:
+                event.setRepeatState(EventInstanceForDay.Repeat.WEEK);
+                break;
+            case R.id.repeat_monthly:
+                event.setRepeatState(EventInstanceForDay.Repeat.MONTH);
+                break;
+            case R.id.repeat_yearly:
+                event.setRepeatState(EventInstanceForDay.Repeat.YEAR);
+                break;
+        }
+        binding.setEvent(event);
+        return true;
     }
-//
-//    @OnClick(R.id.header_btn_x)
-//    void clickX() {
-//        finish();
-//    }
-//
+
+    public void clickX(View view) {
+        finish();
+    }
+
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
-//        switch (pickerState) {
-//            case STATE_START_TIME:
-//                calendar.set(Calendar.MINUTE, minute);
-//                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-//                eventStartTime.setText(sdf.format(calendar.getTime()));
-//                calendarEndTime.set(Calendar.MINUTE, minute);
-//                calendarEndTime.set(Calendar.HOUR_OF_DAY, ++hourOfDay);
-//                eventEndTime.setText(sdf.format(calendarEndTime.getTime()));
-//                break;
-//            case STATE_END_TIME:
-//                calendarEndTime.set(Calendar.MINUTE, minute);
-//                calendarEndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-//                eventEndTime.setText(sdf.format(calendarEndTime.getTime()));
-//        }
+        EventInstanceForDay event = binding.getEvent();
+        Calendar calendar = Calendar.getInstance();
+        long timeDiff = event.getEnd() - event.getBegin();
+        switch (pickerState) {
+            case STATE_START_TIME:
+                calendar.setTimeInMillis(event.getBegin());
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                event.setBegin(calendar.getTimeInMillis());
+                if(event.getBegin() > event.getEnd()){
+                    event.setEnd(event.getBegin() + timeDiff);
+                }
+                break;
+            case STATE_END_TIME:
+                calendar.setTimeInMillis(event.getEnd());
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                event.setEnd(calendar.getTimeInMillis());
+                if(event.getBegin() > event.getEnd()){
+                    event.setBegin(event.getEnd() - timeDiff);
+                }
+        }
+        binding.setEvent(event);
         pickerState = null;
     }
 

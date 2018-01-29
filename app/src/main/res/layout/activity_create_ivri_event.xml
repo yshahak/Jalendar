@@ -5,6 +5,10 @@
         <variable
             name="event"
             type="com.thedroidboy.jalendar.model.EventInstanceForDay" />
+        <import type="android.view.View"/>
+        <variable
+            name="repeatVisibility"
+            type="java.lang.Boolean"/>
     </data>
 
     <ScrollView
@@ -44,6 +48,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:onClick="clickX"
                             android:padding="4dp"
                             android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
@@ -124,10 +129,20 @@
                     android:text="@{event.startEventDate}"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
+                <TextView
+                    android:id="@+id/event_start_day_loazy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:onClick="openDayDialog"
+                    tools:text="05/12"
+                    android:text="@{event.startEventDateLoazy}"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:layout_weight="5" />
+                    android:layout_weight="3" />
 
 
                 <TextView
@@ -135,6 +150,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:onClick="openTimeDialog"
                     android:text="@{event.startEventHour}"
                     tools:text="7:15"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -164,16 +180,28 @@
                     tools:text="רביעי, ג' חשון"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
+                <TextView
+                    android:id="@+id/event_end_day_loazy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:onClick="openDayDialog"
+                    tools:text="05/12"
+                    android:text="@{event.endEventDateLoazy}"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:layout_weight="5" />
+                    android:layout_weight="3" />
 
                 <TextView
                     android:id="@+id/event_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:onClick="openTimeDialog"
                     android:text="@{event.endEventHour}"
                     tools:text="8:15"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -215,9 +243,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:onClick="showPopup"
                     android:layout_marginLeft="8dp"
                     android:padding="8dp"
-                    android:text="אינו חוזר"
+                    android:text="@{event.repeatTitle}"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
@@ -229,6 +258,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layoutDirection="rtl"
+                android:visibility="@{event.repeatVisibility ? View.VISIBLE : View.GONE}"
                 android:orientation="horizontal">
 
 
@@ -241,16 +271,14 @@
                     android:padding="2dp"
                     android:text="חזרות:"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:visibility="gone"
                     tools:visibility="visible" />
 
 
-                <me.angrybyte.numberpicker.view.ActualNumberPicker
+                <com.thedroidboy.jalendar.model.CustomNumberPicker
                     android:id="@+id/countPicker"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
-                    android:visibility="gone"
                     app:bar_color="#ddd"
                     app:bar_width="1dp"
                     app:bars_count="200"
@@ -269,7 +297,7 @@
                     app:show_text="true"
                     app:text_color="@android:color/black"
                     app:text_size="18sp"
-                    app:value="50"
+                    app:value="@{event.repeatValue}"
                     tools:visibility="visible" />
 
 

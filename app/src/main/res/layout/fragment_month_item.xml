@@ -24,31 +24,37 @@
 
             <com.thedroidboy.jalendar.SimpleWeekView
                 android:id="@+id/week1"
+                android:layoutDirection="rtl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <com.thedroidboy.jalendar.SimpleWeekView
                 android:id="@+id/week2"
+                android:layoutDirection="rtl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <com.thedroidboy.jalendar.SimpleWeekView
                 android:id="@+id/week3"
+                android:layoutDirection="rtl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <com.thedroidboy.jalendar.SimpleWeekView
                 android:id="@+id/week4"
+                android:layoutDirection="rtl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <com.thedroidboy.jalendar.SimpleWeekView
                 android:id="@+id/week5"
+                android:layoutDirection="rtl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <com.thedroidboy.jalendar.SimpleWeekView
                 android:id="@+id/week6"
+                android:layoutDirection="rtl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

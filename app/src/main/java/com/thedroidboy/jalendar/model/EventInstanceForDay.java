@@ -1,9 +1,12 @@
 package com.thedroidboy.jalendar.model;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.thedroidboy.jalendar.MyApplication;
+import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
 import java.text.SimpleDateFormat;
@@ -21,11 +24,12 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
 
     protected long eventId;
     protected String eventTitle;
-//    protected boolean allDayEvent;
+    //    protected boolean allDayEvent;
     protected long begin, end;
     protected int displayColor;
     protected String calendarDisplayName;
     protected int dayOfMonth;
+    protected Repeat repeatState = Repeat.SINGLE;
 
     public EventInstanceForDay(long eventId, String eventTitle, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
         this.eventId = eventId;
@@ -98,48 +102,100 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         return dayOfMonth;
     }
 
-    public String getEventTime(){
-        if (begin == -1){
+    public String getEventTime() {
+        if (begin == -1) {
             return "";
         }
         return getStartEventHour() + " - " + getEndEventHour();
     }
 
-     public String getStartEventDate(){
-         JewCalendar calendar = new JewCalendar(new Date(begin));
-         String date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
-                 hebrewHebDateFormatter.formatMonth(calendar);
-         return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date;
+    public String getStartEventDate() {
+        JewCalendar calendar = new JewCalendar(new Date(begin));
+        String date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
+                hebrewHebDateFormatter.formatMonth(calendar);
+        return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date;
     }
 
-     public String getEndEventDate(){
-         JewCalendar calendar = new JewCalendar(new Date(end));
-         String date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
-                 hebrewHebDateFormatter.formatMonth(calendar);
-         return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date;
+    public String getStartEventDateLoazy() {
+        return simpleLoazyDateFormat.format(new Date(begin));
     }
 
-    public String getStartEventHour(){
+    public String getEndEventDate() {
+        JewCalendar calendar = new JewCalendar(new Date(end));
+        String date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
+                hebrewHebDateFormatter.formatMonth(calendar);
+        return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date;
+    }
+
+    public String getEndEventDateLoazy() {
+        return simpleLoazyDateFormat.format(new Date(end));
+    }
+
+    public String getStartEventHour() {
         return simpleEventFormat.format(begin);
     }
 
-    public String getEndEventHour(){
+    public String getEndEventHour() {
         return simpleEventFormat.format(end);
     }
 
+    public void setRepeatState(Repeat repeatState) {
+        this.repeatState = repeatState;
+    }
+
+    public String getRepeatTitle() {
+        Context ctx = MyApplication.getInstance();
+        switch (repeatState) {
+            case SINGLE:
+                return ctx.getString(R.string.instance_single);
+            case DAY:
+                return ctx.getString(R.string.instance_daily);
+            case WEEK:
+                return ctx.getString(R.string.instance_weekly);
+            case MONTH:
+                return ctx.getString(R.string.instance_monthly);
+            case YEAR:
+                return ctx.getString(R.string.instance_yearly);
+        }
+        return ctx.getString(R.string.instance_single);
+    }
+
+    public int getRepeatValue() {
+        switch (repeatState) {
+            case SINGLE:
+                break;
+            case DAY:
+                return 365;
+            case WEEK:
+                return 36;
+            case MONTH:
+                return 12;
+            case YEAR:
+                return 10;
+        }
+        return 1;
+    }
+
+    public boolean getRepeatVisibility(){
+        return !repeatState.equals(Repeat.SINGLE);
+    }
+
+    public Repeat getRepeatState() {
+        return repeatState;
+    }
+
+    private static SimpleDateFormat simpleLoazyDateFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.getDefault());
     private static SimpleDateFormat simpleEventFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
 
-
     @Override
     public String toString() {
-        String result = String.format(Locale.US, "\neventId=%d" +
-                "\neventTitle=%s" +
-                "\nbegin=%s" +
-                "\nend=%s",
-                eventId,eventTitle, simpleDateFormat.format(begin), simpleDateFormat.format(end));
-        return result;
+        return String.format(Locale.US, "\neventId=%d" +
+                        "\neventTitle=%s" +
+                        "\nbegin=%s" +
+                        "\nend=%s",
+                eventId, eventTitle, simpleDateFormat.format(begin), simpleDateFormat.format(end));
     }
 
     @Override
@@ -147,7 +203,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         return (int) (this.begin - instance.begin);
     }
 
-    public enum Repeat{
+    public enum Repeat {
         SINGLE,
         DAY,
         WEEK,
@@ -170,6 +226,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         dest.writeInt(this.displayColor);
         dest.writeString(this.calendarDisplayName);
         dest.writeInt(this.dayOfMonth);
+        dest.writeString(this.repeatState.name());
     }
 
     protected EventInstanceForDay(Parcel in) {
@@ -181,6 +238,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.displayColor = in.readInt();
         this.calendarDisplayName = in.readString();
         this.dayOfMonth = in.readInt();
+        this.repeatState = Repeat.valueOf(in.readString());
     }
 
     public static final Parcelable.Creator<EventInstanceForDay> CREATOR = new Parcelable.Creator<EventInstanceForDay>() {
