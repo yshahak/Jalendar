@@ -26,6 +26,6 @@ public class CustomNumberPicker extends ActualNumberPicker {
     @Override
     public void setValue(int newValue) {
         super.setValue(newValue);
-        post(this::invalidate);
+        post(this::invalidate); //this fix the bug: https://github.com/milosmns/actual-number-picker/issues/16
     }
 }
