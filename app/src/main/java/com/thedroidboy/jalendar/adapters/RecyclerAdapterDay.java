@@ -3,6 +3,7 @@ package com.thedroidboy.jalendar.adapters;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -39,6 +40,7 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
 
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder: " + position + "\t" + day.getGoogleEventInstanceForDays().get(position));
         holder.bindTo(day.getGoogleEventInstanceForDays().get(position));
     }
 

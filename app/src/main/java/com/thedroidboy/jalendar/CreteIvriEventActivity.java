@@ -1,7 +1,7 @@
 package com.thedroidboy.jalendar;
 
 import android.app.TimePickerDialog;
-import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
@@ -14,8 +14,10 @@ import android.support.v7.widget.PopupMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TimePicker;
 
+import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.databinding.ActivityCreateIvriEventBinding;
 import com.thedroidboy.jalendar.fragments.HebrewPickerDialog;
@@ -32,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 
@@ -39,8 +42,9 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
  * Created by B.E.L on 31/10/2016.
  */
 
+@SuppressWarnings("unused")
 public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener
-        , PopupMenu.OnMenuItemClickListener, View.OnClickListener {
+        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, OnValueChangeListener {
 
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
     public static JewCalendar currentCalendar;
@@ -59,6 +63,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_ivri_event);
         setSupportActionBar(binding.myToolbar);
+        binding.countPicker.setListener(this);
         KeyboardVisibilityEvent.setEventListener(this, this);
         calendar = Calendar.getInstance();
         cretaeEventInstance();
@@ -72,12 +77,14 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             endEvent = startEvent + TimeUnit.HOURS.toMillis(1);
         }
         long id = startEvent;
+        long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
         String title = getIntent().getStringExtra(CalendarContract.Events.TITLE);
         String desc = getIntent().getStringExtra(CalendarContract.Events.DESCRIPTION);
         String location = getIntent().getStringExtra(CalendarContract.Events.EVENT_LOCATION);
         int available = getIntent().getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
         String email = getIntent().getStringExtra(Intent.EXTRA_EMAIL);
         EventInstanceForDay event = new EventInstanceForDay(id, title, startEvent, endEvent, -1, "", 1);
+        event.setCalendarId(calID);
         binding.setEvent(event);
     }
 
@@ -91,22 +98,23 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         newFragment.show(getSupportFragmentManager(), "timePicker");
         pickerState = (text.equals(binding.eventStartTime)) ? PICKER_STATE.STATE_START_TIME : PICKER_STATE.STATE_END_TIME;
     }
-//
-//
-//    @OnClick(R.id.header_btn_save)
-//    void click() {
-//        boolean save = headerBtnSave.getText().equals("שמור");
-//        if (save) {
-//            saveEvent();
-//        } else {
-//            InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//            keyboard.hideSoftInputFromWindow(headerTitleEditText.getWindowToken(), 0);
-//            headerBtnSave.setText("שמור");
-//
-//        }
-//    }
-//
-//
+
+
+    public void saveClicked(View view) {
+        boolean save = binding.headerBtnSave.getText().equals("שמור");
+        if (save) {
+            saveEvent();
+        } else {
+            InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (keyboard != null) {
+                keyboard.hideSoftInputFromWindow(binding.headerEditTextEventTitle.getWindowToken(), 0);
+            }
+            binding.headerBtnSave.setText("שמור");
+
+        }
+    }
+
+
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         popup.setOnMenuItemClickListener(this);
@@ -191,37 +199,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
 
     private void saveEvent() {
-        long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
-        if (calID == -1L){
-            return;
-        }
-//        String title = headerTitleEditText.getText().toString();
-//        int repeatId = (int) textViewRepeat.getTag();
-        ContentResolver contentResolver = getContentResolver();
-//        EventInstance.Repeat repeat = null;
-//        switch (repeatId){
-//            case R.id.repeat_single:
-//                repeat = EventInstance.Repeat.SINGLE;
-//                break;
-//            case R.id.repeat_daily:
-//                repeat = EventInstance.Repeat.DAY;
-//                break;
-//            case R.id.repeat_weekly:
-//                repeat = EventInstance.Repeat.WEEK;
-//                break;
-//            case R.id.repeat_monthly:
-//                repeat = EventInstance.Repeat.MONTH;
-//                break;
-//            case R.id.repeat_yearly:
-//                repeat = EventInstance.Repeat.YEAR;
-//                break;
-//        }
-//        if (repeat == null) {
-//            return;
-//        }
-//        long start = calendar.getTimeInMillis();
-//        eventsProvider.addEvent(contentResolver, title, calID, repeat, start, calendarEndTime.getTimeInMillis() - start, eventCountPicker.getValue());
-//        GoogleManager.addHebrewEventToGoogleServer(this, title, repeatId, calendar, calendarEndTime, String.valueOf(eventCountPicker.getValue()));
+        GoogleManager.addHebrewEventToGoogleServer(this, binding.getEvent());
 //        MainActivity.recreateFlag = true;
         finish();
     }
@@ -260,6 +238,13 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         if (hebrewPickerDialog != null) {
             hebrewPickerDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onValueChanged(int oldValue, int newValue) {
+        EventInstanceForDay event = binding.getEvent();
+        event.setRepeatValue(newValue);
+        binding.setEvent(event);
     }
 
 

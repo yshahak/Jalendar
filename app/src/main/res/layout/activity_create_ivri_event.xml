@@ -58,7 +58,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_weight="1"
-                            android:gravity="end"
+                            android:gravity="start"
+                            android:onClick="saveClicked"
                             android:text="שמור"
                             android:textColor="@android:color/white"
                             android:textSize="15sp" />
@@ -76,7 +77,8 @@
                         android:inputType="text"
                         android:maxLines="1"
                         android:src="@android:drawable/ic_menu_close_clear_cancel"
-                        android:textColorHint="@android:color/white" />
+                        android:textColorHint="@android:color/white"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
 
             </android.support.v7.widget.Toolbar>
@@ -228,6 +230,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
+                android:onClick="showPopup"
                 android:layoutDirection="rtl"
                 android:orientation="horizontal">
 
@@ -243,7 +246,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:onClick="showPopup"
                     android:layout_marginLeft="8dp"
                     android:padding="8dp"
                     android:text="@{event.repeatTitle}"

@@ -23,12 +23,14 @@ import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDat
 public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Parcelable, Cloneable {
 
     protected long eventId;
+    protected long calendarId;
     protected String eventTitle;
     //    protected boolean allDayEvent;
     protected long begin, end;
     protected int displayColor;
     protected String calendarDisplayName;
     protected int dayOfMonth;
+    protected int repeatValue = -1;
     protected Repeat repeatState = Repeat.SINGLE;
 
     public EventInstanceForDay(long eventId, String eventTitle, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
@@ -72,6 +74,14 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
 
     public long getEventId() {
         return eventId;
+    }
+
+    public void setCalendarId(long calendarId) {
+        this.calendarId = calendarId;
+    }
+
+    public long getCalendarId() {
+        return calendarId;
     }
 
     public String getEventTitle() {
@@ -160,7 +170,15 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         return ctx.getString(R.string.instance_single);
     }
 
+    public void setRepeatValue(int repeatValue) {
+        this.repeatValue = repeatValue;
+    }
+
     public int getRepeatValue() {
+        if (repeatValue != -1){
+            return repeatValue;
+        }
+        //default values
         switch (repeatState) {
             case SINGLE:
                 break;
@@ -219,6 +237,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.eventId);
+        dest.writeLong(this.calendarId);
         dest.writeString(this.eventTitle);
 //        dest.writeByte(this.allDayEvent ? (byte) 1 : (byte) 0);
         dest.writeLong(this.begin);
@@ -226,11 +245,13 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         dest.writeInt(this.displayColor);
         dest.writeString(this.calendarDisplayName);
         dest.writeInt(this.dayOfMonth);
+        dest.writeInt(this.repeatValue);
         dest.writeString(this.repeatState.name());
     }
 
     protected EventInstanceForDay(Parcel in) {
         this.eventId = in.readLong();
+        this.calendarId = in.readLong();
         this.eventTitle = in.readString();
 //        this.allDayEvent = in.readByte() != 0;
         this.begin = in.readLong();
@@ -238,6 +259,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.displayColor = in.readInt();
         this.calendarDisplayName = in.readString();
         this.dayOfMonth = in.readInt();
+        this.repeatValue = in.readInt();
         this.repeatState = Repeat.valueOf(in.readString());
     }
 

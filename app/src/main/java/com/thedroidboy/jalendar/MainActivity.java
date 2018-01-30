@@ -47,7 +47,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJECTION;
-import static com.thedroidboy.jalendar.calendars.google.Contract.HEBREW_CALENDAR_SUMMERY_TITLE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ACCOUNTNAME_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_COLOR_INDEX;
@@ -244,7 +243,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName
                         + " , ownerName: " + ownerName);
 
-                if (displayName.equals(HEBREW_CALENDAR_SUMMERY_TITLE)) {
+//                if (displayName.equals(HEBREW_CALENDAR_SUMMERY_TITLE)) {
+//                    prefs.edit()
+//                            .putLong(KEY_HEBREW_ID, calID).apply();
+//                }
+                if (prefs.getLong(KEY_HEBREW_ID, -1L) == -1L) {
                     prefs.edit()
                             .putLong(KEY_HEBREW_ID, calID).apply();
                 }

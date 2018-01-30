@@ -162,7 +162,9 @@ public class EventsHelper {
                 long diff = startEvent - startMonth;
                 int index = (int) (diff / TimeUnit.DAYS.toMillis(1));
                 Day day = days.get((Math.abs(index)));
-                day.getGoogleEventInstanceForDays().add(eventInstanceForDay);
+                List<EventInstanceForDay> googleEventInstanceForDays = day.getGoogleEventInstanceForDays();
+                googleEventInstanceForDays.clear();
+                googleEventInstanceForDays.add(eventInstanceForDay);
             } while (cur.moveToNext());
         }
     }
