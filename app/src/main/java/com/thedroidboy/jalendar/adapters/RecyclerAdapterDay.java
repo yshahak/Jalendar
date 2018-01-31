@@ -1,12 +1,14 @@
 package com.thedroidboy.jalendar.adapters;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.thedroidboy.jalendar.CreteIvriEventActivity;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.databinding.EventItemForDayBinding;
 import com.thedroidboy.jalendar.model.Day;
@@ -40,7 +42,7 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
 
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: " + position + "\t" + day.getGoogleEventInstanceForDays().get(position));
+//        Log.d(TAG, "onBindViewHolder: " + position + "\t" + day.getGoogleEventInstanceForDays().get(position));
         holder.bindTo(day.getGoogleEventInstanceForDays().get(position));
     }
 
@@ -49,16 +51,28 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
         return day.getGoogleEventInstanceForDays().size();
     }
 
-    static class DayViewHolder extends RecyclerView.ViewHolder {
+    class DayViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final EventItemForDayBinding binding;
 
         DayViewHolder(EventItemForDayBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+            itemView.setOnClickListener(this);
         }
 
         void bindTo(EventInstanceForDay event) {
             binding.setEvent(event);
+        }
+
+        @Override
+        public void onClick(View v) {
+            EventInstanceForDay event = day.getGoogleEventInstanceForDays().get(getAdapterPosition());
+            if (event.getEventTitle().equals("אין אירועים ליום זה")){
+                return;
+            }
+            Intent intent = new Intent(itemView.getContext(), CreteIvriEventActivity.class);
+            intent.putExtra(CreteIvriEventActivity.EXTRA_EVENT, event);
+            itemView.getContext().startActivity(intent);
         }
     }
 

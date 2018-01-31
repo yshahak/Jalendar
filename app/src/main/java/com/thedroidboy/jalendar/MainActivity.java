@@ -2,7 +2,6 @@ package com.thedroidboy.jalendar;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
@@ -55,7 +54,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ID_I
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_OWNER_ACCOUNT_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISIBLE_INDEX;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener ,View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
@@ -65,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private Toolbar toolbar;
     @Inject
     SharedPreferences prefs;
+    @Inject
+    CalendarRepo calendarRepo;
     private RadioGroup displayChooser;
 
     @Override
@@ -81,7 +82,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         displayChooser = findViewById(R.id.radio_group_display);
-        displayChooser.setOnCheckedChangeListener(this);validateCalendarPermission();
+        displayChooser.setOnCheckedChangeListener(this);
+        validateCalendarPermission();
         drawerLayout = findViewById(R.id.drawer_layout);
         setDrawerMenu();
     }
@@ -117,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private void movePagerToPosition(int position) {
         int current = viewPager.getCurrentItem();
-        int sign = current > position ? -1: 1;
-        while (viewPager.getCurrentItem() != position){
+        int sign = current > position ? -1 : 1;
+        while (viewPager.getCurrentItem() != position) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + sign, true);
         }
     }
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             initViewPager();
             getSupportLoaderManager().initLoader(101, null, this);
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission),100, perms);
+            EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
         }
     }
 
@@ -201,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         String selection = "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " = ? " + ")";
         String[] selectionArgs = new String[]{"com.google"};
         return new CursorLoader(this,  // Context
-               uri, // URI
+                uri, // URI
                 Calendar_PROJECTION,                // Projection
                 selection,                           // Selection
                 selectionArgs,                           // Selection args
@@ -270,11 +272,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         calendarsList.removeAllViews();
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        for (String calendarAccountNmae : accountListNames.keySet()){
+        for (String calendarAccountNmae : accountListNames.keySet()) {
             TextView header = (TextView) layoutInflater.inflate(R.layout.calendar_accont_header, calendarsList, false);
             header.setText(calendarAccountNmae);
             calendarsList.addView(header);
-            for (final CalendarAccount calendarAccount : accountListNames.get(calendarAccountNmae)){
+            for (final CalendarAccount calendarAccount : accountListNames.get(calendarAccountNmae)) {
                 final AppCompatCheckBox checkBox = (AppCompatCheckBox) layoutInflater.inflate(R.layout.calendar_visibility_row, calendarsList, false);
                 calendarsList.addView(checkBox);
                 ColorStateList colorStateList = new ColorStateList(
@@ -282,9 +284,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                                 new int[]{-android.R.attr.state_enabled}, //disabled
                                 new int[]{android.R.attr.state_enabled} //enabled
                         },
-                        new int[] {
+                        new int[]{
                                 calendarAccount.getCalendarColor() //disabled
-                                ,calendarAccount.getCalendarColor() //enabled
+                                , calendarAccount.getCalendarColor() //enabled
 
                         }
                 );
@@ -307,10 +309,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         int currentItem = viewPager.getCurrentItem();
         switch (checkedId) {
             case R.id.display_month:
-                ((PagerAdapterMonthDay)viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.MONTH);
+                ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.MONTH);
                 break;
             case R.id.display_day:
-                ((PagerAdapterMonthDay)viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
+                ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
                 break;
         }
         viewPager.post(() -> onPageSelected(currentItem));
@@ -320,9 +322,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public void onClick(View view) {
         Day day = (Day) view.getTag(R.string.app_name);
         if (day != null) {
-            Intent intent = new Intent(this, DayActivity.class);
-            intent.putExtra("day", day);
-            startActivity(intent);
+            int position = calendarRepo.getPositionForDay(day) + PagerAdapterBase.INITIAL_OFFSET;
+            ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
+            Log.d(TAG, "onClick: " + position);
+            viewPager.post(() -> viewPager.setCurrentItem(position));
         }
     }
 }

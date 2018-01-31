@@ -14,6 +14,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,6 +106,14 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (dayVM.getDayLiveData().getValue() != null) {
+            getLoaderManager().initLoader(100, null, this);
+        }
+    }
+
+    @Override
     public Loader<List<Day>> onCreateLoader(int id, Bundle args) {
         return new GoogleEventsLoader(getContext(), calendarRepo, Collections.singletonList(dayVM.getDayLiveData().getValue()));
     }
@@ -112,6 +121,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     @Override
     public void onLoadFinished(Loader<List<Day>> loader, List<Day> data) {
         if (dayVM.getDayLiveData().getValue() != null) {
+            Log.d(TAG, "onLoadFinished day: " + dayVM.getDayLiveData().getValue());
             dayBinding.dayRecyclerView.getAdapter().notifyDataSetChanged();
         }
     }

@@ -25,7 +25,6 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     protected long eventId;
     protected long calendarId;
     protected String eventTitle;
-    //    protected boolean allDayEvent;
     protected long begin, end;
     protected int displayColor;
     protected String calendarDisplayName;
@@ -36,7 +35,6 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     public EventInstanceForDay(long eventId, String eventTitle, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
         this.eventId = eventId;
         this.eventTitle = (eventTitle != null && eventTitle.length() > 0) ? eventTitle : "(ללא כותרת)";
-//        this.allDayEvent = allDayEvent;
         this.begin = begin;
         this.end = end;
         this.displayColor = displayColor;

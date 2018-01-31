@@ -3,6 +3,7 @@ package com.thedroidboy.jalendar.calendars.google;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJECTION;
 import static com.thedroidboy.jalendar.calendars.google.Contract.HEBREW_CALENDAR_SUMMERY_TITLE;
@@ -67,7 +69,7 @@ public class GoogleManager {
             if (cur != null) {
                 accountListNames.clear();
                 while (cur.moveToNext()) {
-                    int calID , color;
+                    int calID, color;
                     String displayName;
                     String accountName;
                     String ownerName;
@@ -87,7 +89,7 @@ public class GoogleManager {
                     calendarAccount.setCalendarOwnerName(ownerName);
                     calendarAccount.setCalendarColor(color);
                     calendarAccount.setCalendarIsVisible(visible);
-                    if (accountListNames.get(accountName) == null){
+                    if (accountListNames.get(accountName) == null) {
                         List<CalendarAccount> accountList = new ArrayList<>();
                         accountList.add(calendarAccount);
                         accountListNames.put(accountName, accountList);
@@ -97,7 +99,7 @@ public class GoogleManager {
                     Log.d("TAG", "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName
                             + " , ownerName: " + ownerName);
 
-                    if (displayName.equals(HEBREW_CALENDAR_SUMMERY_TITLE)){
+                    if (displayName.equals(HEBREW_CALENDAR_SUMMERY_TITLE)) {
                         PreferenceManager.getDefaultSharedPreferences(activity).edit()
                                 .putLong(KEY_HEBREW_ID, calID).apply();
                     }
@@ -112,7 +114,7 @@ public class GoogleManager {
 
 
     @SuppressWarnings("MissingPermission")
-    private static void syncCalendars(Context context){
+    private static void syncCalendars(Context context) {
         Account[] accounts = AccountManager.get(context).getAccounts();
         String authority = CalendarContract.Calendars.CONTENT_URI.getAuthority();
         for (Account account : accounts) {
@@ -132,7 +134,6 @@ public class GoogleManager {
         ContentUris.appendId(builder, end);
         return builder.build();
     }
-
 
 
     public static Uri asSyncAdapterDay(JewCalendar jewishCalendar) {
@@ -170,7 +171,7 @@ public class GoogleManager {
         time.second = 0;
         long begin = Time.getJulianDay(time.toMillis(true), 0);
         Log.d("TAG", "start: " + simpleDateFormat.format(time.toMillis(true)));
-        if (jewishCalendar.getDaysInJewishMonth() == 29){
+        if (jewishCalendar.getDaysInJewishMonth() == 29) {
             time.monthDay += 29;
         } else {
             time.monthDay += 30;
@@ -188,7 +189,7 @@ public class GoogleManager {
 
     public static void updateCalendarVisibility(ContentResolver contentResolver, CalendarAccount calendarAccount, boolean visibility) {
         Uri.Builder builder = CalendarContract.Calendars.CONTENT_URI.buildUpon()
-                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER,"true")
+                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, calendarAccount.getCalendarName())
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google");
         ContentUris.appendId(builder, calendarAccount.getAccountId());
@@ -207,21 +208,35 @@ public class GoogleManager {
     }
 
     @SuppressWarnings("MissingPermission")
-    public static void addHebrewEventToGoogleServer(Context context, EventInstanceForDay event){
-        long calID = PreferenceManager.getDefaultSharedPreferences(context).getLong(KEY_HEBREW_ID, -1L);
-        if (calID == -1L){
-            return;
-        }
+    public static void addHebrewEventToGoogleServer(Context context, EventInstanceForDay event) {
         ContentValues values;
         ContentResolver cr = context.getContentResolver();
-        switch (event.getRepeatState()){
+        switch (event.getRepeatState()) {
             case SINGLE:
             case DAY:
             case WEEK:
                 values = getContentValueForSingleEvent(event);
-                cr.insert(CalendarContract.Events.CONTENT_URI, values);
+                if (event.getEventId() == -1L) {
+                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+                    if (uri != null) {
+                        long eventId = Long.parseLong(uri.getLastPathSegment());
+                        event.setEventId(eventId);
+                    }
+                } else {
+                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId());
+                    cr.update(updateUri, values, null, null);
+                }
                 break;
             case MONTH:
+//                values = getContentValueForSingleEvent(event);
+//                if (event.getEventId() == -1L) {
+//                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+//                    if (uri != null) {
+//                        long eventId = Long.parseLong(uri.getLastPathSegment());
+//                        event.setEventId(eventId);
+//                        editAllEventInstances(event);
+//                    }
+//                }
                 ContentValues[] contentValues = new ContentValues[event.getRepeatValue()];
                 JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
                 JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
@@ -240,7 +255,7 @@ public class GoogleManager {
                 JewCalendar jewishCalendarStart = new JewCalendar(new Date(event.getBegin()));
                 JewCalendar jewishCalendarEnd = new JewCalendar(new Date(event.getEnd()));
                 event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
-                for (int i = 0 ; i < contentValues.length ; i++) {
+                for (int i = 0; i < contentValues.length; i++) {
 //                    Log.d("TAG",  hebrewDateFormatter.formatHebrewNumber(jewishCalendarStart.getJewishYear()) + " , "
 //                            + hebrewDateFormatter.formatMonth(jewishCalendarStart) + " , "
 //                            + hebrewDateFormatter.formatHebrewNumber(jewishCalendarStart.getJewishDayOfMonth()));
@@ -254,20 +269,27 @@ public class GoogleManager {
         syncCalendars(context);
     }
 
+    @SuppressLint("DefaultLocale")
     @SuppressWarnings("MissingPermission")
-    private static ContentValues getContentValueForSingleEvent(EventInstanceForDay event){
+    private static ContentValues getContentValueForSingleEvent(EventInstanceForDay event) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Events.DTSTART, event.getBegin());
 
-        switch (event.getRepeatState()){
+        switch (event.getRepeatState()) {
             case SINGLE:
                 values.put(CalendarContract.Events.DTEND, event.getEnd());
                 break;
             case DAY:
-                values.put(CalendarContract.Events.DURATION, "PT1H0M");
+                long duration = event.getEnd() - event.getBegin();
+                long hours = TimeUnit.MILLISECONDS.toHours(duration);
+                values.put(CalendarContract.Events.DURATION, String.format("PT%dH%dM", hours, TimeUnit.MILLISECONDS.toMinutes(duration - TimeUnit.HOURS.toMillis(hours))));
                 values.put(CalendarContract.Events.RRULE, "FREQ=DAILY;COUNT=" + event.getRepeatValue());//;BYDAY=TU   "FREQ=WEEKLY;BYDAY=TU;UNTIL=20150428"
                 break;
             case WEEK:
+                values.put(CalendarContract.Events.DURATION, "PT1H0M");
+                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=" + event.getRepeatValue());
+                break;
+            case MONTH:
                 values.put(CalendarContract.Events.DURATION, "PT1H0M");
                 values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=" + event.getRepeatValue());
                 break;

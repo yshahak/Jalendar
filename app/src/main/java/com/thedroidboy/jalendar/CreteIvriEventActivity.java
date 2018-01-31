@@ -46,6 +46,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener
         , PopupMenu.OnMenuItemClickListener, View.OnClickListener, OnValueChangeListener {
 
+    public static final String EXTRA_EVENT = "EXTRA_EVENT" ;
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
     public static JewCalendar currentCalendar;
     private ActivityCreateIvriEventBinding binding;
@@ -66,24 +67,27 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         binding.countPicker.setListener(this);
         KeyboardVisibilityEvent.setEventListener(this, this);
         calendar = Calendar.getInstance();
-        cretaeEventInstance();
+        createEventInstance();
     }
 
-    private void cretaeEventInstance(){
-        Calendar calendar = Calendar.getInstance();
-        long startEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
-        long endEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0L);
-        if (endEvent == 0){
-            endEvent = startEvent + TimeUnit.HOURS.toMillis(1);
+    private void createEventInstance(){
+        EventInstanceForDay event = getIntent().getParcelableExtra(EXTRA_EVENT);
+        if (event == null) {
+            Calendar calendar = Calendar.getInstance();
+            long startEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
+            long endEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0L);
+            if (endEvent == 0){
+                endEvent = startEvent + TimeUnit.HOURS.toMillis(1);
+            }
+            long id = getIntent().getLongExtra(CalendarContract.Instances.EVENT_ID, -1L);
+            String title = getIntent().getStringExtra(CalendarContract.Events.TITLE);
+            String desc = getIntent().getStringExtra(CalendarContract.Events.DESCRIPTION);
+            String location = getIntent().getStringExtra(CalendarContract.Events.EVENT_LOCATION);
+            int available = getIntent().getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+            String email = getIntent().getStringExtra(Intent.EXTRA_EMAIL);
+            event = new EventInstanceForDay(id, title, startEvent, endEvent, -1, "", 1);
         }
-        long id = startEvent;
         long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
-        String title = getIntent().getStringExtra(CalendarContract.Events.TITLE);
-        String desc = getIntent().getStringExtra(CalendarContract.Events.DESCRIPTION);
-        String location = getIntent().getStringExtra(CalendarContract.Events.EVENT_LOCATION);
-        int available = getIntent().getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
-        String email = getIntent().getStringExtra(Intent.EXTRA_EMAIL);
-        EventInstanceForDay event = new EventInstanceForDay(id, title, startEvent, endEvent, -1, "", 1);
         event.setCalendarId(calID);
         binding.setEvent(event);
     }

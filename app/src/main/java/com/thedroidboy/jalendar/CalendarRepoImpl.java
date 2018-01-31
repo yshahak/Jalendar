@@ -199,4 +199,9 @@ public class CalendarRepoImpl implements CalendarRepo {
         return cr.query(uri, INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
                 CalendarContract.Events.DTSTART + " ASC");
     }
+
+    @Override
+    public int getPositionForDay(Day day) {
+        return dayMap.indexOfValue(day);
+    }
 }
