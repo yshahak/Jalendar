@@ -2,6 +2,7 @@ package com.thedroidboy.jalendar;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
@@ -57,6 +58,8 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISI
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int RC_SIGN_IN = 1000;
+
     private ViewPager viewPager;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawertToggle;
@@ -181,6 +184,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN){
+            validateCalendarPermission();
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
@@ -190,8 +201,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private void validateCalendarPermission() {
         String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            initViewPager();
-            getSupportLoaderManager().initLoader(101, null, this);
+            if (prefs.getString("user_email", null) == null){
+                startActivityForResult(new Intent(this, GoogleSignInActivity.class), RC_SIGN_IN);
+            } else {
+                initViewPager();
+                getSupportLoaderManager().initLoader(101, null, this);
+            }
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
         }

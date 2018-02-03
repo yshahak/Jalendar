@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1088145040884",
+    "project_id": "reflecting-ivy-194007"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088145040884:android:033bdb827e23fecc",
+        "android_client_info": {
+          "package_name": "com.thedroidboy.jalendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088145040884-9rpac1qrpjuknr87j38aemas8tnql29l.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1088145040884-uudgqtifedrnk0sadmss2mlj0mhfh132.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thedroidboy.jalendar",
+            "certificate_hash": "7035a1826dd9ce830b755eba1410107b39eb8cdd"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuVh2Pe5gsSy2nYtDPjaBZFi4mwuMvTMg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.google.api.services.calendar.model.Events;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.EventInstanceForDay;
 
@@ -50,7 +51,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.REQUEST_READ_CA
 public class GoogleManager {
 
     public static final int REQUEST_CODE_EDIT_EVENT = 100;
-
+//1088145040884-uudgqtifedrnk0sadmss2mlj0mhfh132.apps.googleusercontent.com
     public static HashMap<String, List<CalendarAccount>> accountListNames = new HashMap<>();
 
     public static void getCalendars(Activity activity) {
@@ -228,16 +229,17 @@ public class GoogleManager {
                 }
                 break;
             case MONTH:
-//                values = getContentValueForSingleEvent(event);
-//                if (event.getEventId() == -1L) {
-//                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-//                    if (uri != null) {
-//                        long eventId = Long.parseLong(uri.getLastPathSegment());
-//                        event.setEventId(eventId);
-//                        editAllEventInstances(event);
-//                    }
-//                }
                 ContentValues[] contentValues = new ContentValues[event.getRepeatValue()];
+
+                values = getContentValueForSingleEvent(event);
+                if (event.getEventId() == -1L) {
+                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+                    if (uri != null) {
+                        long eventId = Long.parseLong(uri.getLastPathSegment());
+                        event.setEventId(eventId);
+                        editAllEventInstances(event);
+                    }
+                }
                 JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
                 JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
                 event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
@@ -269,9 +271,29 @@ public class GoogleManager {
         syncCalendars(context);
     }
 
+    private static void editAllEventInstances(Context context, EventInstanceForDay event) {
+
+        com.google.api.services.calendar.Calendar service = GoogleApiHelper.getCalendarService(context);
+        // First retrieve the instances from the API.
+        Events instances = null;
+        try {
+            instances = service.events().instances(Long.toString(event.getCalendarId()), Long.toString(event.getEventId()), ).execute();
+//            Event instance = instances.getItems().get(0);
+//            instance.setStatus("cancelled");
+//            instance.setStart(new EventDateTime());
+//            Event updatedInstance = service.events().update("primary", instance.getId(), instance).execute();
+//            System.out.println(updatedInstance.getUpdated());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     @SuppressLint("DefaultLocale")
     @SuppressWarnings("MissingPermission")
     private static ContentValues getContentValueForSingleEvent(EventInstanceForDay event) {
+
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Events.DTSTART, event.getBegin());
 
