@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_BEGIN_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_DISPLAY_NAME_INDEX;
+import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_ID;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_TIME_ZONE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_DISPLAY_COLOR_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_END_INDEX;
@@ -172,6 +173,7 @@ public class EventsHelper {
 
     public static EventInstanceForDay convertCursorToEvent(Cursor cursor) {
         long eventId = cursor.getLong(PROJECTION_EVENT_ID);
+        long calendarId = cursor.getLong(PROJECTION_CALENDAR_ID);
         String title = cursor.getString(PROJECTION_TITLE_INDEX);
         long start = cursor.getLong((PROJECTION_BEGIN_INDEX));
         long end = cursor.getLong((PROJECTION_END_INDEX));
@@ -182,7 +184,9 @@ public class EventsHelper {
 //        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
 //        boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
-        return new EventInstanceForDay(eventId, title, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
+        EventInstanceForDay eventInstanceForDay = new EventInstanceForDay(eventId, title, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
+        eventInstanceForDay.setCalendarId(calendarId);
+        return eventInstanceForDay;
     }
 
     public static String covertDurationToRule(long duration) {

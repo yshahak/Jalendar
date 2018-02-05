@@ -19,6 +19,9 @@ import android.support.v4.app.ActivityCompat;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.model.EventInstanceForDay;
@@ -51,7 +54,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.REQUEST_READ_CA
 public class GoogleManager {
 
     public static final int REQUEST_CODE_EDIT_EVENT = 100;
-//1088145040884-uudgqtifedrnk0sadmss2mlj0mhfh132.apps.googleusercontent.com
+    //1088145040884-uudgqtifedrnk0sadmss2mlj0mhfh132.apps.googleusercontent.com
     public static HashMap<String, List<CalendarAccount>> accountListNames = new HashMap<>();
 
     public static void getCalendars(Activity activity) {
@@ -237,20 +240,22 @@ public class GoogleManager {
                     if (uri != null) {
                         long eventId = Long.parseLong(uri.getLastPathSegment());
                         event.setEventId(eventId);
-                        editAllEventInstances(event);
+                        new Thread(() -> {
+                            editAllEventInstances(context, event);
+                        }).start();
                     }
                 }
-                JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
-                JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
-                event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
-                for (int i = 0 ; i < contentValues.length ; i++) {
-                    calStart.shiftMonth(i);
-                    calEnd.shiftMonth(i);
-                    event.setBegin(calStart.getTime().getTime());
-                    event.setEnd(calEnd.getTime().getTime());
-                    contentValues[i] = getContentValueForSingleEvent(event);
-                }
-                cr.bulkInsert(CalendarContract.Events.CONTENT_URI, contentValues);
+//                JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
+//                JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
+//                event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
+//                for (int i = 0; i < contentValues.length; i++) {
+//                    calStart.shiftMonth(i);
+//                    calEnd.shiftMonth(i);
+//                    event.setBegin(calStart.getTime().getTime());
+//                    event.setEnd(calEnd.getTime().getTime());
+//                    contentValues[i] = getContentValueForSingleEvent(event);
+//                }
+//                cr.bulkInsert(CalendarContract.Events.CONTENT_URI, contentValues);
                 break;
             case YEAR:
                 contentValues = new ContentValues[event.getRepeatValue()];
@@ -272,17 +277,31 @@ public class GoogleManager {
     }
 
     private static void editAllEventInstances(Context context, EventInstanceForDay event) {
-
         com.google.api.services.calendar.Calendar service = GoogleApiHelper.getCalendarService(context);
         // First retrieve the instances from the API.
-        Events instances = null;
+        Events instances;
         try {
-            instances = service.events().instances(Long.toString(event.getCalendarId()), Long.toString(event.getEventId()), ).execute();
+            instances = service.events().instances(Long.toString(event.getCalendarId()), Long.toString(event.getEventId()))
+//                    .set("orderby", "starttime").set("sortorder", "ascending")
+                    .execute();
+            int i = 0;
+            JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
+            JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
+            EventDateTime start = new EventDateTime();
+            EventDateTime end = new EventDateTime();
+            for (Event ev : instances.getItems()) {
+                calStart.shiftMonth(i);
+                calEnd.shiftMonth(i);
+                start.setDateTime(new DateTime(calStart.getTime()));
+                ev.setStart(start);
+                end.setDateTime(new DateTime(calEnd.getTime()));
+                ev.setEnd(end);
+                Event updatedInstance = service.events().update(Long.toString(event.getCalendarId()), Long.toString(event.getEventId()), ev).execute();
+                System.out.println(updatedInstance.getUpdated());
+                i++;
+            }
 //            Event instance = instances.getItems().get(0);
 //            instance.setStatus("cancelled");
-//            instance.setStart(new EventDateTime());
-//            Event updatedInstance = service.events().update("primary", instance.getId(), instance).execute();
-//            System.out.println(updatedInstance.getUpdated());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -313,7 +332,7 @@ public class GoogleManager {
                 break;
             case MONTH:
                 values.put(CalendarContract.Events.DURATION, "PT1H0M");
-                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=" + event.getRepeatValue());
+                values.put(CalendarContract.Events.RRULE, "FREQ=MONTHLY;COUNT=" + event.getRepeatValue());
                 break;
         }
         values.put(CalendarContract.Events.TITLE, event.getEventTitle());
