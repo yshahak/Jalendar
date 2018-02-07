@@ -34,13 +34,10 @@ import java.util.concurrent.TimeUnit;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJECTION;
 import static com.thedroidboy.jalendar.calendars.google.Contract.HEBREW_CALENDAR_SUMMERY_TITLE;
-import static com.thedroidboy.jalendar.calendars.google.Contract.INSTANCE_PROJECTION;
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ACCOUNTNAME_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_BEGIN_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_COLOR_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_DISPLAY_NAME_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_END_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ID_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_OWNER_ACCOUNT_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISIBLE_INDEX;
@@ -236,7 +233,7 @@ public class GoogleManager {
 
                 values = getContentValueForSingleEvent(event);
                 if (event.getEventId() == -1L) {
-                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+                    Uri uri = cr.insert(eventUriAsSyncAdapter(PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com")), values);
                     if (uri != null) {
                         long eventId = Long.parseLong(uri.getLastPathSegment());
                         event.setEventId(eventId);
@@ -276,8 +273,17 @@ public class GoogleManager {
         syncCalendars(context);
     }
 
+    private static Uri eventUriAsSyncAdapter (String acountName) {
+        Uri uri = Uri.parse(CalendarContract.Events.CONTENT_URI.toString());
+        uri = uri.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, acountName)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
+        return uri;
+    }
+
     @SuppressLint("MissingPermission")
     private static void editAllEventInstances(Context context, EventInstanceForDay event) {
+        syncCalendars(context);
         ContentResolver cr = context.getContentResolver();
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
                 .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
@@ -286,31 +292,42 @@ public class GoogleManager {
         ContentUris.appendId(builder, event.getBegin() + TimeUnit.DAYS.toMillis(365));
         String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? AND " +CalendarContract.Instances.CALENDAR_ID + " = ? AND " + CalendarContract.Instances.EVENT_ID + " = ?";
         String[] WHERE_CALENDARS_ARGS = {"1", Long.toString(event.getCalendarId()), Long.toString(event.getEventId())};//
-        String[] mProjection = {CalendarContract.Events.DTSTART, CalendarContract.Events.DTEND};
+        String[] mProjection = {
+                CalendarContract.Events.DTSTART, //0
+                CalendarContract.Events.DTEND,  //1
+                CalendarContract.Instances.BEGIN,  //2
+                CalendarContract.Instances.END,   //3
+                CalendarContract.Events._SYNC_ID,  //4
+                CalendarContract.Events.ORIGINAL_SYNC_ID}; //5
 
-        Cursor cur = cr.query(builder.build(), INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
+        Cursor cur = cr.query(builder.build(), mProjection, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
                 CalendarContract.Events.DTSTART + " ASC");
+
         if (cur != null) {
             if (cur.moveToFirst()) {
                 JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
                 JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
+                long eventStart = calStart.getTime().getTime();
+                long eventEnd = calEnd.getTime().getTime();
                 int i = 0;
                 do {
-                    long start = cur.getLong((PROJECTION_BEGIN_INDEX));
-                    long end = cur.getLong((PROJECTION_END_INDEX));
+                    long syncId = cur.getLong(4);
+                    long start = cur.getLong((2));
+                    long end = cur.getLong((3));
                     calStart.shiftMonth(i);
                     calEnd.shiftMonth(i);
                     ContentValues values = new ContentValues();
+                    values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
                     values.put(CalendarContract.Events.DTSTART, calStart.getTime().getTime());
-                    values.put(CalendarContract.Events.DTSTART, calEnd.getTime().getTime());
-                    String where = CalendarContract.Events._ID + "=" + event.getEventId() +
-//                            " and " + CalendarContract.Events.CALENDAR_ID + "=" + event.getCalendarId() +
-                            " and " + CalendarContract.Events.DTSTART + " = " + start +
-                            " and " + CalendarContract.Events.DTEND + " = " + end;
-                    Log.d(TAG, "editAllEventInstances: update start=" + start + "\tend=" + end);
+                    values.put(CalendarContract.Events.DTEND, calEnd.getTime().getTime());
+//                    values.put(CalendarContract.Instances.BEGIN, calStart.getTime().getTime());
+//                    values.put(CalendarContract.Instances.END, calEnd.getTime().getTime());
+                    values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, start);
+                    values.put(CalendarContract.Events.ORIGINAL_SYNC_ID, syncId);
+
                     i++;
-                    int update = cr.update(CalendarContract.Events.CONTENT_URI, values, where, null);
-                    Log.d(TAG, "editAllEventInstances: update row= " + update);
+                    Uri uri = cr.insert(eventUriAsSyncAdapter(PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com")), values);
+                    Log.d(TAG, "editAllEventInstances: update row= " + uri);
                 } while (cur.moveToNext());
 
             }
@@ -341,6 +358,8 @@ public class GoogleManager {
             case MONTH:
                 values.put(CalendarContract.Events.DURATION, "PT1H0M");
                 values.put(CalendarContract.Events.RRULE, "FREQ=MONTHLY;COUNT=" + event.getRepeatValue());
+                String syncId = System.currentTimeMillis() + "";
+                values.put(CalendarContract.Events._SYNC_ID, syncId);
                 break;
         }
         values.put(CalendarContract.Events.TITLE, event.getEventTitle());

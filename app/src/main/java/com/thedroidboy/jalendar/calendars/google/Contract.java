@@ -88,8 +88,6 @@ public class Contract {
             Calendars.OWNER_ACCOUNT,    //7
             Calendars.CALENDAR_TIME_ZONE, //8
             Instances.CALENDAR_ID};//9
-
-
     // The indices for the projection array above.
     public static final int PROJECTION_EVENT_ID = 0;
     public static final int PROJECTION_BEGIN_INDEX = 1;
