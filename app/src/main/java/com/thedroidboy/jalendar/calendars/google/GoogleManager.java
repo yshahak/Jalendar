@@ -281,6 +281,17 @@ public class GoogleManager {
         return uri;
     }
 
+    /**
+     * Creates an updated URI that includes query parameters that identify the source as a
+     * sync adapter.
+     */
+    static Uri asSyncAdapter(Uri uri, String account) {
+        return uri.buildUpon()
+                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
+    }
+
     @SuppressLint("MissingPermission")
     private static void editAllEventInstances(Context context, EventInstanceForDay event) {
         syncCalendars(context);
@@ -307,31 +318,40 @@ public class GoogleManager {
             if (cur.moveToFirst()) {
                 JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
                 JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
+                int i = 0;
                 long eventStart = calStart.getTime().getTime();
                 long eventEnd = calEnd.getTime().getTime();
-                int i = 0;
                 do {
                     long syncId = cur.getLong(4);
                     long start = cur.getLong((2));
                     long end = cur.getLong((3));
                     calStart.shiftMonth(i);
                     calEnd.shiftMonth(i);
+                    event.setBegin(calStart.getTime().getTime());
+                    event.setEnd(calEnd.getTime().getTime());
                     ContentValues values = new ContentValues();
-                    values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
-                    values.put(CalendarContract.Events.DTSTART, calStart.getTime().getTime());
-                    values.put(CalendarContract.Events.DTEND, calEnd.getTime().getTime());
-//                    values.put(CalendarContract.Instances.BEGIN, calStart.getTime().getTime());
-//                    values.put(CalendarContract.Instances.END, calEnd.getTime().getTime());
-                    values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, start);
-                    values.put(CalendarContract.Events.ORIGINAL_SYNC_ID, syncId);
+//                    values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
+//                    values.put(CalendarContract.Events.TITLE, event.getEventTitle());
 
+                    values.put(CalendarContract.Events.DTSTART, event.getBegin());
+//                    values.put(CalendarContract.Events.DTEND, event.getEnd());
+                    values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, start);
+//                    values.put(CalendarContract.Events.ORIGINAL_SYNC_ID, syncId);
+//                    values.put(CalendarContract.Events.ORIGINAL_ID, event.getEventId());
+                    // Create the exception
+                    Uri uri = Uri.withAppendedPath(CalendarContract.Events.CONTENT_EXCEPTION_URI,  String.valueOf(event.getEventId()));
+                    uri = asSyncAdapter(uri, PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com"));
+
+//                    int update = cr.update(ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId()), values, null, null);
+
+                    Uri result = cr.insert(uri, values);
+                    Log.d(TAG, "editAllEventInstances: update row= " + result);
                     i++;
-                    Uri uri = cr.insert(eventUriAsSyncAdapter(PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com")), values);
-                    Log.d(TAG, "editAllEventInstances: update row= " + uri);
                 } while (cur.moveToNext());
 
             }
             cur.close();
+            syncCalendars(context);
         }
     }
 

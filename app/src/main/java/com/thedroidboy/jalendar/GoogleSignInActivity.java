@@ -89,7 +89,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
      * appropriate.
      */
     private void getResultsFromApi() {
-        if (!isGooglePlayServicesAvailable()) {
+        if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
@@ -137,15 +137,8 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
     private void chooseAccount() {
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
-            if (mCredential == null) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            } else {
-                // Start a dialog from which the user can choose an account
-                startActivityForResult(
-                        mCredential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER);
-            }
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
@@ -183,6 +176,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                             prefs.edit().putString("token", token).putString("user_email", account.getEmail()).apply();
                             mCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES))
                                     .setBackOff(new ExponentialBackOff());
+                            mCredential.setSelectedAccountName(account.getEmail());
                             getResultsFromApi();
                         } else {
                             Log.d(TAG, "onActivityResult: going to ask for account presmissioon");

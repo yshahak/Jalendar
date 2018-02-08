@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +46,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 
 @SuppressWarnings("unused")
 public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener
-        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, OnValueChangeListener {
+        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, OnValueChangeListener, TextWatcher {
 
     public static final String EXTRA_EVENT = "EXTRA_EVENT" ;
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
@@ -68,6 +70,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         KeyboardVisibilityEvent.setEventListener(this, this);
         calendar = Calendar.getInstance();
         createEventInstance();
+        binding.headerEditTextEventTitle.addTextChangedListener(this);
     }
 
     private void createEventInstance(){
@@ -249,6 +252,21 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         EventInstanceForDay event = binding.getEvent();
         event.setRepeatValue(newValue);
         binding.setEvent(event);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        binding.getEvent().setEventTitle(binding.headerEditTextEventTitle.getText().toString());
     }
 
 
