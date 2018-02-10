@@ -1,5 +1,6 @@
 package com.thedroidboy.jalendar.fragments;
 
+import android.Manifest;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 /**
@@ -108,7 +110,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     @Override
     public void onResume() {
         super.onResume();
-        if (dayVM.getDayLiveData().getValue() != null) {
+        if (dayVM.getDayLiveData().getValue() != null && EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
             getLoaderManager().initLoader(100, null, this);
         }
     }

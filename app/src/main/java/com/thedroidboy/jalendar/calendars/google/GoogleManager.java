@@ -207,6 +207,14 @@ public class GoogleManager {
         ContentUris.appendId(builder, end);
         return builder.build();
     }
+    @SuppressWarnings("MissingPermission")
+    public static void deleteEvent(Context context, EventInstanceForDay event) {
+        ContentResolver cr = context.getContentResolver();
+        Uri deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId());
+        int rows = cr.delete(deleteUri, null, null);
+        Log.d(TAG, "deleteEvent: " + rows);
+        syncCalendars(context);
+    }
 
     @SuppressWarnings("MissingPermission")
     public static void addHebrewEventToGoogleServer(Context context, EventInstanceForDay event) {

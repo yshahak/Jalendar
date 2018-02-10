@@ -143,6 +143,7 @@ public class Day implements Parcelable {
                 "\t startDayInMillis=" + startDayInMillis +
                 "\t dayInMonth=" + dayInMonth +
                 "\t isOutOfMonthRange=" + isOutOfMonthRange +
+                "\t googleEventInstanceForDays=" + googleEventInstanceForDays +
                 '}';
     }
 
@@ -175,6 +176,16 @@ public class Day implements Parcelable {
         this.loazyDayOfMonth = in.readInt();
         this.isOutOfMonthRange = in.readByte() != 0;
         this.cellHeight = in.readFloat();
+    }
+
+    @Override
+    public int hashCode() {
+        return dayHashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Day && dayHashCode == ((Day) obj).dayHashCode;
     }
 
     public static final Parcelable.Creator<Day> CREATOR = new Parcelable.Creator<Day>() {

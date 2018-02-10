@@ -1,5 +1,6 @@
 package com.thedroidboy.jalendar.fragments;
 
+import android.Manifest;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
@@ -29,6 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 /**
@@ -83,7 +85,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             if (month != null) {
                 binding.setMonth(month);
                 bindMonth(binding);
-                if (shouldShowEvents) {
+                if (shouldShowEvents && EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
                     getLoaderManager().initLoader(100, null, this);
                 }
             }
@@ -123,6 +125,14 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             binding.week6.bindDays(dayList.subList(position, position += 7), cellHeight, currentDayOfMonth);
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (monthVM.getMonth().getValue() != null && EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
+            getLoaderManager().initLoader(100, null, this);
+        }
     }
 
     @Override

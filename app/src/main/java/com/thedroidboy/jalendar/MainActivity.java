@@ -26,8 +26,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
@@ -55,7 +56,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ID_I
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_OWNER_ACCOUNT_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISIBLE_INDEX;
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, RadioGroup.OnCheckedChangeListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1000;
@@ -65,11 +66,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private ActionBarDrawerToggle mDrawertToggle;
     private LinearLayout calendarsList;
     private Toolbar toolbar;
+    private RadioButton radioButtonDay, radioButtonMonth;
     @Inject
     SharedPreferences prefs;
     @Inject
     CalendarRepo calendarRepo;
-    private RadioGroup displayChooser;
+//    private RadioGroup displayChooser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +86,16 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        displayChooser = findViewById(R.id.radio_group_display);
-        displayChooser.setOnCheckedChangeListener(this);
+//        displayChooser = findViewById(R.id.radio_group_display);
+        radioButtonDay = findViewById(R.id.display_day);
+        radioButtonMonth = findViewById(R.id.display_month);
+        radioButtonDay.setOnCheckedChangeListener(this);
+        radioButtonMonth.setOnCheckedChangeListener(this);
+//        displayChooser.setOnCheckedChangeListener(this);
         validateCalendarPermission();
         drawerLayout = findViewById(R.id.drawer_layout);
         setDrawerMenu();
+        initViewPager();
     }
 
     private void initViewPager() {
@@ -132,12 +139,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-//        }
-//        else if (backToMonthDisplay) {
-//            CalendarPagerAdapter.displayState = CalendarPagerAdapter.DISPLAY.MONTH;
-//            displayChooser.check(R.id.display_month);
-//            backToMonthDisplay = false;
-//
+        }
+        else if (((PagerAdapterMonthDay)viewPager.getAdapter()).getDisplayState().equals(PagerAdapterMonthDay.DISPLAY.DAY) ) {
+            radioButtonMonth.setChecked(true);
         } else {
             super.onBackPressed();
         }
@@ -187,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN){
-            validateCalendarPermission();
+//            validateCalendarPermission();
         }
     }
 
@@ -199,14 +203,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @AfterPermissionGranted(100)
     private void validateCalendarPermission() {
-        String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR};
+        String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR, Manifest.permission.GET_ACCOUNTS};
         if (EasyPermissions.hasPermissions(this, perms)) {
             if (prefs.getString("user_email", null) == null){
                 startActivityForResult(new Intent(this, GoogleSignInActivity.class), RC_SIGN_IN);
-            } else {
-                initViewPager();
-                getSupportLoaderManager().initLoader(101, null, this);
             }
+//            else {
+                getSupportLoaderManager().initLoader(101, null, this);
+//            }
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
         }
@@ -318,29 +322,57 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public HashMap<String, List<CalendarAccount>> accountListNames = new HashMap<>();
 
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        drawerLayout.closeDrawers();
-        int currentItem = viewPager.getCurrentItem();
-        switch (checkedId) {
-            case R.id.display_month:
-                ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.MONTH);
-                break;
-            case R.id.display_day:
-                ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
-                break;
-        }
-        viewPager.post(() -> onPageSelected(currentItem));
-    }
+//    @Override
+//    public void onCheckedChanged(RadioGroup group, int checkedId) {
+//        drawerLayout.closeDrawers();
+//        int currentItem = viewPager.getCurrentItem();
+//        switch (checkedId) {
+//            case R.id.display_month:
+//                ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.MONTH);
+//                break;
+//            case R.id.display_day:
+//                ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
+//                break;
+//        }
+//        viewPager.post(() -> onPageSelected(currentItem));
+//    }
 
     @Override
     public void onClick(View view) {
         Day day = (Day) view.getTag(R.string.app_name);
         if (day != null) {
-            int position = calendarRepo.getPositionForDay(day) + PagerAdapterBase.INITIAL_OFFSET;
+            int positionForDay = calendarRepo.getPositionForDay(day);
+            if (positionForDay == -1000){
+                return;
+            }
+            viewPager.setTag(R.string.last_month_position, viewPager.getCurrentItem());
+            int position = positionForDay + PagerAdapterBase.INITIAL_OFFSET;
             ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
-            Log.d(TAG, "onClick: " + position);
-            viewPager.post(() -> viewPager.setCurrentItem(position));
+//            Log.d(TAG, "onClick: " + position);
+            viewPager.setCurrentItem(position);
+            radioButtonDay.setChecked(true);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+        Log.d(TAG, "onCheckedChanged: " + isChecked);
+        if (isChecked) {
+            drawerLayout.closeDrawers();
+            switch (compoundButton.getId()) {
+                case R.id.display_month:
+                    ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.MONTH);
+                    Integer lastPosition = (Integer) viewPager.getTag(R.string.last_month_position);
+                    if (lastPosition != null) {
+                        viewPager.setTag(R.string.last_month_position, null);
+                        viewPager.setCurrentItem(lastPosition);
+                    }
+                    break;
+                case R.id.display_day:
+                    ((PagerAdapterMonthDay) viewPager.getAdapter()).setDisplayState(PagerAdapterMonthDay.DISPLAY.DAY);
+                    break;
+            }
+            viewPager.post(() -> onPageSelected(viewPager.getCurrentItem()));
         }
     }
 }

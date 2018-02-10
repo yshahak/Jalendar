@@ -2,7 +2,6 @@ package com.thedroidboy.jalendar.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import com.thedroidboy.jalendar.fragments.FragmentDay;
 import com.thedroidboy.jalendar.fragments.FragmentMonth;
@@ -27,7 +26,10 @@ public class PagerAdapterMonthDay extends PagerAdapterBase {
 
     @Override
     public Fragment getItem(int position) {
-        Log.d(TAG, "getItem: " + position);
+//        Log.d(TAG, "getItem: " + position);
+        if (Math.abs(position) < 3){
+            position += INITIAL_OFFSET;
+        }
         return displayState == DISPLAY.MONTH ? FragmentMonth.newInstance(position - INITIAL_OFFSET, shouldShowEvents) : FragmentDay.newInstance(position - INITIAL_OFFSET);
     }
 
@@ -38,12 +40,17 @@ public class PagerAdapterMonthDay extends PagerAdapterBase {
     }
 
     public void setDisplayState(DISPLAY displayState) {
-        this.displayState = displayState;
-        dropPages = true;
-        notifyDataSetChanged();
-        dropPages = false;
+        if(displayState != this.displayState) {
+            this.displayState = displayState;
+            dropPages = true;
+            notifyDataSetChanged();
+            dropPages = false;
+        }
     }
 
+    public DISPLAY getDisplayState() {
+        return displayState;
+    }
 
     public enum DISPLAY {
         MONTH,

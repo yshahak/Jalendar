@@ -21,7 +21,7 @@ import java.util.List;
  * on 22/11/2017.
  */
 
-public class SimpleWeekView extends LinearLayout implements View.OnClickListener {
+public class    SimpleWeekView extends LinearLayout implements View.OnClickListener {
 
     private static final String TAG = SimpleWeekView.class.getSimpleName();
 

@@ -1,5 +1,6 @@
 package com.thedroidboy.jalendar;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.ContentResolver;
@@ -8,7 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -18,7 +18,9 @@ import com.thedroidboy.jalendar.model.DayDAO;
 import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthDAO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.INSTANCE_PROJECTION;
 
@@ -32,8 +34,8 @@ public class CalendarRepoImpl implements CalendarRepo {
     private final MonthDAO monthDAO;
     private final DayDAO dayDAO;
     private final JewCalendar jewCalendar;
-    private SparseArray<Month> monthMap;
-    private SparseArray<Day> dayMap;
+    private HashMap<Integer, Month> monthMap;
+    private HashMap<Integer, Day> dayMap;
     private boolean threadIsRunning = true;
 
     public CalendarRepoImpl(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
@@ -43,10 +45,11 @@ public class CalendarRepoImpl implements CalendarRepo {
         init();
     }
 
+    @SuppressLint("UseSparseArrays")
     private void init(){
         new Thread(() -> {
-            dayMap = new SparseArray<>();
-            monthMap = new SparseArray<>();
+            dayMap = new HashMap<>();
+            monthMap = new HashMap<>();
             initMonthMap(0);
             initDayMap();
             threadIsRunning = false;
@@ -120,7 +123,7 @@ public class CalendarRepoImpl implements CalendarRepo {
             }
             Day day = dayMap.get(position);
             if (day == null) {
-
+                //todo complete this
             }
             liveData.postValue(day);
         }).start();
@@ -143,7 +146,7 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     @Override
     public LiveData<Month> getMonthByPosition(int position) {
-        Log.d(TAG, "getMonthByPosition: " + position);
+//        Log.d(TAG, "getMonthByPosition: " + position);
         MutableLiveData<Month> liveData = new MutableLiveData<>();
         getMonth(position, liveData);
         return liveData;
@@ -151,7 +154,7 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     @Override
     public LiveData<Day> getDayByPosition(int position) {
-        Log.d(TAG, "getDayByPosition: " + position);
+//        Log.d(TAG, "getDayByPosition: " + position);
         MutableLiveData<Day> liveData = new MutableLiveData<>();
         getDay(position, liveData);
         return liveData;
@@ -202,6 +205,14 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     @Override
     public int getPositionForDay(Day day) {
-        return dayMap.indexOfValue(day);
+        boolean exists = dayMap.containsValue(day);
+        if (exists){
+            for (Map.Entry<Integer, Day> integerDayEntry : dayMap.entrySet()) {
+                if(day.equals(integerDayEntry.getValue())){
+                    return integerDayEntry.getKey();
+                }
+            }
+        }
+        return -1000;
     }
 }

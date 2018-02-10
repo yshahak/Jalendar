@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
@@ -82,13 +83,13 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             if (endEvent == 0){
                 endEvent = startEvent + TimeUnit.HOURS.toMillis(1);
             }
-            long id = getIntent().getLongExtra(CalendarContract.Instances.EVENT_ID, -1L);
+            long eventId = getIntent().getLongExtra(CalendarContract.Instances.EVENT_ID, -1L);
             String title = getIntent().getStringExtra(CalendarContract.Events.TITLE);
             String desc = getIntent().getStringExtra(CalendarContract.Events.DESCRIPTION);
             String location = getIntent().getStringExtra(CalendarContract.Events.EVENT_LOCATION);
             int available = getIntent().getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
             String email = getIntent().getStringExtra(Intent.EXTRA_EMAIL);
-            event = new EventInstanceForDay(id, title, startEvent, endEvent, -1, "", 1);
+            event = new EventInstanceForDay(eventId, title, startEvent, endEvent, -1, "", 1);
         }
         long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
         event.setCalendarId(calID);
@@ -174,6 +175,17 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     public void clickX(View view) {
         finish();
+    }
+
+    public void deleteEvent(View view) {
+        new AlertDialog.Builder(this)
+                .setTitle("האם למחוק אירוע זה?")
+                .setPositiveButton("כן", (dialogInterface, i) -> {
+                    GoogleManager.deleteEvent(getApplicationContext(), binding.getEvent());
+                    finish();
+                })
+                .setNegativeButton("לא", null)
+                .show();
     }
 
     @Override
