@@ -32,6 +32,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import biweekly.util.Frequency;
+
 import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJECTION;
 import static com.thedroidboy.jalendar.calendars.google.Contract.HEBREW_CALENDAR_SUMMERY_TITLE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
@@ -220,84 +222,62 @@ public class GoogleManager {
     public static void addHebrewEventToGoogleServer(Context context, EventInstanceForDay event) {
         ContentValues values;
         ContentResolver cr = context.getContentResolver();
-        switch (event.getRepeatState()) {
-            case SINGLE:
-            case DAY:
-            case WEEK:
-                values = getContentValueForSingleEvent(event);
-                if (event.getEventId() == -1L) {
-                    Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-                    if (uri != null) {
-                        long eventId = Long.parseLong(uri.getLastPathSegment());
-                        event.setEventId(eventId);
-                    }
-                } else {
-                    Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId());
-                    cr.update(updateUri, values, null, null);
+        Frequency frequency = event.getFrequency();
+        values = getContentValuesForEvent(event);
+        if (event.getEventId() == -1L) {
+            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+            if (uri != null) {
+                long eventId = Long.parseLong(uri.getLastPathSegment());
+                event.setEventId(eventId);
+                if (Frequency.MONTHLY.equals(frequency) || Frequency.YEARLY.equals(frequency)){
+                    new Thread(() -> {
+                        editAllEventInstances(context, event);
+                    }).start();
                 }
-                break;
-            case MONTH:
-                ContentValues[] contentValues = new ContentValues[event.getRepeatValue()];
-
-                values = getContentValueForSingleEvent(event);
-                if (event.getEventId() == -1L) {
-                    Uri uri = cr.insert(eventUriAsSyncAdapter(PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com")), values);
-                    if (uri != null) {
-                        long eventId = Long.parseLong(uri.getLastPathSegment());
-                        event.setEventId(eventId);
-                        new Thread(() -> {
-                            editAllEventInstances(context, event);
-                        }).start();
-                    }
-                }
-//                JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
-//                JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
-//                event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
-//                for (int i = 0; i < contentValues.length; i++) {
-//                    calStart.shiftMonth(i);
-//                    calEnd.shiftMonth(i);
-//                    event.setBegin(calStart.getTime().getTime());
-//                    event.setEnd(calEnd.getTime().getTime());
-//                    contentValues[i] = getContentValueForSingleEvent(event);
-//                }
-//                cr.bulkInsert(CalendarContract.Events.CONTENT_URI, contentValues);
-                break;
-            case YEAR:
-                contentValues = new ContentValues[event.getRepeatValue()];
-                JewCalendar jewishCalendarStart = new JewCalendar(new Date(event.getBegin()));
-                JewCalendar jewishCalendarEnd = new JewCalendar(new Date(event.getEnd()));
-                event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
-                for (int i = 0; i < contentValues.length; i++) {
-//                    Log.d("TAG",  hebrewDateFormatter.formatHebrewNumber(jewishCalendarStart.getJewishYear()) + " , "
-//                            + hebrewDateFormatter.formatMonth(jewishCalendarStart) + " , "
-//                            + hebrewDateFormatter.formatHebrewNumber(jewishCalendarStart.getJewishDayOfMonth()));
-                    contentValues[i] = getContentValueForSingleEvent(event);
-                    jewishCalendarStart.setJewishYear(jewishCalendarStart.getJewishYear() + 1);
-                    jewishCalendarEnd.setJewishYear(jewishCalendarEnd.getJewishYear() + 1);
-                }
-                cr.bulkInsert(CalendarContract.Events.CONTENT_URI, contentValues);
-                break;
+            }
+        } else {
+            Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId());
+            cr.update(updateUri, values, null, null);
         }
         syncCalendars(context);
     }
 
-    private static Uri eventUriAsSyncAdapter (String acountName) {
-        Uri uri = Uri.parse(CalendarContract.Events.CONTENT_URI.toString());
-        uri = uri.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, acountName)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
-        return uri;
-    }
-
-    /**
-     * Creates an updated URI that includes query parameters that identify the source as a
-     * sync adapter.
-     */
-    static Uri asSyncAdapter(Uri uri, String account) {
-        return uri.buildUpon()
-                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
+    @SuppressLint("DefaultLocale")
+    @SuppressWarnings("MissingPermission")
+    private static ContentValues getContentValuesForEvent(EventInstanceForDay event) {
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.DTSTART, event.getBegin());
+        Frequency frequency = event.getFrequency();
+        if (frequency == null) {
+            values.put(CalendarContract.Events.DTEND, event.getEnd());
+        } else {
+            switch (frequency) {
+                case DAILY:
+                    long duration = event.getEnd() - event.getBegin();
+                    long hours = TimeUnit.MILLISECONDS.toHours(duration);
+                    values.put(CalendarContract.Events.DURATION, String.format("PT%dH%dM", hours, TimeUnit.MILLISECONDS.toMinutes(duration - TimeUnit.HOURS.toMillis(hours))));
+                    values.put(CalendarContract.Events.RRULE, "FREQ=DAILY;COUNT=" + event.getRepeatValue());//;BYDAY=TU   "FREQ=WEEKLY;BYDAY=TU;UNTIL=20150428"
+                    break;
+                case WEEKLY:
+                    values.put(CalendarContract.Events.DURATION, "PT1H0M");
+                    values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=" + event.getRepeatValue());
+                    break;
+                case MONTHLY:
+                    values.put(CalendarContract.Events.DURATION, "PT1H0M");
+                    values.put(CalendarContract.Events.RRULE, "FREQ=MONTHLY;COUNT=" + event.getRepeatValue());
+                    values.put(CalendarContract.Events._SYNC_ID, System.currentTimeMillis() + "");
+                    break;
+                case YEARLY:
+                    values.put(CalendarContract.Events.DURATION, "PT1H0M");
+                    values.put(CalendarContract.Events.RRULE, "FREQ=YEARLY;COUNT=" + event.getRepeatValue());
+                    values.put(CalendarContract.Events._SYNC_ID, System.currentTimeMillis() + "");
+                    break;
+            }
+        }
+        values.put(CalendarContract.Events.TITLE, event.getEventTitle());
+        values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+        return values;
     }
 
     @SuppressLint("MissingPermission")
@@ -308,7 +288,8 @@ public class GoogleManager {
                 .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google");
         ContentUris.appendId(builder, event.getBegin());
-        ContentUris.appendId(builder, event.getBegin() + TimeUnit.DAYS.toMillis(365));
+        long endInstances = event.getFrequency().equals(Frequency.MONTHLY) ? TimeUnit.DAYS.toMillis(365) :  TimeUnit.DAYS.toMillis(365 * 10);
+        ContentUris.appendId(builder, event.getBegin() + endInstances);
         String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? AND " +CalendarContract.Instances.CALENDAR_ID + " = ? AND " + CalendarContract.Instances.EVENT_ID + " = ?";
         String[] WHERE_CALENDARS_ARGS = {"1", Long.toString(event.getCalendarId()), Long.toString(event.getEventId())};//
         String[] mProjection = {
@@ -340,7 +321,6 @@ public class GoogleManager {
                     ContentValues values = new ContentValues();
 //                    values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
 //                    values.put(CalendarContract.Events.TITLE, event.getEventTitle());
-
                     values.put(CalendarContract.Events.DTSTART, event.getBegin());
 //                    values.put(CalendarContract.Events.DTEND, event.getEnd());
                     values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, start);
@@ -349,53 +329,35 @@ public class GoogleManager {
                     // Create the exception
                     Uri uri = Uri.withAppendedPath(CalendarContract.Events.CONTENT_EXCEPTION_URI,  String.valueOf(event.getEventId()));
                     uri = asSyncAdapter(uri, PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com"));
-
 //                    int update = cr.update(ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId()), values, null, null);
-
                     Uri result = cr.insert(uri, values);
                     Log.d(TAG, "editAllEventInstances: update row= " + result);
                     i++;
                 } while (cur.moveToNext());
-
             }
             cur.close();
             syncCalendars(context);
         }
     }
 
-
-    @SuppressLint("DefaultLocale")
-    @SuppressWarnings("MissingPermission")
-    private static ContentValues getContentValueForSingleEvent(EventInstanceForDay event) {
-        ContentValues values = new ContentValues();
-        values.put(CalendarContract.Events.DTSTART, event.getBegin());
-        switch (event.getRepeatState()) {
-            case SINGLE:
-                values.put(CalendarContract.Events.DTEND, event.getEnd());
-                break;
-            case DAY:
-                long duration = event.getEnd() - event.getBegin();
-                long hours = TimeUnit.MILLISECONDS.toHours(duration);
-                values.put(CalendarContract.Events.DURATION, String.format("PT%dH%dM", hours, TimeUnit.MILLISECONDS.toMinutes(duration - TimeUnit.HOURS.toMillis(hours))));
-                values.put(CalendarContract.Events.RRULE, "FREQ=DAILY;COUNT=" + event.getRepeatValue());//;BYDAY=TU   "FREQ=WEEKLY;BYDAY=TU;UNTIL=20150428"
-                break;
-            case WEEK:
-                values.put(CalendarContract.Events.DURATION, "PT1H0M");
-                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;COUNT=" + event.getRepeatValue());
-                break;
-            case MONTH:
-                values.put(CalendarContract.Events.DURATION, "PT1H0M");
-                values.put(CalendarContract.Events.RRULE, "FREQ=MONTHLY;COUNT=" + event.getRepeatValue());
-                String syncId = System.currentTimeMillis() + "";
-                values.put(CalendarContract.Events._SYNC_ID, syncId);
-                break;
-        }
-        values.put(CalendarContract.Events.TITLE, event.getEventTitle());
-        values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
-        return values;
+    private static Uri eventUriAsSyncAdapter (String acountName) {
+        Uri uri = Uri.parse(CalendarContract.Events.CONTENT_URI.toString());
+        uri = uri.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, acountName)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
+        return uri;
     }
 
+    /**
+     * Creates an updated URI that includes query parameters that identify the source as a
+     * sync adapter.
+     */
+    static Uri asSyncAdapter(Uri uri, String account) {
+        return uri.buildUpon()
+                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
+    }
 //    public static void openEvent(Context context, EventInstance eventInstance){
 //        Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventInstance.getEventId());
 //        Intent intent = new Intent(Intent.ACTION_VIEW)

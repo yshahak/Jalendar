@@ -87,7 +87,8 @@ public class Contract {
             Calendars.CALENDAR_COLOR,   //6
             Calendars.OWNER_ACCOUNT,    //7
             Calendars.CALENDAR_TIME_ZONE, //8
-            Instances.CALENDAR_ID};//9
+            Instances.CALENDAR_ID,      //9
+            Instances.RRULE};           //10
     // The indices for the projection array above.
     public static final int PROJECTION_EVENT_ID = 0;
     public static final int PROJECTION_BEGIN_INDEX = 1;
@@ -98,6 +99,7 @@ public class Contract {
     public static final int PROJECTION_CALENDAR_COLOR_INDEX = 6;
     public static final int PROJECTION_CALENDAR_TIME_ZONE = 8;
     public static final int PROJECTION_CALENDAR_ID = 9;
+    public static final int PROJECTION_RRULE = 10;
 
     public static void getInstances(Activity activity, Long eventId){
         // Specify the date range you want to search for recurring

@@ -14,6 +14,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
+import biweekly.io.scribe.property.RecurrenceRuleScribe;
+import biweekly.parameter.ICalParameters;
+import biweekly.property.RecurrenceRule;
+import biweekly.util.Frequency;
+
 import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
 
 /**
@@ -30,7 +37,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     protected String calendarDisplayName;
     protected int dayOfMonth;
     protected int repeatValue = -1;
-    protected Repeat repeatState = Repeat.SINGLE;
+    protected Frequency frequency = null;
 
     public EventInstanceForDay(long eventId, String eventTitle, long begin, long end, int displayColor, String calendarDisplayName, int dayOfMonth) {
         this.eventId = eventId;
@@ -147,22 +154,24 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         return simpleEventFormat.format(end);
     }
 
-    public void setRepeatState(Repeat repeatState) {
-        this.repeatState = repeatState;
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
     }
 
     public String getRepeatTitle() {
+
         Context ctx = MyApplication.getInstance();
-        switch (repeatState) {
-            case SINGLE:
-                return ctx.getString(R.string.instance_single);
-            case DAY:
+        if (frequency == null) {
+            return ctx.getString(R.string.instance_single);
+        }
+        switch (frequency) {
+            case DAILY:
                 return ctx.getString(R.string.instance_daily);
-            case WEEK:
+            case WEEKLY:
                 return ctx.getString(R.string.instance_weekly);
-            case MONTH:
+            case MONTHLY:
                 return ctx.getString(R.string.instance_monthly);
-            case YEAR:
+            case YEARLY:
                 return ctx.getString(R.string.instance_yearly);
         }
         return ctx.getString(R.string.instance_single);
@@ -177,27 +186,25 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
             return repeatValue;
         }
         //default values
-        switch (repeatState) {
-            case SINGLE:
-                break;
-            case DAY:
+        switch (frequency) {
+            case DAILY:
                 return 365;
-            case WEEK:
+            case WEEKLY:
                 return 36;
-            case MONTH:
+            case MONTHLY:
                 return 12;
-            case YEAR:
+            case YEARLY:
                 return 10;
         }
         return 1;
     }
 
     public boolean getRepeatVisibility(){
-        return !repeatState.equals(Repeat.SINGLE);
+        return frequency != null;
     }
 
-    public Repeat getRepeatState() {
-        return repeatState;
+    public Frequency getFrequency() {
+        return frequency;
     }
 
     private static SimpleDateFormat simpleLoazyDateFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
@@ -219,14 +226,6 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         return (int) (this.begin - instance.begin);
     }
 
-    public enum Repeat {
-        SINGLE,
-        DAY,
-        WEEK,
-        MONTH,
-        YEAR
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -244,7 +243,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         dest.writeString(this.calendarDisplayName);
         dest.writeInt(this.dayOfMonth);
         dest.writeInt(this.repeatValue);
-        dest.writeString(this.repeatState.name());
+        dest.writeString(this.frequency.name());
     }
 
     protected EventInstanceForDay(Parcel in) {
@@ -258,7 +257,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.calendarDisplayName = in.readString();
         this.dayOfMonth = in.readInt();
         this.repeatValue = in.readInt();
-        this.repeatState = Repeat.valueOf(in.readString());
+        this.frequency = Frequency.valueOf(in.readString());
     }
 
     public static final Parcelable.Creator<EventInstanceForDay> CREATOR = new Parcelable.Creator<EventInstanceForDay>() {
@@ -276,5 +275,20 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
     @Override
     public EventInstanceForDay clone() throws CloneNotSupportedException {
         return (EventInstanceForDay) super.clone();
+    }
+
+    private static RecurrenceRuleScribe scribe = new RecurrenceRuleScribe();
+    private static ParseContext parseContext = new ParseContext();
+    static {
+        parseContext.setVersion(ICalVersion.V2_0);
+    }
+
+    public void convertRruletoFrequencyAndRepeatValue(String rule){
+        if (rule == null) {
+            return;
+        }
+        RecurrenceRule rrule = scribe.parseText(rule, null, new ICalParameters(), parseContext);
+        this.frequency = rrule.getValue().getFrequency();
+        this.repeatValue = rrule.getValue().getCount() != null ? rrule.getValue().getCount() : -1;
     }
 }

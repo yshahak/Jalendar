@@ -25,6 +25,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALE
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_DISPLAY_COLOR_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_END_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_EVENT_ID;
+import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_RRULE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_TITLE_INDEX;
 
 
@@ -183,11 +184,13 @@ public class EventsHelper {
         long offset = timeZone.getOffset(start);
         String calendarName = cursor.getString(PROJECTION_CALENDAR_DISPLAY_NAME_INDEX);
         int displayColor = cursor.getInt(PROJECTION_DISPLAY_COLOR_INDEX);
+        String rrule = cursor.getString(PROJECTION_RRULE);
 //        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
 //        boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
         EventInstanceForDay eventInstanceForDay = new EventInstanceForDay(eventId, title, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
         eventInstanceForDay.setCalendarId(calendarId);
+        eventInstanceForDay.convertRruletoFrequencyAndRepeatValue(rrule);
         return eventInstanceForDay;
     }
 

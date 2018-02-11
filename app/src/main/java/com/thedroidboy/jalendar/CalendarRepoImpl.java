@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
@@ -20,7 +21,6 @@ import com.thedroidboy.jalendar.model.MonthDAO;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.INSTANCE_PROJECTION;
 
@@ -34,8 +34,9 @@ public class CalendarRepoImpl implements CalendarRepo {
     private final MonthDAO monthDAO;
     private final DayDAO dayDAO;
     private final JewCalendar jewCalendar;
-    private HashMap<Integer, Month> monthMap;
-    private HashMap<Integer, Day> dayMap;
+    private SparseArray<Month> monthMap;
+    private SparseArray<Day> dayMap;
+    private HashMap<Day, Integer> dayToPositionMap;
     private boolean threadIsRunning = true;
 
     public CalendarRepoImpl(MonthDAO monthDAO, DayDAO dayDAO, JewCalendar jewCalendar) {
@@ -48,8 +49,9 @@ public class CalendarRepoImpl implements CalendarRepo {
     @SuppressLint("UseSparseArrays")
     private void init(){
         new Thread(() -> {
-            dayMap = new HashMap<>();
-            monthMap = new HashMap<>();
+            dayMap = new SparseArray<>();
+            dayToPositionMap = new HashMap<>();
+            monthMap = new SparseArray<>();
             initMonthMap(0);
             initDayMap();
             threadIsRunning = false;
@@ -78,12 +80,14 @@ public class CalendarRepoImpl implements CalendarRepo {
         List<Day> list = dayDAO.getDaySegmentForward(currentDayHasCode, 100);
         for (Day day : list) {
             dayMap.put(i, day);
+            dayToPositionMap.put(day, i);
             i++;
         }
         List<Day> dayList = dayDAO.getDaySegmentBackward(currentDayHasCode, 100);
         i = -1;
         for (Day day : dayList) {
             dayMap.put(i, day);
+            dayToPositionMap.put(day, i);
             i--;
         }
     }
@@ -204,15 +208,7 @@ public class CalendarRepoImpl implements CalendarRepo {
     }
 
     @Override
-    public int getPositionForDay(Day day) {
-        boolean exists = dayMap.containsValue(day);
-        if (exists){
-            for (Map.Entry<Integer, Day> integerDayEntry : dayMap.entrySet()) {
-                if(day.equals(integerDayEntry.getValue())){
-                    return integerDayEntry.getKey();
-                }
-            }
-        }
-        return -1000;
+    public Integer getPositionForDay(Day day) {
+        return dayToPositionMap.get(day);
     }
 }

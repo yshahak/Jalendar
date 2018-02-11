@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import biweekly.util.Frequency;
 import dagger.android.AndroidInjection;
 import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 
@@ -75,21 +76,24 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     }
 
     private void createEventInstance(){
-        EventInstanceForDay event = getIntent().getParcelableExtra(EXTRA_EVENT);
+        Intent eventIntent = getIntent();
+        EventInstanceForDay event = eventIntent.getParcelableExtra(EXTRA_EVENT);
         if (event == null) {
             Calendar calendar = Calendar.getInstance();
-            long startEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
-            long endEvent = getIntent().getLongExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0L);
+            long startEvent = eventIntent.getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
+            long endEvent = eventIntent.getLongExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0L);
             if (endEvent == 0){
                 endEvent = startEvent + TimeUnit.HOURS.toMillis(1);
             }
-            long eventId = getIntent().getLongExtra(CalendarContract.Instances.EVENT_ID, -1L);
-            String title = getIntent().getStringExtra(CalendarContract.Events.TITLE);
-            String desc = getIntent().getStringExtra(CalendarContract.Events.DESCRIPTION);
-            String location = getIntent().getStringExtra(CalendarContract.Events.EVENT_LOCATION);
-            int available = getIntent().getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
-            String email = getIntent().getStringExtra(Intent.EXTRA_EMAIL);
+            long eventId = eventIntent.getLongExtra(CalendarContract.Instances.EVENT_ID, -1L);
+            String title = eventIntent.getStringExtra(CalendarContract.Events.TITLE);
+            String desc = eventIntent.getStringExtra(CalendarContract.Events.DESCRIPTION);
+            String location = eventIntent.getStringExtra(CalendarContract.Events.EVENT_LOCATION);
+            int available = eventIntent.getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+            String email = eventIntent.getStringExtra(Intent.EXTRA_EMAIL);
             event = new EventInstanceForDay(eventId, title, startEvent, endEvent, -1, "", 1);
+            String rrule = eventIntent.getStringExtra(CalendarContract.Events.RRULE);
+            event.convertRruletoFrequencyAndRepeatValue(rrule);
         }
         long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
         event.setCalendarId(calID);
@@ -106,7 +110,6 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         newFragment.show(getSupportFragmentManager(), "timePicker");
         pickerState = (text.equals(binding.eventStartTime)) ? PICKER_STATE.STATE_START_TIME : PICKER_STATE.STATE_END_TIME;
     }
-
 
     public void saveClicked(View view) {
         boolean save = binding.headerBtnSave.getText().equals("שמור");
@@ -129,19 +132,17 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_event_instances, popup.getMenu());
         int position = 0;
-        switch (binding.getEvent().getRepeatState()) {
-            case SINGLE:
-                break;
-            case DAY:
+        switch (binding.getEvent().getFrequency()) {
+            case DAILY:
                 position = 1;
                 break;
-            case WEEK:
+            case WEEKLY:
                 position = 2;
                 break;
-            case MONTH:
+            case MONTHLY:
                 position = 3;
                 break;
-            case YEAR:
+            case YEARLY:
                 position = 4;
                 break;
         }
@@ -154,19 +155,19 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         EventInstanceForDay event = binding.getEvent();
         switch (item.getItemId()) {
             case R.id.repeat_single:
-                event.setRepeatState(EventInstanceForDay.Repeat.SINGLE);
+                event.setFrequency(null);
                 break;
             case R.id.repeat_daily:
-                event.setRepeatState(EventInstanceForDay.Repeat.DAY);
+                event.setFrequency(Frequency.DAILY);
                 break;
             case R.id.repeat_weekly:
-                event.setRepeatState(EventInstanceForDay.Repeat.WEEK);
+                event.setFrequency(Frequency.WEEKLY);
                 break;
             case R.id.repeat_monthly:
-                event.setRepeatState(EventInstanceForDay.Repeat.MONTH);
+                event.setFrequency(Frequency.MONTHLY);
                 break;
             case R.id.repeat_yearly:
-                event.setRepeatState(EventInstanceForDay.Repeat.YEAR);
+                event.setFrequency(Frequency.YEARLY);
                 break;
         }
         binding.setEvent(event);

@@ -32,6 +32,6 @@ public interface CalendarRepo {
 
     Cursor getMonthEventsCursor(Context context, long start, long end);
 
-    int getPositionForDay(Day day);
+    Integer getPositionForDay(Day day);
 
 }
