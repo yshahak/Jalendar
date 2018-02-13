@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
  * this way we can display the fragment title in the toolBar
  */
 
-public abstract class PagerAdapterBase extends FragmentStatePagerAdapter {
+public abstract class PagerAdapterBase extends FragmentStatePagerAdapter implements ViewPager.OnPageChangeListener {
 
     private static final String TAG = "PagerAdapterBase";
 
@@ -54,7 +55,22 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter {
         return "fragment not known";
     }
 
-//    public long getFragmentStartTime(int position){
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    //    public long getFragmentStartTime(int position){
 //        String name = makeFragmentName(R.id.view_pager, position);
 //        FragmentData fragmentByTag = (FragmentData) mFragmentManager.findFragmentByTag(name);
 //        if (fragmentByTag != null) {

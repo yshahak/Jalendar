@@ -24,6 +24,12 @@ public class PagerAdapterMonthDay extends PagerAdapterBase {
         this.shouldShowEvents = shouldShowEvents;
     }
 
+    public PagerAdapterMonthDay(FragmentManager fm, boolean shouldShowEvents, DISPLAY display) {
+        super(fm);
+        this.shouldShowEvents = shouldShowEvents;
+        this.displayState = display;
+    }
+
     @Override
     public Fragment getItem(int position) {
 //        Log.d(TAG, "getItem: " + position);
