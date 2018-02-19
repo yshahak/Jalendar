@@ -117,7 +117,7 @@ public class GoogleManager {
 
 
     @SuppressWarnings("MissingPermission")
-    private static void syncCalendars(Context context) {
+    public static void syncCalendars(Context context) {
         Account[] accounts = AccountManager.get(context).getAccounts();
         String authority = CalendarContract.Calendars.CONTENT_URI.getAuthority();
         for (Account account : accounts) {
@@ -190,7 +190,7 @@ public class GoogleManager {
         return builder.build();
     }
 
-    public static void updateCalendarVisibility(ContentResolver contentResolver, CalendarAccount calendarAccount, boolean visibility) {
+    public static void updateCalendarVisibility(Context context, CalendarAccount calendarAccount, boolean visibility) {
         Uri.Builder builder = CalendarContract.Calendars.CONTENT_URI.buildUpon()
                 .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, calendarAccount.getCalendarName())
@@ -198,7 +198,9 @@ public class GoogleManager {
         ContentUris.appendId(builder, calendarAccount.getAccountId());
         ContentValues contentValues = new ContentValues();
         contentValues.put(CalendarContract.Calendars.VISIBLE, visibility);
-        contentResolver.update(builder.build(), contentValues, null, null);
+        ContentResolver cr =  context.getContentResolver();
+        cr.update(builder.build(), contentValues, null, null);
+        syncCalendars(context);
     }
 
     public static Uri getInstanceUriForInterval(long start, long end) {

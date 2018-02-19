@@ -93,7 +93,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             String email = eventIntent.getStringExtra(Intent.EXTRA_EMAIL);
             event = new EventInstanceForDay(eventId, title, startEvent, endEvent, -1, "", 1);
             String rrule = eventIntent.getStringExtra(CalendarContract.Events.RRULE);
-            event.convertRruletoFrequencyAndRepeatValue(rrule);
+            event.convertRruleToFrequencyAndRepeatValue(rrule);
         }
         long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
         event.setCalendarId(calID);

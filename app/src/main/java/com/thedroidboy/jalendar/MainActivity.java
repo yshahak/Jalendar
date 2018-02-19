@@ -242,16 +242,10 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
                 } else {
                     accountListNames.get(accountName).add(calendarAccount);
                 }
-                Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName
-                        + " , ownerName: " + ownerName);
+                Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName  + " , ownerName: " + ownerName);
 
-//                if (displayName.equals(HEBREW_CALENDAR_SUMMERY_TITLE)) {
-//                    prefs.edit()
-//                            .putLong(KEY_HEBREW_ID, calID).apply();
-//                }
                 if (prefs.getLong(KEY_HEBREW_ID, -1L) == -1L) {
-                    prefs.edit()
-                            .putLong(KEY_HEBREW_ID, calID).apply();
+                    prefs.edit().putLong(KEY_HEBREW_ID, calID).apply();
                 }
             }
             cur.close();
@@ -291,10 +285,11 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
                         }
                 );
                 checkBox.setSupportButtonTintList(colorStateList);
-
                 checkBox.setChecked(calendarAccount.isCalendarIsVisible());
                 checkBox.setText(calendarAccount.getCalendarDisplayName());
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> GoogleManager.updateCalendarVisibility(getContentResolver(), calendarAccount, isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    GoogleManager.updateCalendarVisibility(this, calendarAccount, isChecked);
+                });
             }
         }
 

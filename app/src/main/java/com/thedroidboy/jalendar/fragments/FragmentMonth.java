@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,6 +146,8 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         return new GoogleEventsLoader(getContext(), calendarRepo, monthVM.getMonth().getValue().getDayList());
     }
 
+
+
     @Override
     public void onLoadFinished(Loader<List<Day>> loader, List<Day> data) {
         if (monthVM.getMonth().getValue() != null) {
@@ -155,7 +158,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoaderReset(Loader<List<Day>> loader) {
-
+        Log.d(TAG, "onLoaderReset:");
     }
 
     @Override

@@ -185,6 +185,9 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         if (repeatValue != -1){
             return repeatValue;
         }
+        if (frequency == null) {
+            return 0;
+        }
         //default values
         switch (frequency) {
             case DAILY:
@@ -243,7 +246,11 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         dest.writeString(this.calendarDisplayName);
         dest.writeInt(this.dayOfMonth);
         dest.writeInt(this.repeatValue);
-        dest.writeString(this.frequency.name());
+        if (this.frequency != null) {
+            dest.writeString(this.frequency.name());
+        } else {
+            dest.writeString("null");
+        }
     }
 
     protected EventInstanceForDay(Parcel in) {
@@ -257,7 +264,8 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.calendarDisplayName = in.readString();
         this.dayOfMonth = in.readInt();
         this.repeatValue = in.readInt();
-        this.frequency = Frequency.valueOf(in.readString());
+        String name = in.readString();
+        this.frequency = name.equals("null") ? null : Frequency.valueOf(name);
     }
 
     public static final Parcelable.Creator<EventInstanceForDay> CREATOR = new Parcelable.Creator<EventInstanceForDay>() {
@@ -283,7 +291,7 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         parseContext.setVersion(ICalVersion.V2_0);
     }
 
-    public void convertRruletoFrequencyAndRepeatValue(String rule){
+    public void convertRruleToFrequencyAndRepeatValue(String rule){
         if (rule == null) {
             return;
         }

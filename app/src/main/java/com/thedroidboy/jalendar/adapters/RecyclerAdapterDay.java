@@ -14,6 +14,8 @@ import com.thedroidboy.jalendar.databinding.EventItemForDayBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.EventInstanceForDay;
 
+import java.util.List;
+
 
 /**
  * Created by Yaakov Shahak
@@ -27,10 +29,6 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
 
     public RecyclerAdapterDay(Day day) {
         this.day = day;
-        if (day.getGoogleEventInstanceForDays().size() == 0){
-            day.getGoogleEventInstanceForDays().add(new EventInstanceForDay(-1, "אין אירועים ליום זה",
-                     -1, -1, Color.TRANSPARENT, "", -1));
-        }
     }
 
     @Override
@@ -43,12 +41,16 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
 //        Log.d(TAG, "onBindViewHolder: " + position + "\t" + day.getGoogleEventInstanceForDays().get(position));
-        holder.bindTo(day.getGoogleEventInstanceForDays().get(position));
+        List<EventInstanceForDay> events = day.getGoogleEventInstanceForDays();
+        EventInstanceForDay event = events.size() > 0 ? events.get(position) : new EventInstanceForDay(-1, "אין אירועים ליום זה",
+                -1, -1, Color.TRANSPARENT, "", -1);
+        holder.bindTo(event);
     }
 
     @Override
     public int getItemCount() {
-        return day.getGoogleEventInstanceForDays().size();
+        int size = day.getGoogleEventInstanceForDays().size();
+        return size == 0 ? 1 : size;
     }
 
     class DayViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

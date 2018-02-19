@@ -111,7 +111,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     public void onResume() {
         super.onResume();
         if (dayVM.getDayLiveData().getValue() != null && EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
-            getLoaderManager().initLoader(100, null, this);
+            getLoaderManager().restartLoader(100, null, this);
         }
     }
 
@@ -130,7 +130,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
 
     @Override
     public void onLoaderReset(Loader<List<Day>> loader) {
-
+        Log.d(TAG, "onLoaderReset: ");
     }
 
     @Override

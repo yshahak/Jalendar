@@ -25,6 +25,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALE
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_DISPLAY_COLOR_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_END_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_EVENT_ID;
+import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_RDATE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_RRULE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_TITLE_INDEX;
 
@@ -156,6 +157,9 @@ public class EventsHelper {
         if (cur == null) {
             return;
         }
+        for (Day day : days) {
+            day.getGoogleEventInstanceForDays().clear();
+        }
         long startMonth = days.get(0).getStartDayInMillis();
         if (cur.moveToFirst()) {
             do {
@@ -166,7 +170,6 @@ public class EventsHelper {
                 if (index < days.size()) {
                     Day day = days.get((Math.abs(index)));
                     List<EventInstanceForDay> googleEventInstanceForDays = day.getGoogleEventInstanceForDays();
-                    googleEventInstanceForDays.clear();
                     googleEventInstanceForDays.add(eventInstanceForDay);
                 }
             } while (cur.moveToNext());
@@ -175,6 +178,19 @@ public class EventsHelper {
 
 
     public static EventInstanceForDay convertCursorToEvent(Cursor cursor) {
+//        StringBuilder sb = new StringBuilder();
+//        int columnsQty = cursor.getColumnCount();
+//        for (int idx=0; idx<columnsQty; ++idx) {
+//            String value = cursor.getString(idx);
+//            if (value != null) {
+//                String key = cursor.getColumnName(idx);
+//                sb.append(key).append("=").append(value);
+//                if (idx < columnsQty - 1)
+//                    sb.append("\n");
+//            }
+//
+//        }
+//        Log.d("event", String.format("Row: %d, Values: %s", cursor.getPosition(),  sb.toString()));
         long eventId = cursor.getLong(PROJECTION_EVENT_ID);
         long calendarId = cursor.getLong(PROJECTION_CALENDAR_ID);
         String title = cursor.getString(PROJECTION_TITLE_INDEX);
@@ -185,12 +201,13 @@ public class EventsHelper {
         String calendarName = cursor.getString(PROJECTION_CALENDAR_DISPLAY_NAME_INDEX);
         int displayColor = cursor.getInt(PROJECTION_DISPLAY_COLOR_INDEX);
         String rrule = cursor.getString(PROJECTION_RRULE);
+        String rDate = cursor.getString(PROJECTION_RDATE);
 //        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
 //        boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
         EventInstanceForDay eventInstanceForDay = new EventInstanceForDay(eventId, title, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
         eventInstanceForDay.setCalendarId(calendarId);
-        eventInstanceForDay.convertRruletoFrequencyAndRepeatValue(rrule);
+        eventInstanceForDay.convertRruleToFrequencyAndRepeatValue(rrule);
         return eventInstanceForDay;
     }
 
