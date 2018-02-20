@@ -4,8 +4,10 @@ import android.Manifest;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -20,6 +22,7 @@ import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.GoogleEventsLoader;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
+import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.databinding.FragmentMonthItemBinding;
 import com.thedroidboy.jalendar.model.Day;
@@ -39,13 +42,14 @@ import pub.devrel.easypermissions.EasyPermissions;
  * on 20/11/2017.
  */
 
-public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>>, PagerAdapterBase.FragmentData {
+public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallbacks<List<Day>>, PagerAdapterBase.FragmentData, DataChanged {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String KEY_SHOW_EVENTS = "keyShowEvents";
     private static final String TAG = FragmentMonth.class.getSimpleName();
     private MonthVM monthVM;
     private FragmentMonthItemBinding binding;
+    private final DataObserver dataObserver;
     @Inject
     CalendarRepo calendarRepo;
     @Inject
@@ -53,6 +57,11 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     private int currentDayOfMonth = -1;
     private float cellHeight;
     private boolean shouldShowEvents;
+
+    public FragmentMonth() {
+        this.dataObserver = new DataObserver(new Handler(), this);
+    }
+
 
     public static FragmentMonth newInstance(int position, boolean shouldShowEvents) {
         FragmentMonth fragmentMonth = new FragmentMonth();
@@ -87,6 +96,14 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
                 binding.setMonth(month);
                 bindMonth(binding);
                 if (shouldShowEvents && EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
+                    List<Day> dayList = month.getDayList();
+                    long first = dayList.get(0).getStartDayInMillis();
+                    long last = dayList.get(dayList.size() - 1).getEndDayInMillis();
+                    getActivity().getContentResolver().
+                            registerContentObserver(
+                                    GoogleManager.getInstanceUriForInterval(first, last),
+                                    true,
+                                    dataObserver);
                     getLoaderManager().initLoader(100, null, this);
                 }
             }
@@ -139,6 +156,8 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onDestroy() {
         super.onDestroy();
+        getActivity().getContentResolver().
+                unregisterContentObserver(dataObserver);
     }
 
     @Override
@@ -146,10 +165,9 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         return new GoogleEventsLoader(getContext(), calendarRepo, monthVM.getMonth().getValue().getDayList());
     }
 
-
-
     @Override
     public void onLoadFinished(Loader<List<Day>> loader, List<Day> data) {
+        Log.d(TAG, "onLoadFinished: ");
         if (monthVM.getMonth().getValue() != null) {
             monthVM.getMonth().getValue().setDayList(data);
             bindMonth(binding);
@@ -172,6 +190,11 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         return "month not known";
     }
 
+    @Override
+    public void onDataChanged() {
+        getLoaderManager().restartLoader(100, null, this);
+    }
+
 //    @Override
 //    public long getFragmentStartTime() {
 //        if (monthVM.getMonth().getValue() != null) {
@@ -179,4 +202,26 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 //        }
 //        return 0;
 //    }
+}
+
+interface DataChanged {
+    void onDataChanged();
+}
+
+class DataObserver extends ContentObserver {
+
+    private final DataChanged dataChanged;
+
+    public DataObserver(Handler handler, DataChanged dataChanged) {
+        super(handler);
+        this.dataChanged = dataChanged;
+    }
+
+    @Override
+    public void onChange(boolean selfChange) {
+        super.onChange(selfChange);
+        if (!selfChange){
+            dataChanged.onDataChanged();
+        }
+    }
 }

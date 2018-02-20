@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.thedroidboy.jalendar.calendars.google.EventsHelper;
-import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.model.Day;
 
 import java.util.List;
@@ -19,14 +18,12 @@ public class GoogleEventsLoader extends AsyncTaskLoader<List<Day>> {
     private final CalendarRepo calendarRepo;
     private final List<Day> dayList;
     private Cursor cursor;
-    private final ForceLoadContentObserver observer;
 
 
     public GoogleEventsLoader(Context context, CalendarRepo calendarRepo, List<Day> dayList) {
         super(context);
         this.calendarRepo = calendarRepo;
         this.dayList = dayList;
-        this.observer = new ForceLoadContentObserver();
     }
 
     @Override
@@ -36,9 +33,6 @@ public class GoogleEventsLoader extends AsyncTaskLoader<List<Day>> {
             long first = dayList.get(0).getStartDayInMillis();
             long last = dayList.get(dayList.size() - 1).getEndDayInMillis();
             this.cursor =  calendarRepo.getMonthEventsCursor(getContext(), first, last);
-            // this is to force a reload when the content change
-            this.cursor.registerContentObserver(this.observer);
-            this.cursor.setNotificationUri(getContext().getContentResolver(),  GoogleManager.getInstanceUriForInterval(first, last));
             EventsHelper.bindCursorToDayList(dayList, cursor);
         }
         return dayList;

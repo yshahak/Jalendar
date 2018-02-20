@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -25,6 +26,7 @@ import com.thedroidboy.jalendar.GoogleEventsLoader;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.RecyclerAdapterDay;
+import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.databinding.FragmentDayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayVM;
@@ -45,16 +47,21 @@ import pub.devrel.easypermissions.EasyPermissions;
  * on 20/11/2017.
  */
 
-public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentData, LoaderManager.LoaderCallbacks<List<Day>> {
+public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentData, LoaderManager.LoaderCallbacks<List<Day>>, DataChanged {
 
     private static final String KEY_POSITION = "keyPosition";
     private static final String TAG = FragmentDay.class.getSimpleName();
     private DayVM dayVM;
+    private final DataObserver dataObserver;
     @Inject
     CalendarRepo calendarRepo;
     @Inject
     SharedPreferences prefs;
     private FragmentDayItemBinding dayBinding;
+
+    public FragmentDay() {
+        dataObserver = new DataObserver(new Handler(), this);
+    }
     //    private int currentDayOfMonth = -1;
 
     public static FragmentDay newInstance(int position) {
@@ -86,6 +93,13 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
                 dayBinding.dayRecyclerView.setLayoutManager(layoutManager);
                 dayBinding.dayRecyclerView.setAdapter(new RecyclerAdapterDay(day));
+                long first = day.getStartDayInMillis();
+                long last = day.getEndDayInMillis();
+                getActivity().getContentResolver().
+                        registerContentObserver(
+                                GoogleManager.getInstanceUriForInterval(first, last),
+                                true,
+                                dataObserver);
                 getLoaderManager().initLoader(100, null, this);
             }
         });
@@ -116,6 +130,13 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().getContentResolver().
+                unregisterContentObserver(dataObserver);
+    }
+
+    @Override
     public Loader<List<Day>> onCreateLoader(int id, Bundle args) {
         return new GoogleEventsLoader(getContext(), calendarRepo, Collections.singletonList(dayVM.getDayLiveData().getValue()));
     }
@@ -143,4 +164,11 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
         }
         return "day not known";
     }
+
+    @Override
+    public void onDataChanged() {
+        getLoaderManager().restartLoader(100, null, this);
+    }
 }
+
+
