@@ -1,10 +1,7 @@
 package com.thedroidboy.jalendar;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,27 +16,19 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.TextView;
 
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
-import com.thedroidboy.jalendar.calendars.google.CalendarAccount;
-import com.thedroidboy.jalendar.calendars.google.GoogleManager;
+import com.thedroidboy.jalendar.calendars.google.CalendarHelper;
 import com.thedroidboy.jalendar.fragments.PagerFragment;
 import com.thedroidboy.jalendar.model.Day;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -48,13 +37,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJECTION;
-import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ACCOUNTNAME_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_COLOR_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_DISPLAY_NAME_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ID_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_OWNER_ACCOUNT_INDEX;
-import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISIBLE_INDEX;
 
 public class MainActivity extends AppCompatActivity implements  LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -188,9 +170,6 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
     private void validateCalendarPermission() {
         String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR, Manifest.permission.GET_ACCOUNTS};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            if (prefs.getString("user_email", null) == null) {
-                startActivityForResult(new Intent(this, GoogleSignInActivity.class), RC_SIGN_IN);
-            }
             getSupportLoaderManager().initLoader(101, null, this);
         } else {
             EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
@@ -213,43 +192,7 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cur) {
         if (cur != null) {
-            accountListNames.clear();
-            while (cur.moveToNext()) {
-                int calID, color;
-                String displayName;
-                String accountName;
-                String ownerName;
-                boolean visible;
-                // Get the field values
-                calID = cur.getInt(PROJECTION_ID_INDEX);
-                displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
-                accountName = cur.getString(PROJECTION_ACCOUNTNAME_INDEX);
-
-                ownerName = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX);
-                color = cur.getInt(PROJECTION_COLOR_INDEX);
-                visible = cur.getInt(PROJECTION_VISIBLE_INDEX) == 1;
-                CalendarAccount calendarAccount = new CalendarAccount();
-                calendarAccount.setAccountId(calID);
-                calendarAccount.setCalendarName(accountName);
-                calendarAccount.setCalendarDisplayName(displayName);
-                calendarAccount.setCalendarOwnerName(ownerName);
-                calendarAccount.setCalendarColor(color);
-                calendarAccount.setCalendarIsVisible(visible);
-                if (accountListNames.get(accountName) == null) {
-                    List<CalendarAccount> accountList = new ArrayList<>();
-                    accountList.add(calendarAccount);
-                    accountListNames.put(accountName, accountList);
-                } else {
-                    accountListNames.get(accountName).add(calendarAccount);
-                }
-                Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName  + " , ownerName: " + ownerName);
-
-                if (prefs.getLong(KEY_HEBREW_ID, -1L) == -1L) {
-                    prefs.edit().putLong(KEY_HEBREW_ID, calID).apply();
-                }
-            }
-            cur.close();
-            setCalendarsListInDrawer();
+            CalendarHelper.setCalendarsListInDrawer(this, cur, calendarsList);
         }
     }
 
@@ -257,45 +200,6 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
-
-    /**
-     * setting the drawer category menu of the store
-     */
-    @SuppressLint("RestrictedApi")
-    public void setCalendarsListInDrawer() {
-
-        calendarsList.removeAllViews();
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        for (String calendarAccountNmae : accountListNames.keySet()) {
-            TextView header = (TextView) layoutInflater.inflate(R.layout.calendar_accont_header, calendarsList, false);
-            header.setText(calendarAccountNmae);
-            calendarsList.addView(header);
-            for (final CalendarAccount calendarAccount : accountListNames.get(calendarAccountNmae)) {
-                final AppCompatCheckBox checkBox = (AppCompatCheckBox) layoutInflater.inflate(R.layout.calendar_visibility_row, calendarsList, false);
-                calendarsList.addView(checkBox);
-                ColorStateList colorStateList = new ColorStateList(
-                        new int[][]{
-                                new int[]{-android.R.attr.state_enabled}, //disabled
-                                new int[]{android.R.attr.state_enabled} //enabled
-                        },
-                        new int[]{
-                                calendarAccount.getCalendarColor() //disabled
-                                , calendarAccount.getCalendarColor() //enabled
-
-                        }
-                );
-                checkBox.setSupportButtonTintList(colorStateList);
-                checkBox.setChecked(calendarAccount.isCalendarIsVisible());
-                checkBox.setText(calendarAccount.getCalendarDisplayName());
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    GoogleManager.updateCalendarVisibility(this, calendarAccount, isChecked);
-                });
-            }
-        }
-
-    }
-
-    public HashMap<String, List<CalendarAccount>> accountListNames = new HashMap<>();
 
     @Override
     public void onClick(View view) {

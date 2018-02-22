@@ -132,19 +132,22 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_event_instances, popup.getMenu());
         int position = 0;
-        switch (binding.getEvent().getFrequency()) {
-            case DAILY:
-                position = 1;
-                break;
-            case WEEKLY:
-                position = 2;
-                break;
-            case MONTHLY:
-                position = 3;
-                break;
-            case YEARLY:
-                position = 4;
-                break;
+        Frequency frequency = binding.getEvent().getFrequency();
+        if (frequency != null) {
+            switch (frequency) {
+                case DAILY:
+                    position = 1;
+                    break;
+                case WEEKLY:
+                    position = 2;
+                    break;
+                case MONTHLY:
+                    position = 3;
+                    break;
+                case YEARLY:
+                    position = 4;
+                    break;
+            }
         }
         popup.getMenu().getItem(position).setChecked(true);
         popup.show();
