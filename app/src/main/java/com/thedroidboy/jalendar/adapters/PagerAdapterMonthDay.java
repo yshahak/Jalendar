@@ -2,6 +2,7 @@ package com.thedroidboy.jalendar.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import com.thedroidboy.jalendar.fragments.FragmentDay;
 import com.thedroidboy.jalendar.fragments.FragmentMonth;
@@ -32,7 +33,7 @@ public class PagerAdapterMonthDay extends PagerAdapterBase {
 
     @Override
     public Fragment getItem(int position) {
-//        Log.d(TAG, "getItem: " + position);
+        Log.d(TAG, "getItem: " + position);
         if (Math.abs(position) < 3){
             position += INITIAL_OFFSET;
         }

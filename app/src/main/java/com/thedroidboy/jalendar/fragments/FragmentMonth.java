@@ -77,6 +77,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
         AndroidSupportInjection.inject(this);
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(KEY_POSITION);
+        Log.d(TAG, "onCreate: " + position);
         shouldShowEvents = getArguments().getBoolean(KEY_SHOW_EVENTS);
         if (position == 0) {
             currentDayOfMonth = JewCalendarPool.obtain(position).dayHashCode();
@@ -109,6 +110,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
             }
         });
         getCellHeight();
+        Log.d(TAG, "onCreateView: " + getArguments().getInt(KEY_POSITION));
         return binding.getRoot();
     }
 
@@ -167,7 +169,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoadFinished(Loader<List<Day>> loader, List<Day> data) {
-        Log.d(TAG, "onLoadFinished: ");
+//        Log.d(TAG, "onLoadFinished: ");
         if (monthVM.getMonth().getValue() != null) {
             monthVM.getMonth().getValue().setDayList(data);
             bindMonth(binding);
@@ -176,7 +178,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoaderReset(Loader<List<Day>> loader) {
-        Log.d(TAG, "onLoaderReset:");
+//        Log.d(TAG, "onLoaderReset:");
     }
 
     @Override
