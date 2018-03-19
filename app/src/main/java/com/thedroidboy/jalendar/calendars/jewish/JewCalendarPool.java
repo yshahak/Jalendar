@@ -15,11 +15,10 @@ public class JewCalendarPool {
     private final static String TAG = "JewCalendarPool";
 
     private final static SparseArray<JewCalendar> jewCalendarMap = new SparseArray<>();
-    private static Thread thread;
     private static Handler handler;
 
-    public static void init(){
-        thread = new Thread(){
+    public static void init() {
+        Thread thread = new Thread() {
             public void run() {
                 Looper.prepare();
                 handler = new Handler();
@@ -41,34 +40,42 @@ public class JewCalendarPool {
 
     private static void prepareAsyncNextItems(int position) {
         synchronized (jewCalendarMap) {
-            if (jewCalendarMap.get(position + 2) == null || jewCalendarMap.get(position + 3) == null || jewCalendarMap.get(position + 4) == null) {
-                handler.post(() -> {
-                    instantiateNewCalendar(position + 2);
-                    instantiateNewCalendar(position + 3);
-                    instantiateNewCalendar(position + 4);
-                });
-            }
-            if (jewCalendarMap.get(position - 2) == null || jewCalendarMap.get(position - 3) == null || jewCalendarMap.get(position - 4) == null) {
-                handler.post(() -> {
-                    instantiateNewCalendar(position - 2);
-                    instantiateNewCalendar(position - 3);
-                    instantiateNewCalendar(position - 4);
-                });
-            }
+            handler.post(() -> {
+                instantiateNewCalendar(position + 1);
+                instantiateNewCalendar(position + 2);
+                instantiateNewCalendar(position + 3);
+                instantiateNewCalendar(position + 4);
+                instantiateNewCalendar(position + 5);
+                instantiateNewCalendar(position + 6);
+                instantiateNewCalendar(position + 7);
+                instantiateNewCalendar(position + 8);
+                instantiateNewCalendar(position + 9);
+                instantiateNewCalendar(position + 10);
+                instantiateNewCalendar(position - 1);
+                instantiateNewCalendar(position - 2);
+                instantiateNewCalendar(position - 3);
+                instantiateNewCalendar(position - 4);
+                instantiateNewCalendar(position - 5);
+                instantiateNewCalendar(position - 6);
+                instantiateNewCalendar(position - 7);
+                instantiateNewCalendar(position - 8);
+                instantiateNewCalendar(position - 9);
+                instantiateNewCalendar(position - 10);
+            });
         }
 
     }
 
     private static void instantiateNewCalendar(int position) {
-        if (jewCalendarMap.get(position) != null){
+        if (jewCalendarMap.get(position) != null) {
             return;
         }
-        Log.d(TAG, "instantiateNewCalendar new calendar for " + position);
         JewCalendar jewCalendar = new JewCalendar(position);
+        Log.d(TAG, "instantiate calendar for " + position + "\t" + jewCalendar.toString());
         jewCalendarMap.put(position, jewCalendar);
     }
 
-    public static void release(int position){
+    public static void release(int position) {
         jewCalendarMap.put(position, null);
     }
 }

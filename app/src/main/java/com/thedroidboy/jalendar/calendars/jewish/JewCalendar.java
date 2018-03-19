@@ -21,7 +21,6 @@ public class JewCalendar extends JewishCalendar {
     private static final String TAG = JewCalendar.class.getSimpleName();
     public static HebrewDateFormatter hebrewHebDateFormatter = new HebrewDateFormatter();
     public static HebrewDateFormatter hebrewEnDateFormatter = new HebrewDateFormatter();
-    private static JewCalendar calculatorCalendar = new JewCalendar();
     private int currentPosition;
 
     static {
@@ -328,7 +327,7 @@ public class JewCalendar extends JewishCalendar {
 
         int jewishMonth = getJewishMonth();
         if (jewishMonth <= 6){
-            jewishMonth += 6;
+            jewishMonth += isJewishLeapYear() ? 7 : 6;
         } else {
             jewishMonth -= 6;
         }

@@ -60,13 +60,13 @@ public class CalendarRepoImpl implements CalendarRepo {
 
     private void initMonthMap(int position) {
         int i = position;
-        int currentMonthHasCode = JewCalendarPool.obtain(position).monthHashCode();
-        List<Month> list = monthDAO.getMonthSegmentForward(currentMonthHasCode, 10);
+        int startMonthCode = JewCalendarPool.obtain(position).monthHashCode();
+        List<Month> list = monthDAO.getMonthSegmentForward(startMonthCode, 10);
         for (Month month : list) {
             monthMap.put(i, month);
             i++;
         }
-        List<Month> monthList = monthDAO.getMonthSegmentBackward(currentMonthHasCode, 10);
+        List<Month> monthList = monthDAO.getMonthSegmentBackward(startMonthCode, 10);
         i = position - 1;
         for (Month month : monthList) {
             monthMap.put(i, month);
@@ -103,7 +103,7 @@ public class CalendarRepoImpl implements CalendarRepo {
             }
             Month month = monthMap.get(position);
             if (month == null) {
-                Log.d(TAG, "getMonth: month is null");
+                Log.d(TAG, "getMonth: month is null: " + position);
                 initMonthMap(position);
                 month = monthMap.get(position);
                 if (month == null) {
