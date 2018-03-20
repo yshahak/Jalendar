@@ -31,7 +31,8 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_VISI
 
 public class CalendarHelper {
 
-    private static String TAG = "CalendarHelper";
+    public static final String HOLIDAYS = "Holidays";
+    public static final String TAG = "CalendarHelper";
 
     /**
      * setting the drawer category menu of the store
@@ -45,7 +46,12 @@ public class CalendarHelper {
             TextView header = (TextView) layoutInflater.inflate(R.layout.calendar_accont_header, calendarsList, false);
             header.setText(calendarAccountNmae);
             calendarsList.addView(header);
+            int counter = 0;
             for (final CalendarAccount calendarAccount : accountListNames.get(calendarAccountNmae)) {
+                if (calendarAccountNmae.equals(HOLIDAYS) && counter == 1){
+                    GoogleManager.updateCalendarVisibility(context, calendarAccount, false);
+                    continue;
+                }
                 final AppCompatCheckBox checkBox = (AppCompatCheckBox) layoutInflater.inflate(R.layout.calendar_visibility_row, calendarsList, false);
                 calendarsList.addView(checkBox);
                 ColorStateList colorStateList = new ColorStateList(
@@ -64,6 +70,7 @@ public class CalendarHelper {
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     GoogleManager.updateCalendarVisibility(context, calendarAccount, isChecked);
                 });
+                counter++;
             }
         }
 
@@ -76,20 +83,22 @@ public class CalendarHelper {
             int calID, color;
             String displayName, accountName, ownerName;
             boolean visible;
-            // Get the field values
             calID = cur.getInt(PROJECTION_ID_INDEX);
             displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
             accountName = cur.getString(PROJECTION_ACCOUNTNAME_INDEX);
             ownerName = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX);
+            if (ownerName.contains("#holiday@group.v.calendar.google.com")){
+                ownerName = HOLIDAYS;
+            }
             color = cur.getInt(PROJECTION_COLOR_INDEX);
             visible = cur.getInt(PROJECTION_VISIBLE_INDEX) == 1;
             CalendarAccount calendarAccount = new CalendarAccount(calID, color, displayName, accountName, ownerName, visible);
-            if (accountListNames.get(accountName) == null) {
+            if (accountListNames.get(ownerName) == null) {
                 List<CalendarAccount> accountList = new ArrayList<>();
                 accountList.add(calendarAccount);
-                accountListNames.put(accountName, accountList);
+                accountListNames.put(ownerName, accountList);
             } else {
-                accountListNames.get(accountName).add(calendarAccount);
+                accountListNames.get(ownerName).add(calendarAccount);
             }
             Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName + " , ownerName: " + ownerName);
         }

@@ -63,13 +63,13 @@ public class CalendarRepoImpl implements CalendarRepo {
         int startMonthCode = JewCalendarPool.obtain(position).monthHashCode();
         List<Month> list = monthDAO.getMonthSegmentForward(startMonthCode, 10);
         for (Month month : list) {
-            monthMap.put(i, month);
+            monthMap.put(month.getMonthHashCode(), month);
             i++;
         }
         List<Month> monthList = monthDAO.getMonthSegmentBackward(startMonthCode, 10);
         i = position - 1;
         for (Month month : monthList) {
-            monthMap.put(i, month);
+            monthMap.put(month.getMonthHashCode(), month);
             i--;
         }
     }
@@ -101,16 +101,16 @@ public class CalendarRepoImpl implements CalendarRepo {
                     e.printStackTrace();
                 }
             }
-            Month month = monthMap.get(position);
+            int monthHashCode = JewCalendarPool.obtain(position).monthHashCode();
+            Month month = monthMap.get(monthHashCode);
             if (month == null) {
-                Log.d(TAG, "getMonth: month is null: " + position);
+                Log.d(TAG, "getMonth: month is null: " + monthHashCode);
                 initMonthMap(position);
-                month = monthMap.get(position);
+                month = monthMap.get(monthHashCode);
                 if (month == null) {
                     JewCalendar jewCalendar = JewCalendarPool.obtain(position);
-//                    jewCalendar.shiftMonth(position);
                     pullMonth(jewCalendar);
-                    month = monthMap.get(position);
+                    month = monthMap.get(monthHashCode);
                 }
             }
             liveData.postValue(month);
@@ -180,7 +180,7 @@ public class CalendarRepoImpl implements CalendarRepo {
     public void pullMonth(JewCalendar jewCalendar) {
         Log.d(TAG, "getMonthByCalendar: didn't found one in db");
         Month month = new Month(jewCalendar);
-        monthMap.put(jewCalendar.getCurrentPosition(), month);
+        monthMap.put(month.getMonthHashCode(), month);
         new Thread(() -> {
             insertMonth(month);
             insertMonthDays(month.getDayList());

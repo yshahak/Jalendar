@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -62,8 +63,11 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         toolbar = findViewById(R.id.my_toolbar);
         calendarsList = findViewById(R.id.calender_list);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
         radioButtonDay = findViewById(R.id.display_day);
         radioButtonMonth = findViewById(R.id.display_month);
         radioButtonDay.setOnCheckedChangeListener(this);
@@ -179,13 +183,13 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = CalendarContract.Calendars.CONTENT_URI;
-        String selection = "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " = ? " + ")";
-        String[] selectionArgs = new String[]{"com.google"};
+        String selection = "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " = ? " + "AND " + CalendarContract.Calendars.CALENDAR_DISPLAY_NAME + " != ? )";
+        String[] selectionArgs = new String[]{"com.google", "Contacts"};
         return new CursorLoader(this,  // Context
                 uri, // URI
                 Calendar_PROJECTION,                // Projection
-                selection,                           // Selection
-                selectionArgs,                           // Selection args
+                selection,                          // Selection
+                selectionArgs,                      // Selection args
                 null); // Sort
     }
 

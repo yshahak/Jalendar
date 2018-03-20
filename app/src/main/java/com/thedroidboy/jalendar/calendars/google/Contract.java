@@ -39,7 +39,7 @@ public class Contract {
             Calendars.CALENDAR_DISPLAY_NAME,         // 2
             Calendars.OWNER_ACCOUNT,                 // 3
             Calendars.CALENDAR_COLOR,                // 4
-            Calendars.VISIBLE                        // 5
+            Calendars.VISIBLE,                       // 5
     };
 
     // The indices for the projection array above.
