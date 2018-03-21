@@ -1,16 +1,24 @@
 package com.thedroidboy.jalendar.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.thedroidboy.jalendar.CreteIvriEventActivity;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
+
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Yaakov Shahak
@@ -29,13 +37,33 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_pager_holder, container, false);
         viewPager = rootView.findViewById(R.id.view_pager);
         viewPager.setOffscreenPageLimit(2);
         viewPager.addOnPageChangeListener(this);
         PagerAdapterMonthDay.DISPLAY display = PagerAdapterMonthDay.DISPLAY.valueOf(getArguments().getString("STATE", "MONTH"));
         initViewPager(display);
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            PagerAdapterBase adapter = (PagerAdapterBase) viewPager.getAdapter();
+            if (adapter != null) {
+                long startDay = adapter.onCreateEventClicked(viewPager.getCurrentItem());
+                if (startDay != -1){
+                    Calendar instance = Calendar.getInstance();
+                    int hourNow = instance.get(Calendar.HOUR_OF_DAY);
+                    int minuteNow = (instance.get(Calendar.MINUTE) / 15) * 15;
+                    Intent intent = new Intent(getContext(), CreteIvriEventActivity.class)
+                            .putExtra(CalendarContract.Events.TITLE, "test")
+                            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow) + TimeUnit.MINUTES.toMillis(minuteNow));
+                    startActivity(intent);
+                    //Intent chooser = Intent.createChooser(intent, "Create an new event");
+//                    return new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI)
+//                            .putExtra(CalendarContract.Events.TITLE, "test")
+//                            .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow) + TimeUnit.MINUTES.toMillis(minuteNow));
+                }
+            }
+        });
         return rootView;
     }
 
@@ -71,11 +99,18 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
     @Override
     public void onPageSelected(int position) {
         PagerAdapterBase adapter = (PagerAdapterBase) viewPager.getAdapter();
-        getActivity().setTitle(adapter.getPageTitle(position));
+        if (getActivity() != null && adapter != null) {
+            getActivity().setTitle(adapter.getPageTitle(position));
+        }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    private Intent onCreateEventClicked(){
+
+        return null;
     }
 }

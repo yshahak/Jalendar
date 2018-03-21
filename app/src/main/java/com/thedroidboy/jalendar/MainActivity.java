@@ -39,7 +39,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJECTION;
 
-public class MainActivity extends AppCompatActivity implements  LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1000;
@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         fragment.shiftToPosition(position);
     }
 
-
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -131,11 +130,9 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else if (display.equals(PagerAdapterMonthDay.DISPLAY.DAY) ) {
+        } else if (display.equals(PagerAdapterMonthDay.DISPLAY.DAY)) {
             radioButtonMonth.setChecked(true);
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }

@@ -3,14 +3,12 @@ package com.thedroidboy.jalendar.fragments;
 import android.Manifest;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -31,10 +29,8 @@ import com.thedroidboy.jalendar.databinding.FragmentDayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayVM;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -84,7 +80,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         dayBinding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_day_item, container, false);
         LiveData<Day> dayLiveData = dayVM.getDayLiveData();
         dayLiveData.observe(this, day -> {
@@ -92,6 +88,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
                 dayBinding.setSingleDay(day);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
                 dayBinding.dayRecyclerView.setLayoutManager(layoutManager);
+                Log.d(TAG, "onCreateView: new day=" + day.toString());
                 dayBinding.dayRecyclerView.setAdapter(new RecyclerAdapterDay(day));
                 long first = day.getStartDayInMillis();
                 long last = day.getEndDayInMillis();
@@ -103,21 +100,6 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
                 getLoaderManager().initLoader(100, null, this);
             }
         });
-        dayBinding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", v -> {
-                    if (dayLiveData.getValue() != null) {
-                        long startDay = dayLiveData.getValue().getStartDayInMillis();
-                        Calendar instance = Calendar.getInstance();
-                        int hourNow = instance.get(Calendar.HOUR_OF_DAY);
-                        int minuteNow = (instance.get(Calendar.MINUTE) / 15) * 15;
-                        Intent intent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI)
-                                .putExtra(CalendarContract.Events.TITLE, "test")
-                                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow) + TimeUnit.MINUTES.toMillis(minuteNow));
-//                        Intent chooser = Intent.createChooser(intent, "Create an new event");
-                        startActivity(intent);
-                    }
-
-                }).show());
         return dayBinding.getRoot();
     }
 
@@ -160,9 +142,18 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
         if (dayLiveData.getValue() != null) {
             return dayLiveData.getValue().getLabelDayAndMonth();
         } else {
-            dayLiveData.observe(this, day -> (getActivity()).setTitle(day != null ? day.getLabelDayAndMonth() : "day is null"));
+            dayLiveData.observe(this, day -> (getActivity()).setTitle(day != null ? day.getLabelDayAndMonth() : "..."));
         }
-        return "day not known";
+        return "...";
+    }
+
+    @Override
+    public long getStartDayInMs() {
+        LiveData<Day> dayLiveData = dayVM.getDayLiveData();
+        if (dayLiveData.getValue() != null) {
+            return dayLiveData.getValue().getStartDayInMillis();
+        }
+        return -1;
     }
 
     @Override

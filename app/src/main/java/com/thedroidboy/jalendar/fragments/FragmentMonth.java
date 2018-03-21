@@ -29,6 +29,7 @@ import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthVM;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -181,29 +182,38 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 //        Log.d(TAG, "onLoaderReset:");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public String getFragmentTitle() {
         LiveData<Month> monthLiveData = monthVM.getMonth();
         if (monthLiveData.getValue() != null) {
             return monthLiveData.getValue().getMonthHebLabel();
         } else {
-            monthLiveData.observe(this, month -> (getActivity()).setTitle(month.getMonthHebLabel()));
+            monthLiveData.observe(this, month -> {
+                try {
+                    (getActivity()).setTitle(month.getMonthHebLabel());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         }
-        return "month not known";
+        return "...";
+    }
+
+    @Override
+    public long getStartDayInMs() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime().getTime();
     }
 
     @Override
     public void onDataChanged() {
         getLoaderManager().restartLoader(100, null, this);
     }
-
-//    @Override
-//    public long getFragmentStartTime() {
-//        if (monthVM.getMonth().getValue() != null) {
-//            return monthVM.getMonth().getValue().getStartMonthInMs();
-//        }
-//        return 0;
-//    }
 }
 
 interface DataChanged {

@@ -52,7 +52,7 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter impleme
         if (fragmentByTag != null) {
             return fragmentByTag.getFragmentTitle();
         }
-        return "fragment not known";
+        return "...";
     }
 
     @Override
@@ -70,6 +70,15 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter impleme
 
     }
 
+    public long onCreateEventClicked(int position){
+        String name = makeFragmentName(R.id.view_pager, position);
+        FragmentData fragmentByTag = (FragmentData) mFragmentManager.findFragmentByTag(name);
+        if (fragmentByTag != null) {
+            return fragmentByTag.getStartDayInMs();
+        }
+        return -1;
+    }
+
     //    public long getFragmentStartTime(int position){
 //        String name = makeFragmentName(R.id.view_pager, position);
 //        FragmentData fragmentByTag = (FragmentData) mFragmentManager.findFragmentByTag(name);
@@ -85,9 +94,7 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter impleme
 
     public interface FragmentData {
         String getFragmentTitle();
-//        default long getFragmentStartTime(){
-//            return 0L;
-//        }
+        long getStartDayInMs();
     }
 
 
