@@ -1,4 +1,4 @@
-package com.thedroidboy.jalendar;
+package com.thedroidboy.jalendar.activities;
 
 import android.Manifest;
 import android.content.SharedPreferences;
@@ -26,6 +26,8 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 
+import com.thedroidboy.jalendar.CalendarRepo;
+import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
 import com.thedroidboy.jalendar.calendars.google.CalendarHelper;
 import com.thedroidboy.jalendar.fragments.PagerFragment;

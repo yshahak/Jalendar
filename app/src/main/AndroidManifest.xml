@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,43 +25,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity-->
-            <!--android:name=".DayActivity"-->
-            <!--android:label="@string/title_activity_day"-->
-            <!--android:parentActivityName=".MainActivity"-->
-            <!--android:screenOrientation="portrait"-->
-            <!--android:theme="@style/AppTheme.NoActionBar">-->
-            <!--<meta-data-->
-                <!--android:name="android.support.PARENT_ACTIVITY"-->
-                <!--android:value="com.thedroidboy.jalendar.MainActivity" />-->
-        <!--</activity>-->
+        <!-- <activity -->
+        <!-- android:name=".DayActivity" -->
+        <!-- android:label="@string/title_activity_day" -->
+        <!-- android:parentActivityName=".MainActivity" -->
+        <!-- android:screenOrientation="portrait" -->
+        <!-- android:theme="@style/AppTheme.NoActionBar"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.PARENT_ACTIVITY" -->
+        <!-- android:valcom.thedroidboy.jalendar.activities.MainActivityvity" /> -->
+        <!-- </activity> -->
 
         <activity
-            android:name=".CreteIvriEventActivity"
+            android:name=".activities.CreteIvriEventActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.EDIT" />-->
-                <!--<action android:name="android.intent.action.INSERT" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<data android:host="com.android.calendar" />-->
-                <!--<data android:host="calendar" />-->
-                <!--<data android:scheme="content" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.EDIT" /> -->
+            <!-- <action android:name="android.intent.action.INSERT" /> -->
+            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+            <!-- <data android:host="com.android.calendar" /> -->
+            <!-- <data android:host="calendar" /> -->
+            <!-- <data android:scheme="content" /> -->
+            <!-- </intent-filter> -->
             <intent-filter>
                 <action android:name="android.intent.action.INSERT" />
                 <action android:name="android.intent.action.EDIT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="vnd.android.cursor.dir/event" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".GoogleSignInActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
+            android:name=".activities.GoogleSignInActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.DayDetailsActivity"></activity>
     </application>
 
 </manifest>

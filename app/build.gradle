@@ -82,9 +82,11 @@ dependencies {
 
     implementation 'com.android.support:design:26.1.0'
 
-    implementation  'net.sf.biweekly:biweekly:0.6.1'
+    implementation 'net.sf.biweekly:biweekly:0.6.1'
 }
 repositories {
     mavenCentral()
 }
 apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'kotlin-android-extensions'

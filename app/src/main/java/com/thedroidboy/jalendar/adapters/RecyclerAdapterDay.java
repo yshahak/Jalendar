@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.thedroidboy.jalendar.CreteIvriEventActivity;
+import com.thedroidboy.jalendar.activities.CreteIvriEventActivity;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.databinding.EventItemForDayBinding;
 import com.thedroidboy.jalendar.model.Day;

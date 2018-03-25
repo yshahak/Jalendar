@@ -1,4 +1,4 @@
-package com.thedroidboy.jalendar;
+package com.thedroidboy.jalendar.activities;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TimePicker;
 
+import com.thedroidboy.jalendar.CalendarRepo;
+import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.databinding.ActivityCreateIvriEventBinding;

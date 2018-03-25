@@ -1,4 +1,4 @@
-package com.thedroidboy.jalendar.model;
+package com.thedroidboy.jalendar.views;
 
 import android.content.Context;
 import android.util.AttributeSet;

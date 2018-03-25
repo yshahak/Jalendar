@@ -49,4 +49,21 @@
         <item name="android:textColor">@color/colorAccent</item>
 -->
     </style>
+
+    <style name="style_text_row">
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+    <style name="direction">
+        <item name="android:layoutDirection">ltr</item>
+    </style>
+
+    <style name="style_text_row_today">
+        <item name="android:textSize">25sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

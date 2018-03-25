@@ -286,7 +286,7 @@
                     tools:visibility="visible" />
 
 
-                <com.thedroidboy.jalendar.model.CustomNumberPicker
+                <com.thedroidboy.jalendar.views.CustomNumberPicker
                     android:id="@+id/countPicker"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"

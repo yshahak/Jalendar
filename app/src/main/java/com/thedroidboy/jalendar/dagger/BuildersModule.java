@@ -3,8 +3,8 @@ package com.thedroidboy.jalendar.dagger;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
-import com.thedroidboy.jalendar.CreteIvriEventActivity;
-import com.thedroidboy.jalendar.MainActivity;
+import com.thedroidboy.jalendar.activities.CreteIvriEventActivity;
+import com.thedroidboy.jalendar.activities.MainActivity;
 import com.thedroidboy.jalendar.fragments.FragmentDay;
 import com.thedroidboy.jalendar.fragments.FragmentMonth;
 

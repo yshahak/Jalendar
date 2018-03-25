@@ -1,4 +1,4 @@
-package com.thedroidboy.jalendar;
+package com.thedroidboy.jalendar.activities;
 
 public class DayActivity {
 //        extends AppCompatActivity {
