@@ -51,5 +51,9 @@
         <item name="android:paddingRight">8dp</item>
     </style>
 
+    <style name="mySpinnerItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 
 </resources>

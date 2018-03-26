@@ -3,4 +3,8 @@
     <declare-styleable name="MonthGridLayout">
         <attr name="bindDays" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="RowDayDetails">
+        <attr name="header" format="string"/>
+        <attr name="row_value" format="string"/>
+    </declare-styleable>
 </resources>

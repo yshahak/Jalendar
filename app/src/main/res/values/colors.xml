@@ -26,6 +26,12 @@
     <color name="month_today_bgcolor">#FFFFFFFF</color>
     <color name="month_bgcolor">#FFE5E5E5</color>
 
+
+    <color name="blue">#2196F3</color>
+    <color name="green">#39B54A</color>
+    <color name="colorGrayText">#a5a5a5</color>
     <color name="saparate">#40000000</color>
+    <color name="text_bg">#40AFAFAF</color>
+    <color name="notif_bg">#40000000</color>
 
 </resources>

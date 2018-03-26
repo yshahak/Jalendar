@@ -1,5 +1,7 @@
 package com.thedroidboy.jalendar.model
 
+
+
 /**
  * Created by Yaakov Shahak
  * on 25/03/2018.
@@ -18,7 +20,7 @@ class DayTimes(val location: String,
                val sunset: Long,
                val dusk: Long) {
 
-//    private val iconId: Int = 0
+    //    private val iconId: Int = 0
 //    private val dayTitle: String? = null
 //    private val dayOfWeek: String? = null
 //    private val dayOfMonth: String? = null
@@ -31,5 +33,6 @@ class DayTimes(val location: String,
 //    private val tzetShabbat:  
 //    private val tzetShabbat72:  
 //    private val isShabbat: Boolean = false
+
 
 }

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <LinearLayout
+        style="@style/direction"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        style="@style/direction">
+        android:orientation="horizontal">
 
 
         <TextView
@@ -25,7 +22,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="3" />
 
-
     </LinearLayout>
 
     <View
@@ -34,4 +30,4 @@
         android:layout_marginTop="4dp"
         android:background="@color/saparate" />
 
-</LinearLayout>
+</merge>
