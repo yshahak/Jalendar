@@ -21,16 +21,6 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
-        <!-- <activity -->
-        <!-- android:name=".DayActivity" -->
-        <!-- android:label="@string/title_activity_day" -->
-        <!-- android:parentActivityName=".MainActivity" -->
-        <!-- android:screenOrientation="portrait" -->
-        <!-- android:theme="@style/AppTheme.NoActionBar"> -->
-        <!-- <meta-data -->
-        <!-- android:name="android.support.PARENT_ACTIVITY" -->
-        <!-- android:valcom.thedroidboy.jalendar.activities.MainActivityvity" /> -->
-        <!-- </activity> -->
 
         <activity
             android:name=".activities.CreteIvriEventActivity"
@@ -59,7 +49,9 @@
             android:name=".activities.GoogleSignInActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.DayDetailsActivity">
+        <activity
+            android:name=".activities.DayDetailsActivity"
+            android:configChanges="layoutDirection|locale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

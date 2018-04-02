@@ -9,10 +9,11 @@ import com.thedroidboy.jalendar.model.DayTimes
 
 class DayDetailsActivity : AppCompatActivity() {
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding : ActivityDayDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_day_details)
         binding.dayTimes = DayTimes.create()
     }
-
 }

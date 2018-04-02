@@ -2,6 +2,7 @@ package com.thedroidboy.jalendar;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import com.facebook.stetho.Stetho;
@@ -9,6 +10,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
 import com.thedroidboy.jalendar.dagger.DaggerAppComponent;
+import com.thedroidboy.jalendar.utils.SettingsHelperKt;
 
 import javax.inject.Inject;
 
@@ -41,6 +43,12 @@ public class MyApplication extends Application implements HasSupportFragmentInje
                 .application(this)
                 .build()
                 .inject(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Context context = SettingsHelperKt.getConfiguration(newBase);
+        super.attachBaseContext(context);
     }
 
     protected RefWatcher setupLeakCanary() {
