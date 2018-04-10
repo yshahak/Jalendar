@@ -59,6 +59,11 @@ public class PagerAdapterMonthDay extends PagerAdapterBase {
         return displayState;
     }
 
+    @Override
+    public long onDayDetailsClicked() {
+        return 0;
+    }
+
     public enum DISPLAY {
         MONTH,
         DAY

@@ -19,7 +19,11 @@
         <activity
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -49,14 +53,12 @@
             android:name=".activities.GoogleSignInActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".activities.DayDetailsActivity"
-            android:configChanges="layoutDirection|locale">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="layoutDirection|locale"
+            android:parentActivityName=".activities.MainActivity">
         </activity>
     </application>
 

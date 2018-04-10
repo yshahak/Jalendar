@@ -8,4 +8,11 @@
         android:orderInCategory="100"
         app:showAsAction="always"
         android:icon="@android:drawable/ic_menu_day"/>
+
+    <item
+        android:id="@+id/action_current_day_details"
+        android:title=""
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_info_details"/>
 </menu>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -9,81 +8,106 @@
             type="com.thedroidboy.jalendar.model.DayTimes" />
     </data>
 
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context="com.thedroidboy.jalendar.activities.DayDetailsActivity">
+        android:layout_height="wrap_content">
 
-        <include
-            android:id="@+id/row_today"
-            layout="@layout/row_today"
-            bind:dayTimes="@{dayTimes}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
+        <LinearLayout
+            xmlns:tools="http://schemas.android.com/tools"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            bind:header="@string/col_header_alos"
-            bind:row_value="@{dayTimes.alos}"/>
+            android:orientation="vertical"
+            tools:context="com.thedroidboy.jalendar.activities.DayDetailsActivity">
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_sunrise"
-            bind:row_value="@{dayTimes.sunrise}"/>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/my_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/white"
+                android:elevation="4dp"
+                app:title="@{dayTimes.dayTitle}"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_sof_shma_mga"
-            bind:row_value="@{dayTimes.sofShmaMGA}"/>
+            <include
+                android:id="@+id/row_today"
+                layout="@layout/row_today"
+                bind:dayTimes="@{dayTimes}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_sof_shma_gra"
-            bind:row_value="@{dayTimes.sofShmaGRA}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_daf_yomi"
+                bind:row_value="@{dayTimes.dafYomi}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_sof_tfila_mga"
-            bind:row_value="@{dayTimes.sofTfilaMGA}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_alos"
+                bind:row_value="@{dayTimes.alos}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_sof_tfila_gra"
-            bind:row_value="@{dayTimes.sofTfilaGRA}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_sunrise"
+                bind:row_value="@{dayTimes.sunrise}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_Chatzos"
-            bind:row_value="@{dayTimes.chatzos}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_sof_shma_mga"
+                bind:row_value="@{dayTimes.sofShmaMGA}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_mincha_gdola"
-            bind:row_value="@{dayTimes.minchGdola}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_sof_shma_gra"
+                bind:row_value="@{dayTimes.sofShmaGRA}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_mincha_ktana"
-            bind:row_value="@{dayTimes.minchKtana}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_sof_tfila_mga"
+                bind:row_value="@{dayTimes.sofTfilaMGA}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_sunset"
-            bind:row_value="@{dayTimes.sunset}"/>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_sof_tfila_gra"
+                bind:row_value="@{dayTimes.sofTfilaGRA}" />
 
-        <com.thedroidboy.jalendar.views.RowDayDetails
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            bind:header="@string/col_header_dusk"
-            bind:row_value="@{dayTimes.dusk}"/>
-    </LinearLayout>
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_Chatzos"
+                bind:row_value="@{dayTimes.chatzos}" />
+
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_mincha_gdola"
+                bind:row_value="@{dayTimes.minchGdola}" />
+
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_mincha_ktana"
+                bind:row_value="@{dayTimes.minchKtana}" />
+
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_sunset"
+                bind:row_value="@{dayTimes.sunset}" />
+
+            <com.thedroidboy.jalendar.views.RowDayDetails
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                bind:header="@string/col_header_dusk"
+                bind:row_value="@{dayTimes.dusk}" />
+        </LinearLayout>
+    </ScrollView>
+
 </layout>

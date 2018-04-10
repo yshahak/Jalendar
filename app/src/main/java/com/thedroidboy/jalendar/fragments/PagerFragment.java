@@ -12,10 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.thedroidboy.jalendar.activities.CreteIvriEventActivity;
 import com.thedroidboy.jalendar.R;
+import com.thedroidboy.jalendar.activities.CreteIvriEventActivity;
+import com.thedroidboy.jalendar.activities.DayDetailsActivity;
 import com.thedroidboy.jalendar.adapters.PagerAdapterBase;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
+import com.thedroidboy.jalendar.utils.Constants;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -48,8 +50,8 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
         fab.setOnClickListener(view -> {
             PagerAdapterBase adapter = (PagerAdapterBase) viewPager.getAdapter();
             if (adapter != null) {
-                long startDay = adapter.onCreateEventClicked(viewPager.getCurrentItem());
-                if (startDay != -1){
+                long startDay = adapter.getStartDayInMs(viewPager.getCurrentItem());
+                if (startDay != -1) {
                     Calendar instance = Calendar.getInstance();
                     int hourNow = instance.get(Calendar.HOUR_OF_DAY);
                     int minuteNow = (instance.get(Calendar.MINUTE) / 15) * 15;
@@ -91,6 +93,23 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
         }
     }
 
+    public void startDayDetailsActivity() {
+        final PagerAdapterMonthDay adapter = (PagerAdapterMonthDay) viewPager.getAdapter();
+        if (adapter != null) {
+            long startDay = adapter.getStartDayInMs(viewPager.getCurrentItem());
+            if (startDay != -1) {
+                Calendar instance = Calendar.getInstance();
+                int hourNow = instance.get(Calendar.HOUR_OF_DAY);
+                Intent intent = new Intent(getContext(), DayDetailsActivity.class)
+                        .putExtra(Constants.KEY_TIME, startDay + TimeUnit.HOURS.toMillis(hourNow));
+                startActivity(intent);
+            } else {
+                startActivity(new Intent(getActivity(), DayDetailsActivity.class));
+            }
+        }
+    }
+
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -107,10 +126,5 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
     @Override
     public void onPageScrollStateChanged(int state) {
 
-    }
-
-    private Intent onCreateEventClicked(){
-
-        return null;
     }
 }

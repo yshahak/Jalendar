@@ -61,6 +61,11 @@ public class RowDayDetails extends LinearLayout {
         view.setRowValue(String.format(Locale.getDefault(), "%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)));
     }
 
+    @BindingAdapter("bind:row_value")
+    public static void bindRowValue(RowDayDetails view, String value) {
+        view.setRowValue(value);
+    }
+
     public void setRowValue(String rowValue) {
         this.rowValue = rowValue;
         valueTextView.setText(rowValue);

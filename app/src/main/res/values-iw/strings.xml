@@ -53,4 +53,5 @@
     <string name="checkbox_enable_omer">תזכורת עומר פעילה</string>
     <string name="notif_approved">הבנתי</string>
     <string name="notif_explain_new">התראה זו הכרחית כדי להציג את התאריך בקביעות</string>
+    <string name="col_header_daf_yomi">דף יומי</string>
 </resources>

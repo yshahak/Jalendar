@@ -70,7 +70,7 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter impleme
 
     }
 
-    public long onCreateEventClicked(int position){
+    public long getStartDayInMs(int position){
         String name = makeFragmentName(R.id.view_pager, position);
         FragmentData fragmentByTag = (FragmentData) mFragmentManager.findFragmentByTag(name);
         if (fragmentByTag != null) {
@@ -78,6 +78,8 @@ public abstract class PagerAdapterBase extends FragmentStatePagerAdapter impleme
         }
         return -1;
     }
+
+    public abstract long onDayDetailsClicked();
 
     //    public long getFragmentStartTime(int position){
 //        String name = makeFragmentName(R.id.view_pager, position);

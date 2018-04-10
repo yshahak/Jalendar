@@ -12,33 +12,14 @@
         android:layout_gravity="center"
         android:orientation="vertical">
 
-        <LinearLayout
-            style="@style/direction"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
 
-
-            <TextView
-                android:id="@+id/row_text_header"
-                style="@style/style_text_row_today"
-                android:text="@string/col_header_today"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp" />
-
-            <TextView
-                android:id="@+id/row_text_value"
-                style="@style/style_text_row_today"
-                android:text="@{dayTimes.dayTitle}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-
-        </LinearLayout>
+        <!--<TextView-->
+            <!--android:id="@+id/row_text_value"-->
+            <!--style="@style/style_text_row_today"-->
+            <!--android:text="@{dayTimes.dayTitle}"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="center_horizontal"/>-->
 
         <TextView
             android:id="@+id/row_location"

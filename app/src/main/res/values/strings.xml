@@ -15,56 +15,59 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="last_month_position">lastMonthPosition</string>
 
-    <string name="setting_header">Configuration:</string>
-    <string name="checkbox_enable_notification">Show date is active</string>
-    <string name="config_option_0">3 Nisan, 5776</string>
-    <string name="config_option_1">Tue, 3 Nisan</string>
-    <string name="config_option_3">Tue, 3 Nisan 5776</string>
-    <string name="share_facebook">Share in Facebook</string>
-    <string name="share_whatsapp">Share in Whatsapp</string>
-    <string name="checkbox_switch_date_in_night">Switch date at dusk</string>
-    <string name="notif_explain">This must stay here to show the above date icon</string>
-    <string name="alert_location_message">Please allow location permission to get your local sunset time</string>
-    <string name="alert_location_title">Location</string>
-    <string name="alert_default_title">Permission</string>
-    <string name="alert_default_permissions">Please allow missing permission</string>
-    <string name="ok">OK</string>
 
-    <string name="col_header_today">Today:</string>
-    <string name="col_header_mincha">Mincha</string>
-    <string name="col_header_mincha_gdola">Mincha Gdola</string>
-    <string name="col_header_mincha_ktana">Mincha Ktana</string>
+    <string name="setting_header">תצורה:</string>
+    <string name="checkbox_enable_notification">  הצגת תאריך פעילה  </string>
+    <string name="config_option_0">יג תשרי תשח</string>
+    <string name="config_option_1">יג תשרי התשח</string>
+    <string name="config_option_3">י\"ג תשרי התש\"ח</string>
+    <string name="share_facebook">שתף בפייסבוק</string>
+    <string name="share_whatsapp">שתף בוואטסאפ</string>
 
-    <string name="col_header_alos">Alos</string>
-    <string name="col_header_sunrise">Sunrise</string>
-    <string name="col_header_sof_shma_mga">End Shma MGA</string>
-    <string name="col_header_sof_shma_gra">End Shma GRA</string>
-    <string name="col_header_sof_tfila_mga">End Tfila MGA</string>
-    <string name="col_header_sof_tfila_gra">End Tfila GRA</string>
-    <string name="col_header_Chatzos">Chtzos</string>
-    <string name="col_header_sunset">sunset</string>
-    <string name="col_header_dusk">Dusk</string>
+    <string name="checkbox_switch_date_in_night">החלף תאריך בצאת הכוכבים</string>
 
-    <string name="col_header_knisat_shabbat">Shabbat start(calculdated as 18 minutes before sunset)</string>
-    <string name="col_header_yeziat_shabbat">Shabbat end</string>
-    <string name="col_header_yeziat_shabbat_72">Shabbat end 72</string>
+    <string name="alert_location_message">אשר שימוש במיקום כדי לקבל לוח זמנים מדוייק</string>
+    <string name="alert_location_title">מיקום</string>
+    <string name="alert_default_title">הרשאות</string>
+    <string name="alert_default_permissions">אנא אשר הראשות חסרות</string>
+    <string name="ok">הבנתי</string>
 
-    <string name="col_header_parasha">Parasha</string>
 
-    <string name="checkbox_use_night_icons">Use color inversion for night</string>
-    <string name="pick_place_title">Help for place picker</string>
-    <string name="place_picker_help">In the next screen, type your desire location in the search bar, and then press \"select\"</string>
-    <string name="location_header">Location:</string>
-    <string name="spinner_location_device">Find current location</string>
-    <string name="spinner_location_spinner">Pick different location</string>
-    <string name="checkbox_enable_times_in_notif">Display times in notification</string>
-    <string name="place_holder_location">Do you want to use this location: %1$s?</string>
-    <string name="location_not_found">Location didn\'t found, please try to select manualy</string>
-    <string name="location_result">Location chooser</string>
-    <string name="use_mga">MGA</string>
-    <string name="use_gra">GRA</string>
-    <string name="mga_header">Time method:</string>
-    <string name="checkbox_enable_omer">Show Omer notification</string>
-    <string name="notif_approved">OK</string>
-    <string name="notif_explain_new">This must stay here to display the date icon</string>
+    <string name="notif_explain">התראה זו הכרחית בכדי להציג את אייקון התאריך במכשיר</string>
+
+    <string name="col_header_today">היום:</string>
+    <string name="col_header_mincha">מנחה</string>
+    <string name="col_header_Chatzos">חצות</string>
+    <string name="col_header_mincha_ktana">מנחה קטנה</string>
+    <string name="col_header_sunrise">זריחה</string>
+    <string name="col_header_alos">עלות השחר</string>
+    <string name="col_header_sof_shma_mga">סוף שמע מג"א</string>
+    <string name="col_header_sof_shma_gra">סוף שמע גר"א</string>
+    <string name="col_header_sof_tfila_mga">סוף תפילה מג"א</string>
+    <string name="col_header_sof_tfila_gra">סוף תפילה גר"א</string>
+    <string name="col_header_sunset">שקיעה</string>
+    <string name="col_header_dusk">צאת הכוכבים</string>
+    <string name="col_header_mincha_gdola">מנחה גדולה</string>
+    <string name="col_header_knisat_shabbat">כניסת שבת (מחושב כ-18 דקות לפני שקיעה)</string>
+    <string name="col_header_yeziat_shabbat">יציאת שבת</string>
+    <string name="col_header_yeziat_shabbat_72">יציאת שבת ר"ת</string>
+    <string name="col_header_parasha">פרשת השבוע:</string>
+
+    <string name="checkbox_use_night_icons">הפוך צבעים בלילה</string>
+    <string name="pick_place_title">הסבר לבחירת מיקום</string>
+    <string name="place_picker_help">במסך הבא, הקלד בתיבת החיפוש את שם המקום הרצוי והקש לאישור</string>
+    <string name="location_header">מיקום (לחישוב זמנים):</string>
+    <string name="spinner_location_device">מצא מיקום נוכחי</string>
+    <string name="spinner_location_spinner">בחר מיקום שונה</string>
+    <string name="checkbox_enable_times_in_notif">הצג זמנים בוילון</string>
+    <string name="place_holder_location">האם לבחור במיקום הבא: %1$s?</string>
+    <string name="location_not_found">לא נמצא מיקום, נסה לבחור ידנית</string>
+    <string name="location_result">בחירת מיקום</string>
+    <string name="use_mga">מג\"א</string>
+    <string name="use_gra">גר\"א</string>
+    <string name="mga_header">שיטת זמנים:</string>
+    <string name="checkbox_enable_omer">תזכורת עומר פעילה</string>
+    <string name="notif_approved">הבנתי</string>
+    <string name="notif_explain_new">התראה זו הכרחית כדי להציג את התאריך בקביעות</string>
+    <string name="col_header_daf_yomi">דף יומי</string>
 </resources>

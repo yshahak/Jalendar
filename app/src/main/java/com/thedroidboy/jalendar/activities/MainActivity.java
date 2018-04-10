@@ -63,13 +63,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.my_toolbar);
-        calendarsList = findViewById(R.id.calender_list);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
+        calendarsList = findViewById(R.id.calender_list);
         radioButtonDay = findViewById(R.id.display_day);
         radioButtonMonth = findViewById(R.id.display_month);
         radioButtonDay.setOnCheckedChangeListener(this);
@@ -115,17 +115,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case R.id.action_current_day:
                 movePagerToPosition(PagerAdapterMonthDay.INITIAL_OFFSET);
                 return true;
+            case R.id.action_current_day_details:
+                startDayDetailsActivity();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void startDayDetailsActivity(){
+        PagerFragment fragment = getPagerFragment();
+        if (fragment != null) {
+            fragment.startDayDetailsActivity();
+        }
+    }
+
     private void movePagerToPosition(int position) {
-        String tag = display.name();
-        PagerFragment fragment = (PagerFragment) getSupportFragmentManager().findFragmentByTag(tag);
+        PagerFragment fragment = getPagerFragment();
         if (fragment != null) {
             fragment.movePagerToPosition(position);
         }
+    }
+
+    private PagerFragment getPagerFragment() {
+        String tag = display.name();
+        return (PagerFragment) getSupportFragmentManager().findFragmentByTag(tag);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.thedroidboy.jalendar.model
 import net.sourceforge.zmanim.ZmanimCalendar
 import net.sourceforge.zmanim.hebrewcalendar.HebrewDateFormatter
 import net.sourceforge.zmanim.hebrewcalendar.JewishCalendar
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -23,7 +24,8 @@ data class DayTimes(val location: String,
                     val minchKtana: Long,
                     val sunset: Long,
                     val dusk: Long,
-                    val shabbat: Shabbat?) {
+                    val shabbat: Shabbat?,
+                    val dafYomi: String) {
 
     companion object {
 
@@ -35,15 +37,17 @@ data class DayTimes(val location: String,
             hebrewDateFormatter.isHebrewFormat = true
         }
 
-        fun create(): DayTimes {
+        fun create(time: Long): DayTimes {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = time
             val zmanimCalendar = ZmanimCalendar()
-            val jewishCalendar = JewishCalendar()
+            zmanimCalendar.calendar = calendar
+            val jewishCalendar = JewishCalendar(calendar)
             val month = hebrewDateFormatter.formatMonth(jewishCalendar)
             val dayInMonth = hebrewDateFormatter.formatHebrewNumber(jewishCalendar.jewishDayOfMonth)
             val dayInWeek = hebrewDateFormatter.formatHebrewNumber(jewishCalendar.dayOfWeek)
             val year = hebrewDateFormatter.formatHebrewNumber(jewishCalendar.jewishYear)
             val date = "$dayInWeek, $dayInMonth $month, $year"
-
             return DayTimes("Jerusalem", date
                     , zmanimCalendar.alosHashachar.time
                     , zmanimCalendar.sunrise.time
@@ -56,7 +60,8 @@ data class DayTimes(val location: String,
                     , zmanimCalendar.minchaKetana.time
                     , zmanimCalendar.sunset.time
                     , zmanimCalendar.sunset.time + TimeUnit.MINUTES.toMillis(20)
-                    , null)
+                    , null
+                    ,  hebrewDateFormatter.formatDafYomiBavli(jewishCalendar.dafYomiBavli))
         }
     }
 }

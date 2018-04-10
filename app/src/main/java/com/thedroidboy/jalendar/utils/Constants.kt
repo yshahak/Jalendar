@@ -7,5 +7,6 @@ package com.thedroidboy.jalendar.utils
 class Constants {
     companion object {
         const val KEY_LANGUAGE = "KEY_LANGUAGE"
+        const val KEY_TIME = "KEY_TIME"
     }
 }

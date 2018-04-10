@@ -46,9 +46,9 @@ public class MyApplication extends Application implements HasSupportFragmentInje
     }
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        Context context = SettingsHelperKt.getConfiguration(newBase);
-        super.attachBaseContext(context);
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(SettingsHelperKt.onAttach(base, "iw"));
+
     }
 
     protected RefWatcher setupLeakCanary() {
