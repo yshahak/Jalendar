@@ -60,6 +60,10 @@
             android:configChanges="layoutDirection|locale"
             android:parentActivityName=".activities.MainActivity">
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyClaxOusuDRmWr3QjHhYh-TAkCAWTpsdr0" />
     </application>
 
 </manifest>

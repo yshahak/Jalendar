@@ -58,7 +58,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:2.12"
     kapt "com.google.dagger:dagger-android-processor:2.12"
     /*google calendar api*/
-    implementation 'com.google.android.gms:play-services-auth:11.8.0'
+    implementation 'com.google.android.gms:play-services-auth:12.0.1'
     implementation('com.google.apis:google-api-services-calendar:v3-rev249-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
@@ -71,6 +71,8 @@ dependencies {
 //    compile('com.google.apis:google-api-services-calendar:v3-rev287-1.23.0') {
 //        exclude group: 'org.apache.httpcomponents'
 //    };
+    implementation 'com.google.android.gms:play-services-places:12.0.1'
+
 
     implementation 'com.facebook.stetho:stetho:1.5.0'
 

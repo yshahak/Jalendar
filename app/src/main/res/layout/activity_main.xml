@@ -84,9 +84,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="8dp">
+                        android:padding="8dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp" />
 
-                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/label_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="8dp"
+                        android:padding="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textStyle="bold"
+                        android:gravity="start|center_vertical"
+                        android:drawableLeft="@drawable/ic_google_maps"
+                        android:drawableStart="@drawable/ic_google_maps" />
 
                 </LinearLayout>
 

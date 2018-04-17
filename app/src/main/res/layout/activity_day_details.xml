@@ -3,6 +3,8 @@
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
+
+        <import type="android.view.View"/>
         <variable
             name="dayTimes"
             type="com.thedroidboy.jalendar.model.DayTimes" />
@@ -13,9 +15,8 @@
         android:layout_height="wrap_content">
 
 
-        <LinearLayout
+        <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -27,9 +28,9 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/white"
                 android:elevation="4dp"
-                app:title="@{dayTimes.dayTitle}"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title="@{dayTimes.dayTitle}" />
 
             <include
                 android:id="@+id/row_today"
@@ -107,6 +108,38 @@
                 android:layout_height="wrap_content"
                 bind:header="@string/col_header_dusk"
                 bind:row_value="@{dayTimes.dusk}" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{dayTimes.shabbat == null ? View.GONE: View.VISIBLE}"
+                android:orientation="vertical">
+
+                <com.thedroidboy.jalendar.views.RowDayDetails
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    bind:header="@string/col_header_parasha"
+                    bind:row_value="@{dayTimes.shabbat.parasha}" />
+
+                <com.thedroidboy.jalendar.views.RowDayDetails
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    bind:header="@string/col_header_knisat_shabbat"
+                    bind:row_value="@{dayTimes.shabbat.knisatShabbbat}" />
+
+                <com.thedroidboy.jalendar.views.RowDayDetails
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    bind:header="@string/col_header_yeziat_shabbat"
+                    bind:row_value="@{dayTimes.shabbat.tzetShabbat}" />
+
+                <com.thedroidboy.jalendar.views.RowDayDetails
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    bind:header="@string/col_header_yeziat_shabbat_72"
+                    bind:row_value="@{dayTimes.shabbat.tzetShabbat72}" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

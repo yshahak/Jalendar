@@ -24,7 +24,7 @@ class DayDetailsActivity : AppCompatActivity() {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
         }
-        setTitle("")
+        title = ""
         val time = intent.getLongExtra(Constants.KEY_TIME, System.currentTimeMillis())
         binding.dayTimes = DayTimes.create(time)
     }

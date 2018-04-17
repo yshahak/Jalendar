@@ -1,6 +1,8 @@
 package com.thedroidboy.jalendar.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,6 +18,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,13 +28,25 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.adapters.PagerAdapterMonthDay;
 import com.thedroidboy.jalendar.calendars.google.CalendarHelper;
 import com.thedroidboy.jalendar.fragments.PagerFragment;
 import com.thedroidboy.jalendar.model.Day;
+import com.thedroidboy.jalendar.utils.Constants;
+import com.thedroidboy.jalendar.utils.LocationHelper;
+import com.thedroidboy.jalendar.utils.Utils;
+
+import net.sourceforge.zmanim.util.GeoLocation;
 
 import javax.inject.Inject;
 
@@ -45,10 +60,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1000;
+    private static final int PLACE_PICKER_REQUEST = 2000;
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mDrawertToggle;
     private LinearLayout calendarsList;
+    private TextView locationLabel;
     private Toolbar toolbar;
     private RadioButton radioButtonDay, radioButtonMonth;
     @Inject
@@ -74,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         radioButtonMonth = findViewById(R.id.display_month);
         radioButtonDay.setOnCheckedChangeListener(this);
         radioButtonMonth.setOnCheckedChangeListener(this);
+        locationLabel = findViewById(R.id.label_location);
+        locationLabel.setOnClickListener(v -> chooseLocationOnMap(locationLabel));
+        setLocationValue();
         validateCalendarPermission();
         drawerLayout = findViewById(R.id.drawer_layout);
         setDrawerMenu();
@@ -139,6 +159,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private PagerFragment getPagerFragment() {
         String tag = display.name();
         return (PagerFragment) getSupportFragmentManager().findFragmentByTag(tag);
+    }
+
+    @SuppressWarnings("MissingPermission")
+    @SuppressLint("CommitPrefEdits")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PLACE_PICKER_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    Place place = PlacePicker.getPlace(this, data);
+                    if (place != null) {
+                        final boolean hebrew = Utils.isLocaleHebrew(prefs);
+                        GeoLocation geoLocation = LocationHelper.getGeoLocationFromPlace(getApplicationContext(), place, hebrew);
+                        LocationHelper.saveLocation(prefs, geoLocation);
+                    }
+                    setLocationValue();
+                }
+        }
     }
 
     @Override
@@ -243,6 +282,51 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
             PagerAdapterMonthDay.DISPLAY display = compoundButton.getId() == R.id.display_month ? PagerAdapterMonthDay.DISPLAY.MONTH : PagerAdapterMonthDay.DISPLAY.DAY;
             initScreen(display, position);
+        }
+    }
+
+    private void setLocationValue() {
+        String location = LocationHelper.getLocation(prefs);
+        if (location != null) {
+            locationLabel.setText(location);
+        }
+    }
+
+    public void chooseLocationOnMap(View view) {
+        if (prefs.getBoolean(Constants.KEY_DISPLAY_PLACES_HELP_DIALOG, true)) {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle(getString(R.string.pick_place_title))
+                    .setMessage(getString(R.string.place_picker_help))
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        try {
+                            startActivityForResult(new PlacePicker.IntentBuilder().build(MainActivity.this), PLACE_PICKER_REQUEST);
+                        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .show();
+            prefs.edit().putBoolean(Constants.KEY_DISPLAY_PLACES_HELP_DIALOG, false).apply();
+        } else {
+            checkGooglePlayServices();
+            try {
+                startActivityForResult(new PlacePicker.IntentBuilder().build(MainActivity.this), PLACE_PICKER_REQUEST);
+            } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void checkGooglePlayServices(){
+        switch (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)){
+            case ConnectionResult.SERVICE_MISSING:
+                GoogleApiAvailability.getInstance().getErrorDialog(this,ConnectionResult.SERVICE_MISSING,0).show();
+                break;
+            case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+                GoogleApiAvailability.getInstance().getErrorDialog(this,ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED,0).show();
+                break;
+            case ConnectionResult.SERVICE_DISABLED:
+                GoogleApiAvailability.getInstance().getErrorDialog(this,ConnectionResult.SERVICE_DISABLED,0).show();
+                break;
         }
     }
 }
