@@ -11,6 +11,7 @@ import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.RecurrenceRuleScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceRule;
+import biweekly.util.ByDay;
 import biweekly.util.Frequency;
 
 import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter;
@@ -27,7 +29,7 @@ import static com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDat
  * Created by yshahak on 14/10/2016.
  */
 
-public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Parcelable, Cloneable {
+public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Parcelable/*, Cloneable*/ {
 
     protected long eventId;
     protected long calendarId;
@@ -239,7 +241,6 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         dest.writeLong(this.eventId);
         dest.writeLong(this.calendarId);
         dest.writeString(this.eventTitle);
-//        dest.writeByte(this.allDayEvent ? (byte) 1 : (byte) 0);
         dest.writeLong(this.begin);
         dest.writeLong(this.end);
         dest.writeInt(this.displayColor);
@@ -257,7 +258,6 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         this.eventId = in.readLong();
         this.calendarId = in.readLong();
         this.eventTitle = in.readString();
-//        this.allDayEvent = in.readByte() != 0;
         this.begin = in.readLong();
         this.end = in.readLong();
         this.displayColor = in.readInt();
@@ -280,10 +280,10 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         }
     };
 
-    @Override
-    public EventInstanceForDay clone() throws CloneNotSupportedException {
-        return (EventInstanceForDay) super.clone();
-    }
+//    @Override
+//    public EventInstanceForDay clone() throws CloneNotSupportedException {
+//        return (EventInstanceForDay) super.clone();
+//    }
 
     private static RecurrenceRuleScribe scribe = new RecurrenceRuleScribe();
     private static ParseContext parseContext = new ParseContext();
@@ -298,5 +298,11 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
         RecurrenceRule rrule = scribe.parseText(rule, null, new ICalParameters(), parseContext);
         this.frequency = rrule.getValue().getFrequency();
         this.repeatValue = rrule.getValue().getCount() != null ? rrule.getValue().getCount() : -1;
+        if (frequency.equals(Frequency.WEEKLY) && rrule.getValue() != null){
+            List<ByDay> days = rrule.getValue().getByDay();
+            for (ByDay day : days) {
+
+            }
+        }
     }
 }

@@ -88,17 +88,17 @@ public class CalendarHelper {
             accountName = cur.getString(PROJECTION_ACCOUNTNAME_INDEX);
             ownerName = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX);
             if (ownerName.contains("#holiday@group.v.calendar.google.com")){
-                ownerName = HOLIDAYS;
+                accountName = HOLIDAYS;
             }
             color = cur.getInt(PROJECTION_COLOR_INDEX);
             visible = cur.getInt(PROJECTION_VISIBLE_INDEX) == 1;
             CalendarAccount calendarAccount = new CalendarAccount(calID, color, displayName, accountName, ownerName, visible);
-            if (accountListNames.get(ownerName) == null) {
+            if (accountListNames.get(accountName) == null) {
                 List<CalendarAccount> accountList = new ArrayList<>();
                 accountList.add(calendarAccount);
-                accountListNames.put(ownerName, accountList);
+                accountListNames.put(accountName, accountList);
             } else {
-                accountListNames.get(ownerName).add(calendarAccount);
+                accountListNames.get(accountName).add(calendarAccount);
             }
             Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName + " , ownerName: " + ownerName);
         }
