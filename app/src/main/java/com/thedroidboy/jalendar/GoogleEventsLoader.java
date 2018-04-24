@@ -33,7 +33,8 @@ public class GoogleEventsLoader extends AsyncTaskLoader<List<Day>> {
             long first = dayList.get(0).getStartDayInMillis();
             long last = dayList.get(dayList.size() - 1).getEndDayInMillis();
             this.cursor =  calendarRepo.getMonthEventsCursor(getContext(), first, last);
-            EventsHelper.bindCursorToDayList(dayList, cursor);
+//            EventsHelper.bindCursorToDayList(dayList, cursor);
+            EventsHelper.bindCursorToDayEventList(dayList, cursor);
         }
         return dayList;
     }

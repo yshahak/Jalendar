@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
@@ -28,7 +29,7 @@ import com.thedroidboy.jalendar.databinding.ActivityCreateIvriEventBinding;
 import com.thedroidboy.jalendar.fragments.HebrewPickerDialog;
 import com.thedroidboy.jalendar.fragments.TimePickerFragment;
 import com.thedroidboy.jalendar.model.Day;
-import com.thedroidboy.jalendar.model.EventInstanceForDay;
+import com.thedroidboy.jalendar.model.GoogleEvent;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -79,7 +80,8 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     private void createEventInstance(){
         Intent eventIntent = getIntent();
-        EventInstanceForDay event = eventIntent.getParcelableExtra(EXTRA_EVENT);
+        GoogleEvent event = eventIntent.getParcelableExtra(EXTRA_EVENT);
+        long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
         if (event == null) {
             Calendar calendar = Calendar.getInstance();
             long startEvent = eventIntent.getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
@@ -93,12 +95,10 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             String location = eventIntent.getStringExtra(CalendarContract.Events.EVENT_LOCATION);
             int available = eventIntent.getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
             String email = eventIntent.getStringExtra(Intent.EXTRA_EMAIL);
-            event = new EventInstanceForDay(eventId, title, startEvent, endEvent, -1, "", 1);
+            event = GoogleEvent.Companion.newInstance(eventId, calID, title, startEvent, endEvent, Color.BLUE, -1,"");
             String rrule = eventIntent.getStringExtra(CalendarContract.Events.RRULE);
-            event.convertRruleToFrequencyAndRepeatValue(rrule);
         }
-        long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
-        event.setCalendarId(calID);
+        event.convertRruleToFrequencyAndRepeatValue();
         binding.setEvent(event);
     }
 
@@ -157,7 +157,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        EventInstanceForDay event = binding.getEvent();
+        GoogleEvent event = binding.getEvent();
         switch (item.getItemId()) {
             case R.id.repeat_single:
                 event.setFrequency(null);
@@ -196,7 +196,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        EventInstanceForDay event = binding.getEvent();
+        GoogleEvent event = binding.getEvent();
         Calendar calendar = Calendar.getInstance();
         long timeDiff = event.getEnd() - event.getBegin();
         switch (pickerState) {
@@ -249,7 +249,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     public void onClick(View view) {
         Day day = (Day) view.getTag(R.string.app_name);
         if (day != null) {
-            EventInstanceForDay event = binding.getEvent();
+            GoogleEvent event = binding.getEvent();
             calendar.setTimeInMillis(event.getBegin());
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
@@ -267,7 +267,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
     @Override
     public void onValueChanged(int oldValue, int newValue) {
-        EventInstanceForDay event = binding.getEvent();
+        GoogleEvent event = binding.getEvent();
         event.setRepeatValue(newValue);
         binding.setEvent(event);
     }

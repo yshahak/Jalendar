@@ -24,8 +24,11 @@ public class Day implements Parcelable {
 
     public static final long DAY_IN_MS = TimeUnit.DAYS.toMillis(1);
 
+//    @Ignore
+//    private List<EventInstanceForDay> googleEventInstanceForDays = new ArrayList<>();
+
     @Ignore
-    private List<EventInstanceForDay> googleEventInstanceForDays = new ArrayList<>();
+    private List<GoogleEvent> googleEventsForDay = new ArrayList<>();
 
     private final String labelDay;
     private final String labelDayAndMonth;
@@ -50,6 +53,13 @@ public class Day implements Parcelable {
         this.dayInMonth = dayInMonth;
         this.startDayInMillis = startDayInMillis;
         this.loazyDayOfMonth = loazyDayOfMonth;
+    }
+
+    public List<GoogleEvent> getGoogleEventsForDay() {
+        if (googleEventsForDay == null) {
+            googleEventsForDay = new ArrayList<>();
+        }
+        return googleEventsForDay;
     }
 
     public int getLoazyDayOfMonth() {
@@ -104,12 +114,12 @@ public class Day implements Parcelable {
         return isCurrentDay;
     }
 
-    public List<EventInstanceForDay> getGoogleEventInstanceForDays() {
-        if (googleEventInstanceForDays == null) {
-            googleEventInstanceForDays = new ArrayList<>();
-        }
-        return googleEventInstanceForDays;
-    }
+//    public List<EventInstanceForDay> getGoogleEventInstanceForDays() {
+//        if (googleEventInstanceForDays == null) {
+//            googleEventInstanceForDays = new ArrayList<>();
+//        }
+//        return googleEventInstanceForDays;
+//    }
 
     public void setCellHeight(float cellHeight) {
         this.cellHeight = cellHeight;
@@ -143,7 +153,7 @@ public class Day implements Parcelable {
                 "\t startDayInMillis=" + startDayInMillis +
                 "\t dayInMonth=" + dayInMonth +
                 "\t isOutOfMonthRange=" + isOutOfMonthRange +
-                "\t googleEventInstanceForDays=" + googleEventInstanceForDays +
+                "\t googleEventInstanceForDays=" + googleEventsForDay +
                 '}';
     }
 
@@ -155,7 +165,7 @@ public class Day implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(this.googleEventInstanceForDays);
+        dest.writeTypedList(this.googleEventsForDay);
         dest.writeInt(this.dayHashCode);
         dest.writeString(this.labelDay);
         dest.writeString(this.labelDayAndMonth);
@@ -167,7 +177,7 @@ public class Day implements Parcelable {
     }
 
     protected Day(Parcel in) {
-        this.googleEventInstanceForDays = in.createTypedArrayList(EventInstanceForDay.CREATOR);
+        this.googleEventsForDay = in.createTypedArrayList(GoogleEvent.CREATOR);
         this.dayHashCode = in.readInt();
         this.labelDay = in.readString();
         this.labelDayAndMonth = in.readString();

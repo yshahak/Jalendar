@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.databinding.DayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
-import com.thedroidboy.jalendar.model.EventInstanceForDay;
+import com.thedroidboy.jalendar.model.GoogleEvent;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
  * on 22/11/2017.
  */
 
-public class    SimpleWeekView extends LinearLayout implements View.OnClickListener {
+public class SimpleWeekView extends LinearLayout implements View.OnClickListener {
 
     private static final String TAG = SimpleWeekView.class.getSimpleName();
 
@@ -36,11 +36,11 @@ public class    SimpleWeekView extends LinearLayout implements View.OnClickListe
         init();
     }
 
-    private void init(){
+    private void init() {
         setOrientation(HORIZONTAL);
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         setWeightSum(7);
-        for (int i = 0; i < 7; i++){
+        for (int i = 0; i < 7; i++) {
 
             DayItemBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.day_item, this, false);
             binding.getRoot().setTag(binding);
@@ -48,8 +48,8 @@ public class    SimpleWeekView extends LinearLayout implements View.OnClickListe
         }
     }
 
-    public void bindDays(List<Day> days, float cellHeight, int currentDayOfMonth){
-        for (int i = 0; i < getChildCount(); i++){
+    public void bindDays(List<Day> days, float cellHeight, int currentDayOfMonth) {
+        for (int i = 0; i < getChildCount(); i++) {
             View view = getChildAt(i);
             DayItemBinding binding = (DayItemBinding) view.getTag();
             if (binding != null) {
@@ -61,25 +61,25 @@ public class    SimpleWeekView extends LinearLayout implements View.OnClickListe
                 binding.setDay(day);
                 ViewGroup container = view.findViewById(R.id.day_events_container);
                 container.removeAllViews();
-                List<EventInstanceForDay> eventInstanceForDays = day.getGoogleEventInstanceForDays();
+                List<GoogleEvent> eventInstanceForDays = day.getGoogleEventsForDay();
                 if (eventInstanceForDays == null || eventInstanceForDays.size() == 0) {
                     continue;
                 }
                 LayoutInflater inflater = LayoutInflater.from(getContext());
-                for (EventInstanceForDay eventInstanceForDay : eventInstanceForDays){
+                for (GoogleEvent event : eventInstanceForDays) {
                     TextView textView = (TextView) inflater.inflate(R.layout.text_view_event_for_month, container, false);
-                    textView.setText(eventInstanceForDay.getEventTitle());
-                    textView.setBackgroundColor(eventInstanceForDay.getDisplayColor());
+                    textView.setText(event.getEventTitle());
+                    textView.setBackgroundColor(event.getDisplayColor());
                     container.addView(textView);
-                    textView.setTag(eventInstanceForDay);
+                    textView.setTag(event);
                 }
             }
 
         }
     }
 
-    public void switchHighlight(int currentDayOfMonth){
-        for (int i = 0; i < getChildCount(); i++){
+    public void switchHighlight(int currentDayOfMonth) {
+        for (int i = 0; i < getChildCount(); i++) {
             View view = getChildAt(i);
             DayItemBinding binding = (DayItemBinding) view.getTag();
             if (binding != null) {

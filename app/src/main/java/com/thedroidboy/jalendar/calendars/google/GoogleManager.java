@@ -14,7 +14,7 @@ import android.provider.CalendarContract;
 import android.util.Log;
 
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
-import com.thedroidboy.jalendar.model.EventInstanceForDay;
+import com.thedroidboy.jalendar.model.GoogleEvent;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -76,7 +76,7 @@ public class GoogleManager {
         return builder.build();
     }
     @SuppressWarnings("MissingPermission")
-    public static void deleteEvent(Context context, EventInstanceForDay event) {
+    public static void deleteEvent(Context context, GoogleEvent event) {
         ContentResolver cr = context.getContentResolver();
         Uri deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId());
         int rows = cr.delete(deleteUri, null, null);
@@ -85,7 +85,7 @@ public class GoogleManager {
     }
 
     @SuppressWarnings("MissingPermission")
-    public static void addHebrewEventToGoogleServer(Context context, EventInstanceForDay event) {
+    public static void addHebrewEventToGoogleServer(Context context, GoogleEvent event) {
         ContentValues values;
         ContentResolver cr = context.getContentResolver();
         Frequency frequency = event.getFrequency();
@@ -110,7 +110,7 @@ public class GoogleManager {
 
     @SuppressLint("DefaultLocale")
     @SuppressWarnings("MissingPermission")
-    private static ContentValues getContentValuesForEvent(EventInstanceForDay event) {
+    private static ContentValues getContentValuesForEvent(GoogleEvent event) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Events.DTSTART, event.getBegin());
         Frequency frequency = event.getFrequency();
@@ -147,7 +147,7 @@ public class GoogleManager {
     }
 
     @SuppressLint("MissingPermission")
-    private static void editAllEventInstances(Context context, EventInstanceForDay event) {
+    private static void editAllEventInstances(Context context, GoogleEvent event) {
         syncCalendars(context);
         ContentResolver cr = context.getContentResolver();
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon()

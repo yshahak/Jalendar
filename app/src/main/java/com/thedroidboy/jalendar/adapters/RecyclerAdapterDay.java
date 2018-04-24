@@ -12,7 +12,7 @@ import com.thedroidboy.jalendar.activities.CreteIvriEventActivity;
 import com.thedroidboy.jalendar.R;
 import com.thedroidboy.jalendar.databinding.EventItemForDayBinding;
 import com.thedroidboy.jalendar.model.Day;
-import com.thedroidboy.jalendar.model.EventInstanceForDay;
+import com.thedroidboy.jalendar.model.GoogleEvent;
 
 import java.util.List;
 
@@ -41,15 +41,16 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
 //        Log.d(TAG, "onBindViewHolder: " + position + "\t" + day.getGoogleEventInstanceForDays().get(position));
-        List<EventInstanceForDay> events = day.getGoogleEventInstanceForDays();
-        EventInstanceForDay event = events.size() > 0 ? events.get(position) : new EventInstanceForDay(-1, "אין אירועים ליום זה",
-                -1, -1, Color.TRANSPARENT, "", -1);
+        List<GoogleEvent> events = day.getGoogleEventsForDay();
+
+        GoogleEvent event = events.size() > 0 ? events.get(position) : new GoogleEvent(-1, -1, "אין אירועים ליום זה",
+                -1, -1, Color.TRANSPARENT, 1,-1, null, "");
         holder.bindTo(event);
     }
 
     @Override
     public int getItemCount() {
-        int size = day.getGoogleEventInstanceForDays().size();
+        int size = day.getGoogleEventsForDay().size();
         return size == 0 ? 1 : size;
     }
 
@@ -62,13 +63,13 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
             itemView.setOnClickListener(this);
         }
 
-        void bindTo(EventInstanceForDay event) {
+        void bindTo(GoogleEvent event) {
             binding.setEvent(event);
         }
 
         @Override
         public void onClick(View v) {
-            EventInstanceForDay event = day.getGoogleEventInstanceForDays().get(getAdapterPosition());
+            GoogleEvent event = day.getGoogleEventsForDay().get(getAdapterPosition());
             if (event.getEventTitle().equals("אין אירועים ליום זה")){
                 return;
             }
