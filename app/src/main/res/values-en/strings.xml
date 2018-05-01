@@ -53,4 +53,11 @@
     <string name="notif_approved">OK</string>
     <string name="notif_explain_new">This must stay here to display the date icon</string>
     <string name="col_header_daf_yomi">דף יומי</string>
+    <string name="sunday">Sun</string>
+    <string name="monday">Mon</string>
+    <string name="tuesday">Tue</string>
+    <string name="thursday">Thu</string>
+    <string name="friday">Fri</string>
+    <string name="saturday">Sat</string>
+    <string name="wednsday">Wed</string>
 </resources>

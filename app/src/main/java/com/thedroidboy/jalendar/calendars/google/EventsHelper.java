@@ -203,14 +203,14 @@ public class EventsHelper {
 //        long offset = eventOffset - TimeZone.getDefault().getOffset(start);
 //        String calendarName = cursor.getString(PROJECTION_CALENDAR_DISPLAY_NAME_INDEX);
 //        int displayColor = cursor.getInt(PROJECTION_DISPLAY_COLOR_INDEX);
-//        String rrule = cursor.getString(PROJECTION_RRULE);
+//        String stringOccurenceRule = cursor.getString(PROJECTION_RRULE);
 //        String rDate = cursor.getString(PROJECTION_RDATE);
 ////        int calendarColor = cursor.getInt(PROJECTION_CALENDAR_COLOR_INDEX);
 ////        boolean allDayEvent = (end - start) == TimeUnit.DAYS.toMillis(1);
 //        int dayOfMonth = JewCalendar.getDayOfMonth(start);
 //        EventInstanceForDay eventInstanceForDay = new EventInstanceForDay(eventId, title, start + offset, end + offset, displayColor, calendarName, dayOfMonth);
 //        eventInstanceForDay.setCalendarId(calendarId);
-//        eventInstanceForDay.convertRruleToFrequencyAndRepeatValue(rrule);
+//        eventInstanceForDay.convertRruleToFrequencyAndRepeatValue(stringOccurenceRule);
 //        return eventInstanceForDay;
 //    }
 

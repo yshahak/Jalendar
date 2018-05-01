@@ -1,3 +1,5 @@
+@file:Suppress("NON_EXHAUSTIVE_WHEN")
+
 package com.thedroidboy.jalendar.model
 
 import android.os.Parcelable
@@ -9,6 +11,7 @@ import biweekly.property.RecurrenceRule
 import biweekly.util.Frequency
 import com.thedroidboy.jalendar.MyApplication
 import com.thedroidboy.jalendar.R
+import com.thedroidboy.jalendar.calendars.convertDayToHebrew
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter
 import kotlinx.android.parcel.IgnoredOnParcel
@@ -28,7 +31,7 @@ data class GoogleEvent(var eventId: Long,
                        var end: Long,
                        val displayColor: Int,
                        var dayOfMonth: Int = 0,
-                       var rrule: String? = null,
+                       var stringOccurenceRule: String? = null,
                        val allDayEvent: Boolean = false) : Parcelable, Comparable<GoogleEvent> {
 
     @IgnoredOnParcel
@@ -36,7 +39,7 @@ data class GoogleEvent(var eventId: Long,
     @IgnoredOnParcel
     var frequency: Frequency? = null
     @IgnoredOnParcel
-    var rule: RecurrenceRule? = null
+    var recurrenceRule: RecurrenceRule? = null
 
     companion object {
         private val simpleLoazyDateFormat = SimpleDateFormat("dd/MM", Locale.getDefault())
@@ -54,24 +57,48 @@ data class GoogleEvent(var eventId: Long,
                         end: Long,
                         displayColor: Int,
                         dayOfMonth: Int = 0,
-                        rrule: String): GoogleEvent {
+                        rrule: String?): GoogleEvent {
             return GoogleEvent(eventId, calendarId, eventTitle, begin, end, displayColor, dayOfMonth, rrule)
         }
     }
 
     fun convertRruleToFrequencyAndRepeatValue() {
-        if (rrule == null) {
-            return
-        }
-        val rrule = scribe.parseText(rrule, null, ICalParameters(), parseContext)
-        this.frequency = rrule.value.frequency
-        this.repeatValue = if (rrule.value.count != null) rrule.value.count else -1
-        if (frequency == Frequency.WEEKLY && rrule.value != null) {
-            val days = rrule.value.byDay
-            for (day in days) {
+        stringOccurenceRule?.let {
+            recurrenceRule = scribe.parseText(stringOccurenceRule, null, ICalParameters(), parseContext)?.also {
+                this.frequency = it.value.frequency
+                this.repeatValue = if (it.value.count != null) it.value.count else -1
+                if (frequency == Frequency.WEEKLY && it.value != null) {
+                    val days = it.value.byDay
+                    for (day in days) {
 
+                    }
+                }
             }
         }
+    }
+
+    fun getRepeatTitle(): String {
+        val ctx = MyApplication.getInstance()
+        recurrenceRule?.let { rule ->
+            rule.value.frequency?.also { frequency ->
+                when (frequency){
+                    Frequency.DAILY -> return ctx.getString(R.string.instance_daily)
+                    Frequency.WEEKLY -> {
+                        rule.value.byDay?.let {
+                            val stringBuilder = StringBuilder()
+                            for (day in it){
+                                day?.let { stringBuilder.append(it.convertDayToHebrew(ctx)).append(" ") }
+                            }
+                            return ctx.getString(R.string.instance_weekly) + " בימי " + stringBuilder.toString()
+                        }
+                        return ctx.getString(R.string.instance_weekly)
+                    }
+                    Frequency.MONTHLY -> return ctx.getString(R.string.instance_monthly)
+                    Frequency.YEARLY -> return ctx.getString(R.string.instance_yearly)
+                }
+            }
+        }
+        return ctx.getString(R.string.instance_single)
     }
 
 
@@ -111,20 +138,20 @@ data class GoogleEvent(var eventId: Long,
         return simpleEventFormat.format(end)
     }
 
-    fun getRepeatTitle(): String {
-
-        val ctx = MyApplication.getInstance()
-        if (frequency == null) {
-            return ctx.getString(R.string.instance_single)
-        }
-        when (frequency) {
-            Frequency.DAILY -> return ctx.getString(R.string.instance_daily)
-            Frequency.WEEKLY -> return ctx.getString(R.string.instance_weekly)
-            Frequency.MONTHLY -> return ctx.getString(R.string.instance_monthly)
-            Frequency.YEARLY -> return ctx.getString(R.string.instance_yearly)
-        }
-        return ctx.getString(R.string.instance_single)
-    }
+//    fun getRepeatTitle(): String {
+//
+//        val ctx = MyApplication.getInstance()
+//        if (frequency == null) {
+//            return ctx.getString(R.string.instance_single)
+//        }
+//        when (frequency) {
+//            Frequency.DAILY -> return ctx.getString(R.string.instance_daily)
+//            Frequency.WEEKLY -> return ctx.getString(R.string.instance_weekly)
+//            Frequency.MONTHLY -> return ctx.getString(R.string.instance_monthly)
+//            Frequency.YEARLY -> return ctx.getString(R.string.instance_yearly)
+//        }
+//        return ctx.getString(R.string.instance_single)
+//    }
 
     fun getRepeatVisibility(): Boolean {
         return frequency != null

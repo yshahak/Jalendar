@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.thedroidboy.jalendar.MyApplication;
 import com.thedroidboy.jalendar.R;
 
 import java.util.ArrayList;
@@ -48,7 +50,7 @@ public class CalendarHelper {
             calendarsList.addView(header);
             int counter = 0;
             for (final CalendarAccount calendarAccount : accountListNames.get(calendarAccountNmae)) {
-                if (calendarAccountNmae.equals(HOLIDAYS) && counter == 1){
+                if (calendarAccountNmae.equals(HOLIDAYS) && counter == 1) {
                     GoogleManager.updateCalendarVisibility(context, calendarAccount, false);
                     continue;
                 }
@@ -87,7 +89,8 @@ public class CalendarHelper {
             displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
             accountName = cur.getString(PROJECTION_ACCOUNTNAME_INDEX);
             ownerName = cur.getString(PROJECTION_OWNER_ACCOUNT_INDEX);
-            if (ownerName.contains("#holiday@group.v.calendar.google.com")){
+            String copyName = accountName; //for updating visibilty
+            if (ownerName.contains("#holiday@group.v.calendar.google.com")) {
                 accountName = HOLIDAYS;
             }
             color = cur.getInt(PROJECTION_COLOR_INDEX);
@@ -98,7 +101,14 @@ public class CalendarHelper {
                 accountList.add(calendarAccount);
                 accountListNames.put(accountName, accountList);
             } else {
-                accountListNames.get(accountName).add(calendarAccount);
+                if (accountName.equals(HOLIDAYS)){
+                    calendarAccount.setAccountName(copyName);
+                    new Handler().post(() -> {
+                        GoogleManager.updateCalendarVisibility(MyApplication.getInstance(), calendarAccount, false); //we don't
+                    });
+                } else {
+                    accountListNames.get(accountName).add(calendarAccount);
+                }
             }
             Log.d(TAG, "calID: " + calID + " , displayName: " + displayName + ", accountName: " + accountName + " , ownerName: " + ownerName);
         }

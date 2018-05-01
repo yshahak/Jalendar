@@ -43,8 +43,8 @@ public class RecyclerAdapterDay extends RecyclerView.Adapter<RecyclerAdapterDay.
 //        Log.d(TAG, "onBindViewHolder: " + position + "\t" + day.getGoogleEventInstanceForDays().get(position));
         List<GoogleEvent> events = day.getGoogleEventsForDay();
 
-        GoogleEvent event = events.size() > 0 ? events.get(position) : new GoogleEvent(-1, -1, "אין אירועים ליום זה",
-                -1, -1, Color.TRANSPARENT, 1,-1, null, "");
+        GoogleEvent event = events.size() > 0 ? events.get(position) : new GoogleEvent(-1L, -1L, "אין אירועים ליום זה",
+                -1L, -1L, Color.TRANSPARENT, 1,"", false);
         holder.bindTo(event);
     }
 

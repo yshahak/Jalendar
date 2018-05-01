@@ -70,4 +70,11 @@
     <string name="notif_approved">הבנתי</string>
     <string name="notif_explain_new">התראה זו הכרחית כדי להציג את התאריך בקביעות</string>
     <string name="col_header_daf_yomi">דף יומי</string>
+    <string name="tuesday">ג׳</string>
+    <string name="wednsday">ד׳</string>
+    <string name="thursday">ה׳</string>
+    <string name="friday">ו׳</string>
+    <string name="saturday">ז׳</string>
+    <string name="sunday">א׳</string>
+    <string name="monday">ב׳</string>
 </resources>
