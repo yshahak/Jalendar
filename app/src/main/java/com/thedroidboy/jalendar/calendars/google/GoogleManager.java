@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import biweekly.property.RecurrenceRule;
 import biweekly.util.Frequency;
 
 /**
@@ -88,17 +89,15 @@ public class GoogleManager {
     public static void addHebrewEventToGoogleServer(Context context, GoogleEvent event) {
         ContentValues values;
         ContentResolver cr = context.getContentResolver();
-        Frequency frequency = event.getFrequency();
         values = getContentValuesForEvent(event);
         if (event.getEventId() == -1L) {
             Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
             if (uri != null) {
                 long eventId = Long.parseLong(uri.getLastPathSegment());
                 event.setEventId(eventId);
-                if (Frequency.MONTHLY.equals(frequency) || Frequency.YEARLY.equals(frequency)){
-                    new Thread(() -> {
-                        editAllEventInstances(context, event);
-                    }).start();
+                final RecurrenceRule rule = event.getRecurrenceRule();
+                if (rule != null && (Frequency.MONTHLY.equals(rule.getValue().getFrequency()) || Frequency.YEARLY.equals(rule.getValue().getFrequency()))){
+                    new Thread(() -> editAllEventInstances(context, event)).start();
                 }
             }
         } else {
@@ -113,10 +112,11 @@ public class GoogleManager {
     private static ContentValues getContentValuesForEvent(GoogleEvent event) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Events.DTSTART, event.getBegin());
-        Frequency frequency = event.getFrequency();
-        if (frequency == null) {
+        RecurrenceRule rule = event.getRecurrenceRule();
+        if (rule == null || rule.getValue().getFrequency() == null) {
             values.put(CalendarContract.Events.DTEND, event.getEnd());
         } else {
+            Frequency frequency = rule.getValue().getFrequency();
             switch (frequency) {
                 case DAILY:
                     long duration = event.getEnd() - event.getBegin();
@@ -154,7 +154,9 @@ public class GoogleManager {
                 .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google");
         ContentUris.appendId(builder, event.getBegin());
-        long endInstances = event.getFrequency().equals(Frequency.MONTHLY) ? TimeUnit.DAYS.toMillis(365) :  TimeUnit.DAYS.toMillis(365 * 10);
+        final RecurrenceRule recurrenceRule = event.getRecurrenceRule();
+        final Frequency frequency = (recurrenceRule != null) ? recurrenceRule.getValue().getFrequency() : null;
+        long endInstances = Frequency.MONTHLY.equals(frequency) ? TimeUnit.DAYS.toMillis(365) :  TimeUnit.DAYS.toMillis(365 * 10);
         ContentUris.appendId(builder, event.getBegin() + endInstances);
         String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? AND " +CalendarContract.Instances.CALENDAR_ID + " = ? AND " + CalendarContract.Instances.EVENT_ID + " = ?";
         String[] WHERE_CALENDARS_ARGS = {"1", Long.toString(event.getCalendarId()), Long.toString(event.getEventId())};//

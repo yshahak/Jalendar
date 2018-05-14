@@ -9,6 +9,7 @@ import biweekly.io.scribe.property.RecurrenceRuleScribe
 import biweekly.parameter.ICalParameters
 import biweekly.property.RecurrenceRule
 import biweekly.util.Frequency
+import biweekly.util.Recurrence
 import com.thedroidboy.jalendar.MyApplication
 import com.thedroidboy.jalendar.R
 import com.thedroidboy.jalendar.calendars.convertDayToHebrew
@@ -34,10 +35,10 @@ data class GoogleEvent(var eventId: Long,
                        var stringOccurenceRule: String? = null,
                        val allDayEvent: Boolean = false) : Parcelable, Comparable<GoogleEvent> {
 
-    @IgnoredOnParcel
-    var repeatValue: Int = -1
-    @IgnoredOnParcel
-    var frequency: Frequency? = null
+//    @IgnoredOnParcel
+//    var repeatValue: Int = -1
+//    @IgnoredOnParcel
+//    var frequency: Frequency? = null
     @IgnoredOnParcel
     var recurrenceRule: RecurrenceRule? = null
 
@@ -47,7 +48,7 @@ data class GoogleEvent(var eventId: Long,
 
         private val scribe = RecurrenceRuleScribe()
         private val parseContext = ParseContext().also {
-            it.version = ICalVersion.V2_0;
+            it.version = ICalVersion.V2_0
         }
 
         fun newInstance(eventId: Long,
@@ -64,16 +65,17 @@ data class GoogleEvent(var eventId: Long,
 
     fun convertRruleToFrequencyAndRepeatValue() {
         stringOccurenceRule?.let {
-            recurrenceRule = scribe.parseText(stringOccurenceRule, null, ICalParameters(), parseContext)?.also {
-                this.frequency = it.value.frequency
-                this.repeatValue = if (it.value.count != null) it.value.count else -1
-                if (frequency == Frequency.WEEKLY && it.value != null) {
-                    val days = it.value.byDay
-                    for (day in days) {
-
-                    }
-                }
-            }
+            recurrenceRule = scribe.parseText(stringOccurenceRule, null, ICalParameters(), parseContext)
+//                    ?.also {
+//                this.frequency = it.value.frequency
+//                this.repeatValue = if (it.value.count != null) it.value.count else -1
+//                if (frequency == Frequency.WEEKLY && it.value != null) {
+//                    val days = it.value.byDay
+//                    for (day in days) {
+//
+//                    }
+//                }
+//            }
         }
     }
 
@@ -99,6 +101,33 @@ data class GoogleEvent(var eventId: Long,
             }
         }
         return ctx.getString(R.string.instance_single)
+    }
+
+    fun getRepeatHeader(): String {
+        return if (getRepeatValue() > 0){
+            "חזרות:"
+        } else {
+            "חזרות: ללא הגבלה"
+        }
+    }
+
+    fun getRepeatValue(): Int {
+        return recurrenceRule?.value?.count ?: 0
+    }
+
+    fun setRepeatValue(value: Int) {
+        recurrenceRule?.let { rule ->
+            recurrenceRule = RecurrenceRule(Recurrence.Builder(rule.value.frequency).count(value).build())
+        }
+    }
+
+    fun setFrequency(value: Frequency) {
+        //todo need to complete on which day to start when switch from daily to other forms
+        recurrenceRule = RecurrenceRule(Recurrence.Builder(value).count(getRepeatValue()).build())
+    }
+
+    fun clearFrequency() {
+        recurrenceRule = null
     }
 
 
@@ -138,23 +167,8 @@ data class GoogleEvent(var eventId: Long,
         return simpleEventFormat.format(end)
     }
 
-//    fun getRepeatTitle(): String {
-//
-//        val ctx = MyApplication.getInstance()
-//        if (frequency == null) {
-//            return ctx.getString(R.string.instance_single)
-//        }
-//        when (frequency) {
-//            Frequency.DAILY -> return ctx.getString(R.string.instance_daily)
-//            Frequency.WEEKLY -> return ctx.getString(R.string.instance_weekly)
-//            Frequency.MONTHLY -> return ctx.getString(R.string.instance_monthly)
-//            Frequency.YEARLY -> return ctx.getString(R.string.instance_yearly)
-//        }
-//        return ctx.getString(R.string.instance_single)
-//    }
-
     fun getRepeatVisibility(): Boolean {
-        return frequency != null
+        return recurrenceRule?.value?.frequency != null
     }
 
 

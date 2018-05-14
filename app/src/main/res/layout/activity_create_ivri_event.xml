@@ -281,7 +281,9 @@
                     android:layout_gravity="center_vertical"
                     android:maxLines="1"
                     android:padding="2dp"
-                    android:text="חזרות:"
+                    android:text="@{event.repeatHeader}"
+                    android:onClick="editRepeat"
+                    tools:text="חזרות:"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     tools:visibility="visible" />
 
@@ -300,7 +302,7 @@
                     app:fast_controls_color="@android:color/darker_gray"
                     app:highlight_color="#FFFF3040"
                     app:max_value="1000"
-                    app:min_value="1"
+                    app:min_value="0"
                     app:selection_color="#A0FF3040"
                     app:show_bars="true"
                     app:show_controls="true"
@@ -310,6 +312,7 @@
                     app:text_color="@android:color/black"
                     app:text_size="18sp"
                     app:value="@{event.repeatValue}"
+                    android:visibility="@{event.repeatValue > 0 ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible" />
 
 

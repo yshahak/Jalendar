@@ -127,6 +127,9 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         }
     }
 
+    public void editRepeat(View v){
+        onValueChanged(0, 10);
+    }
 
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
@@ -134,8 +137,8 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_event_instances, popup.getMenu());
         int position = 0;
-        Frequency frequency = binding.getEvent().getFrequency();
-        if (frequency != null) {
+        if (binding.getEvent().getRecurrenceRule() != null) {
+            Frequency frequency = binding.getEvent().getRecurrenceRule().getValue().getFrequency();
             switch (frequency) {
                 case DAILY:
                     position = 1;
@@ -160,7 +163,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         GoogleEvent event = binding.getEvent();
         switch (item.getItemId()) {
             case R.id.repeat_single:
-                event.setFrequency(null);
+                event.clearFrequency();
                 break;
             case R.id.repeat_daily:
                 event.setFrequency(Frequency.DAILY);
