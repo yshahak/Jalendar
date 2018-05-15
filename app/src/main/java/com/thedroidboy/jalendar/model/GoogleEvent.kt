@@ -12,6 +12,7 @@ import biweekly.util.Frequency
 import biweekly.util.Recurrence
 import com.thedroidboy.jalendar.MyApplication
 import com.thedroidboy.jalendar.R
+import com.thedroidboy.jalendar.calendars.byDayToDayOfWeekList
 import com.thedroidboy.jalendar.calendars.convertDayToHebrew
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter
@@ -116,8 +117,11 @@ data class GoogleEvent(var eventId: Long,
     }
 
     fun setRepeatValue(value: Int) {
-        recurrenceRule?.let { rule ->
-            recurrenceRule = RecurrenceRule(Recurrence.Builder(rule.value.frequency).count(value).build())
+        if (value != getRepeatValue()) {
+            recurrenceRule?.let { rule ->
+                val recurrence = Recurrence.Builder(rule.value.frequency).byDay(rule.byDayToDayOfWeekList()).count(value).build()
+                recurrenceRule = RecurrenceRule(recurrence)
+            }
         }
     }
 
@@ -171,6 +175,7 @@ data class GoogleEvent(var eventId: Long,
         return recurrenceRule?.value?.frequency != null
     }
 
+    fun isRecuuringEvent() = recurrenceRule != null
 
     override fun compareTo(other: GoogleEvent): Int {
         return (this.begin - other.begin).toInt()

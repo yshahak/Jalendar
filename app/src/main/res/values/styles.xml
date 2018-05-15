@@ -59,6 +59,7 @@
 
     <style name="direction">
         <item name="android:layoutDirection">ltr</item>
+        <item name="android:gravity">right</item>
     </style>
 
     <style name="style_text_row_today">
@@ -66,4 +67,9 @@
         <item name="android:padding">8dp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:layoutDirection">rtl</item>
+    </style>
+
 </resources>

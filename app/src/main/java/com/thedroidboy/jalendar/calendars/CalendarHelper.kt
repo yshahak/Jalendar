@@ -1,6 +1,7 @@
 package com.thedroidboy.jalendar.calendars
 
 import android.content.Context
+import biweekly.property.RecurrenceRule
 import biweekly.util.ByDay
 import biweekly.util.DayOfWeek
 import com.thedroidboy.jalendar.R
@@ -33,4 +34,12 @@ fun ByDay.convertDayToHebrew(context: Context): String {
             context.resources.getString(R.string.saturday)
         }
     }
+}
+
+inline fun RecurrenceRule.byDayToDayOfWeekList(): List<DayOfWeek> {
+    val list = mutableListOf<DayOfWeek>()
+    for (day in value.byDay){
+        list.add(day.day)
+    }
+    return list
 }

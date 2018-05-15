@@ -71,11 +71,11 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_create_ivri_event);
         setSupportActionBar(binding.myToolbar);
-        binding.countPicker.setListener(this);
         KeyboardVisibilityEvent.setEventListener(this, this);
         calendar = Calendar.getInstance();
         createEventInstance();
         binding.headerEditTextEventTitle.addTextChangedListener(this);
+        binding.countPicker.setListener(this);
     }
 
     private void createEventInstance(){
@@ -187,13 +187,33 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     }
 
     public void deleteEvent(View view) {
-        new AlertDialog.Builder(this)
-                .setTitle("האם למחוק אירוע זה?")
-                .setPositiveButton("כן", (dialogInterface, i) -> {
+        if (binding.getEvent().isRecuuringEvent()){
+            deleteRecurringEvent();
+        } else {
+            new AlertDialog.Builder(this, R.style.AlertDialogCustom)
+                    .setTitle("האם למחוק אירוע זה?")
+                    .setPositiveButton("כן", (dialogInterface, i) -> {
+                        GoogleManager.deleteEvent(getApplicationContext(), binding.getEvent());
+                        finish();
+                    })
+                    .setNegativeButton("לא", null)
+                    .show();
+        }
+
+    }
+
+    public void deleteRecurringEvent() {
+        /*AlertDialog alertDialog = */new AlertDialog.Builder(this, R.style.AlertDialogCustom)
+                .setTitle("מחיקת אירועים")
+                .setPositiveButton("אירוע זה בלבד", (dialogInterface, i) -> {
                     GoogleManager.deleteEvent(getApplicationContext(), binding.getEvent());
                     finish();
                 })
-                .setNegativeButton("לא", null)
+                .setNeutralButton("כל האירועים", ((dialog, which) -> {
+                    GoogleManager.deleteSingleEventFromRecurring(getApplicationContext(), binding.getEvent());
+                    finish();
+                }))
+                .setNegativeButton("בטל", null)
                 .show();
     }
 

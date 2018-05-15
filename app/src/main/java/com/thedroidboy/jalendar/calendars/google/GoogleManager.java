@@ -85,6 +85,43 @@ public class GoogleManager {
         syncCalendars(context);
     }
 
+ @SuppressWarnings("MissingPermission")
+    public static void deleteSingleEventFromRecurring(Context context, GoogleEvent event) {
+     ContentResolver cr = context.getContentResolver();
+     Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+             .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+             .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google");
+     ContentUris.appendId(builder, event.getBegin());
+     ContentUris.appendId(builder, event.getBegin() + event.getEnd());
+     String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? AND " +CalendarContract.Instances.CALENDAR_ID + " = ? AND " + CalendarContract.Instances.EVENT_ID + " = ?";
+     String[] WHERE_CALENDARS_ARGS = {"1", Long.toString(event.getCalendarId()), Long.toString(event.getEventId())};//
+     String[] mProjection = {
+             CalendarContract.Events.DTSTART, //0
+             CalendarContract.Events.DTEND,  //1
+             CalendarContract.Instances.BEGIN,  //2
+             CalendarContract.Instances.END,   //3
+     }; //5
+
+     Cursor cur = cr.query(builder.build(), mProjection, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
+             CalendarContract.Events.DTSTART + " ASC");
+     if (cur != null) {
+         if (cur.moveToFirst()) {
+             do {
+                 long begin = cur.getLong((2));
+                 ContentValues values = new ContentValues();
+                 values.put(CalendarContract.Events.DTSTART, event.getBegin());
+                 values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, begin);
+                 values.put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED);
+                 Uri uri = Uri.withAppendedPath(CalendarContract.Events.CONTENT_EXCEPTION_URI,  String.valueOf(event.getEventId()));
+                 Uri result = cr.insert(uri, values);
+                 Log.d(TAG, "delete single instance: update row= " + result);
+             } while (cur.moveToNext());
+         }
+         cur.close();
+         syncCalendars(context);
+     }
+    }
+
     @SuppressWarnings("MissingPermission")
     public static void addHebrewEventToGoogleServer(Context context, GoogleEvent event) {
         ContentValues values;
@@ -131,12 +168,10 @@ public class GoogleManager {
                 case MONTHLY:
                     values.put(CalendarContract.Events.DURATION, "PT1H0M");
                     values.put(CalendarContract.Events.RRULE, "FREQ=MONTHLY;COUNT=" + event.getRepeatValue());
-//                    values.put(CalendarContract.Events._SYNC_ID, System.currentTimeMillis() + "");
                     break;
                 case YEARLY:
                     values.put(CalendarContract.Events.DURATION, "PT1H0M");
                     values.put(CalendarContract.Events.RRULE, "FREQ=YEARLY;COUNT=" + event.getRepeatValue());
-//                    values.put(CalendarContract.Events._SYNC_ID, System.currentTimeMillis() + "");
                     break;
             }
         }
@@ -165,8 +200,6 @@ public class GoogleManager {
                 CalendarContract.Events.DTEND,  //1
                 CalendarContract.Instances.BEGIN,  //2
                 CalendarContract.Instances.END,   //3
-//                CalendarContract.Events._SYNC_ID,  //4
-//                CalendarContract.Events.ORIGINAL_SYNC_ID
         }; //5
 
         Cursor cur = cr.query(builder.build(), mProjection, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
@@ -177,28 +210,16 @@ public class GoogleManager {
                 JewCalendar calStart = new JewCalendar(new Date(event.getBegin()));
                 JewCalendar calEnd = new JewCalendar(new Date(event.getEnd()));
                 int i = 0;
-                long eventStart = calStart.getTime().getTime();
-                long eventEnd = calEnd.getTime().getTime();
                 do {
-//                    long syncId = cur.getLong(4);
                     long start = cur.getLong((2));
-                    long end = cur.getLong((3));
                     calStart.shiftMonth(i);
                     calEnd.shiftMonth(i);
                     event.setBegin(calStart.getTime().getTime());
                     event.setEnd(calEnd.getTime().getTime());
                     ContentValues values = new ContentValues();
-//                    values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
-//                    values.put(CalendarContract.Events.TITLE, event.getEventTitle());
                     values.put(CalendarContract.Events.DTSTART, event.getBegin());
-//                    values.put(CalendarContract.Events.DTEND, event.getEnd());
                     values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, start);
-//                    values.put(CalendarContract.Events.ORIGINAL_SYNC_ID, syncId);
-//                    values.put(CalendarContract.Events.ORIGINAL_ID, event.getEventId());
-                    // Create the exception
                     Uri uri = Uri.withAppendedPath(CalendarContract.Events.CONTENT_EXCEPTION_URI,  String.valueOf(event.getEventId()));
-//                    uri = asSyncAdapter(uri, PreferenceManager.getDefaultSharedPreferences(context).getString("user_email", "yshahak@gmail.com"));
-//                    int update = cr.update(ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.getEventId()), values, null, null);
                     Uri result = cr.insert(uri, values);
                     Log.d(TAG, "editAllEventInstances: update row= " + result);
                     i++;
@@ -208,24 +229,5 @@ public class GoogleManager {
             syncCalendars(context);
         }
     }
-
-    /**
-     * Creates an updated URI that includes query parameters that identify the source as a
-     * sync adapter.
-     */
-    static Uri asSyncAdapter(Uri uri, String account) {
-        return uri.buildUpon()
-                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google").build();
-    }
-//    public static void openEvent(Context context, EventInstance eventInstance){
-//        Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventInstance.getEventId());
-//        Intent intent = new Intent(Intent.ACTION_VIEW)
-//                .setData(uri)
-//                .putExtra(CalendarContract.Events.TITLE, eventInstance.getEventTitle());
-//        ((Activity)context).startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
-//    }
-
 
 }
