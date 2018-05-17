@@ -17,5 +17,9 @@
         <item
             android:id="@+id/repeat_yearly"
             android:title="@string/instance_yearly"/>
+
+        <item
+            android:id="@+id/repeat_custom"
+            android:title="מותאם אישית"/>
     </group>
 </menu>

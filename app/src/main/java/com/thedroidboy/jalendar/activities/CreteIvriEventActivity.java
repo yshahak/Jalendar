@@ -41,7 +41,6 @@ import javax.inject.Inject;
 
 import biweekly.util.Frequency;
 import dagger.android.AndroidInjection;
-import me.angrybyte.numberpicker.listener.OnValueChangeListener;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 
@@ -51,7 +50,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 
 @SuppressWarnings("unused")
 public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener
-        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, OnValueChangeListener, TextWatcher {
+        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, /*OnValueChangeListener, */TextWatcher {
 
     public static final String EXTRA_EVENT = "EXTRA_EVENT" ;
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
@@ -75,7 +74,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         calendar = Calendar.getInstance();
         createEventInstance();
         binding.headerEditTextEventTitle.addTextChangedListener(this);
-        binding.countPicker.setListener(this);
+//        binding.countPicker.setListener(this);
     }
 
     private void createEventInstance(){
@@ -161,9 +160,9 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         GoogleEvent event = binding.getEvent();
+        event.clearFrequency();
         switch (item.getItemId()) {
             case R.id.repeat_single:
-                event.clearFrequency();
                 break;
             case R.id.repeat_daily:
                 event.setFrequency(Frequency.DAILY);
@@ -176,6 +175,9 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
                 break;
             case R.id.repeat_yearly:
                 event.setFrequency(Frequency.YEARLY);
+                break;
+            case R.id.repeat_custom:
+                //todo custom dialog
                 break;
         }
         binding.setEvent(event);
@@ -288,7 +290,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         }
     }
 
-    @Override
+//    @Override
     public void onValueChanged(int oldValue, int newValue) {
         GoogleEvent event = binding.getEvent();
         event.setRepeatValue(newValue);

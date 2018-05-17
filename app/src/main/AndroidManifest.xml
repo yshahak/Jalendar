@@ -25,7 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.CreteIvriEventActivity"
             android:exported="true"
@@ -53,17 +52,22 @@
             android:name=".activities.GoogleSignInActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.DayDetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="layoutDirection|locale"
-            android:parentActivityName=".activities.MainActivity">
-        </activity>
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".activities.CustomRecurrenceActivity"
+            android:parentActivityName=".activities.CreteIvriEventActivity"
+            android:theme="@style/AppTheme"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyClaxOusuDRmWr3QjHhYh-TAkCAWTpsdr0" />
+
+
     </application>
 
 </manifest>

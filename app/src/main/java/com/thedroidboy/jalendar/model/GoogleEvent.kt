@@ -18,6 +18,7 @@ import com.thedroidboy.jalendar.calendars.jewish.JewCalendar
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
+import net.sourceforge.zmanim.hebrewcalendar.JewishDate
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,10 +37,6 @@ data class GoogleEvent(var eventId: Long,
                        var stringOccurenceRule: String? = null,
                        val allDayEvent: Boolean = false) : Parcelable, Comparable<GoogleEvent> {
 
-//    @IgnoredOnParcel
-//    var repeatValue: Int = -1
-//    @IgnoredOnParcel
-//    var frequency: Frequency? = null
     @IgnoredOnParcel
     var recurrenceRule: RecurrenceRule? = null
 
@@ -67,45 +64,37 @@ data class GoogleEvent(var eventId: Long,
     fun convertRruleToFrequencyAndRepeatValue() {
         stringOccurenceRule?.let {
             recurrenceRule = scribe.parseText(stringOccurenceRule, null, ICalParameters(), parseContext)
-//                    ?.also {
-//                this.frequency = it.value.frequency
-//                this.repeatValue = if (it.value.count != null) it.value.count else -1
-//                if (frequency == Frequency.WEEKLY && it.value != null) {
-//                    val days = it.value.byDay
-//                    for (day in days) {
-//
-//                    }
-//                }
-//            }
         }
     }
 
     fun getRepeatTitle(): String {
         val ctx = MyApplication.getInstance()
         recurrenceRule?.let { rule ->
+            val builder = StringBuilder()
             rule.value.frequency?.also { frequency ->
-                when (frequency){
-                    Frequency.DAILY -> return ctx.getString(R.string.instance_daily)
-                    Frequency.WEEKLY -> {
-                        rule.value.byDay?.let {
-                            val stringBuilder = StringBuilder()
-                            for (day in it){
-                                day?.let { stringBuilder.append(it.convertDayToHebrew(ctx)).append(" ") }
-                            }
-                            return ctx.getString(R.string.instance_weekly) + " בימי " + stringBuilder.toString()
-                        }
-                        return ctx.getString(R.string.instance_weekly)
-                    }
-                    Frequency.MONTHLY -> return ctx.getString(R.string.instance_monthly)
-                    Frequency.YEARLY -> return ctx.getString(R.string.instance_yearly)
+                when (frequency) {
+                    Frequency.DAILY -> builder.append(ctx.getString(R.string.instance_daily))
+                    Frequency.WEEKLY -> builder.append(ctx.getString(R.string.instance_weekly))
+                    Frequency.MONTHLY -> builder.append(ctx.getString(R.string.instance_monthly))
+                    Frequency.YEARLY -> builder.append(ctx.getString(R.string.instance_yearly))
                 }
             }
+            rule.value.byDay?.takeIf { it.size > 0 }?.let {
+                builder.append(" בימי ")
+                for (day in it) {
+                    day?.let { builder.append(it.convertDayToHebrew(ctx)).append(" ") }
+                }
+            }
+            rule.value.count?.takeIf { it > 0 }?.let { builder.append(" ").append(it).append(" פעמים") }
+            rule.value.until?.let {
+                builder.append(" עד ").append(simpleLoazyDateFormat.format(it)).append(" ").append(hebrewHebDateFormatter.format(JewishDate(it))) }
+            return builder.toString()
         }
         return ctx.getString(R.string.instance_single)
     }
 
     fun getRepeatHeader(): String {
-        return if (getRepeatValue() > 0){
+        return if (getRepeatValue() > 0) {
             "חזרות:"
         } else {
             "חזרות: ללא הגבלה"
@@ -127,7 +116,7 @@ data class GoogleEvent(var eventId: Long,
 
     fun setFrequency(value: Frequency) {
         //todo need to complete on which day to start when switch from daily to other forms
-        recurrenceRule = RecurrenceRule(Recurrence.Builder(value).count(getRepeatValue()).build())
+        recurrenceRule = RecurrenceRule(Recurrence.Builder(value)./*count(getRepeatValue()).*/build())
     }
 
     fun clearFrequency() {

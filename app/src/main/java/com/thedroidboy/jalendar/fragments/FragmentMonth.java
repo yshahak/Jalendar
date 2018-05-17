@@ -8,6 +8,7 @@ import android.database.ContentObserver;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -90,7 +91,7 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater layoutInflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_month_item, container, false);
         LiveData<Month> monthLiveData = monthVM.getMonth();
         monthLiveData.observe(this, month -> {
@@ -172,8 +173,11 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     public void onLoadFinished(Loader<List<Day>> loader, List<Day> data) {
 //        Log.d(TAG, "onLoadFinished: ");
         if (monthVM.getMonth().getValue() != null) {
-            monthVM.getMonth().getValue().setDayList(data);
-            bindMonth(binding);
+            //trying to avoid CurrentModification exception when looping over the data
+            binding.getRoot().post(() -> {
+                monthVM.getMonth().getValue().setDayList(data);
+                bindMonth(binding);
+            });
         }
     }
 
