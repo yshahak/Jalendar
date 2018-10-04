@@ -45,10 +45,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 @SuppressWarnings("FieldCanBeLocal")
 public class GoogleSignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, EasyPermissions.PermissionCallbacks {
 
-        private static final int RC_SIGN_IN = 100;
+    private static final int RC_SIGN_IN = 100;
     private static String TAG = "TAG";
     private GoogleAccountCredential mCredential;
-    private static final String[] SCOPES = { CalendarScopes.CALENDAR };
+    private static final String[] SCOPES = {CalendarScopes.CALENDAR};
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -89,11 +89,11 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
      * appropriate.
      */
     private void getResultsFromApi() {
-        if (! isGooglePlayServicesAvailable()) {
+        if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
-        }else {
+        } else {
             setResult(RESULT_OK);
             finish();
 //            new MakeRequestTask().execute(mCredential);
@@ -108,15 +108,16 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
 
         /**
          * Background task to call Google Calendar API.
+         *
          * @param params no parameters needed for this task.
          */
         @Override
         protected Void doInBackground(GoogleAccountCredential... params) {
-                HttpTransport transport = AndroidHttp.newCompatibleTransport();
-                JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-                com.google.api.services.calendar.Calendar mService = new com.google.api.services.calendar.Calendar.Builder(
-                        transport, jsonFactory, params[0])
-                        .build();
+            HttpTransport transport = AndroidHttp.newCompatibleTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            com.google.api.services.calendar.Calendar mService = new com.google.api.services.calendar.Calendar.Builder(
+                    transport, jsonFactory, params[0])
+                    .build();
 
             return null;
         }
@@ -150,23 +151,24 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     }
 
 
-
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
      * the resultCode it returned, and any additional data from it.
+     *
      * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     *     activity result.
-     * @param data Intent (containing result data) returned by incoming
-     *     activity result.
+     * @param resultCode  code indicating the result of the incoming
+     *                    activity result.
+     * @param data        Intent (containing result data) returned by incoming
+     *                    activity result.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch (requestCode) {
             case RC_SIGN_IN:        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                //todo the result is not good... need to refresh code
                 if (result.isSuccess()) {
                     // Google Sign In was successful, authenticate with Firebase
                     GoogleSignInAccount account = result.getSignInAccount();
@@ -218,13 +220,15 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                 break;
         }
     }
+
     /**
      * Respond to requests for permissions at runtime for API 23 and above.
-     * @param requestCode The request code passed in
-     *     requestPermissions(android.app.Activity, String, int, String[])
-     * @param permissions The requested permissions. Never null.
+     *
+     * @param requestCode  The request code passed in
+     *                     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions  The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
-     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     *                     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -238,9 +242,10 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     /**
      * Callback for when a permission is granted using the EasyPermissions
      * library.
+     *
      * @param requestCode The request code associated with the requested
-     *         permission
-     * @param list The requested permission list. Never null.
+     *                    permission
+     * @param list        The requested permission list. Never null.
      */
     @Override
     public void onPermissionsGranted(int requestCode, List<String> list) {
@@ -250,9 +255,10 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     /**
      * Callback for when a permission is denied using the EasyPermissions
      * library.
+     *
      * @param requestCode The request code associated with the requested
-     *         permission
-     * @param list The requested permission list. Never null.
+     *                    permission
+     * @param list        The requested permission list. Never null.
      */
     @Override
     public void onPermissionsDenied(int requestCode, List<String> list) {
@@ -260,11 +266,11 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     }
 
 
-
     /**
      * Check that Google Play services APK is installed and up to date.
+     *
      * @return true if Google Play Services is available and up to
-     *     date on this device; false otherwise.
+     * date on this device; false otherwise.
      */
     private boolean isGooglePlayServicesAvailable() {
         GoogleApiAvailability apiAvailability =
@@ -292,8 +298,9 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
     /**
      * Display an error dialog showing that Google Play Services is missing
      * or out of date.
+     *
      * @param connectionStatusCode code describing the presence (or lack of)
-     *     Google Play Services on this device.
+     *                             Google Play Services on this device.
      */
     void showGooglePlayServicesAvailabilityErrorDialog(
             final int connectionStatusCode) {

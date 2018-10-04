@@ -177,6 +177,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     }
                     setLocationValue();
                 }
+                break;
+            case RC_SIGN_IN:
+                if (resultCode == RESULT_OK) {
+                    String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR, Manifest.permission.GET_ACCOUNTS};
+                    EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
+                }
+
         }
     }
 
@@ -227,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (EasyPermissions.hasPermissions(this, perms)) {
             getSupportLoaderManager().initLoader(101, null, this);
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
+            startActivityForResult(new Intent(this, GoogleSignInActivity.class), RC_SIGN_IN);
         }
     }
 

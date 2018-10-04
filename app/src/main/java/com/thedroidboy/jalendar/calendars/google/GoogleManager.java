@@ -33,9 +33,8 @@ public class GoogleManager {
     private static final String TAG = GoogleManager.class.getSimpleName();
     //1088145040884-uudgqtifedrnk0sadmss2mlj0mhfh132.apps.googleusercontent.com
 
-    @SuppressWarnings("MissingPermission")
-    public static void syncCalendars(Context context) {
-        Account[] accounts = AccountManager.get(context).getAccounts();
+    private static void syncCalendars(Context context) {
+        Account[] accounts = AccountManager.get(context).getAccountsByType("com.google");
         String authority = CalendarContract.Calendars.CONTENT_URI.getAuthority();
         for (Account account : accounts) {
             Bundle extras = new Bundle();
