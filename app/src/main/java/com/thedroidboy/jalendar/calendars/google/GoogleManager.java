@@ -34,14 +34,15 @@ public class GoogleManager {
     //1088145040884-uudgqtifedrnk0sadmss2mlj0mhfh132.apps.googleusercontent.com
 
     private static void syncCalendars(Context context) {
+//        Account[] accounts = AccountManager.get(context).getAccountsByType("com.google");
         Account[] accounts = AccountManager.get(context).getAccountsByType("com.google");
         String authority = CalendarContract.Calendars.CONTENT_URI.getAuthority();
         for (Account account : accounts) {
             Bundle extras = new Bundle();
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-            if (account.type.equals("com.google")) {
+//            if (account.type.equals("com.google")) {
                 ContentResolver.requestSync(account, authority, extras);
-            }
+//            }
         }
     }
 

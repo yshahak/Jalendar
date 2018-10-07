@@ -1,11 +1,13 @@
 package com.thedroidboy.jalendar.activities;
 
 import android.Manifest;
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
@@ -226,6 +228,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = AccountManager.newChooseAccountIntent(null, null, new String[]{"com.google"}, null, null, null, null);
+            startActivityForResult(intent, 42);
+        }
     }
 
     @AfterPermissionGranted(100)
@@ -234,15 +240,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (EasyPermissions.hasPermissions(this, perms)) {
             getSupportLoaderManager().initLoader(101, null, this);
         } else {
-            startActivityForResult(new Intent(this, GoogleSignInActivity.class), RC_SIGN_IN);
+            EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
+//            startActivityForResult(new Intent(this, GoogleSignInActivity.class), RC_SIGN_IN);
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = CalendarContract.Calendars.CONTENT_URI;
-        String selection = "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " = ? " + "AND " + CalendarContract.Calendars.CALENDAR_DISPLAY_NAME + " != ? )";
-        String[] selectionArgs = new String[]{"com.google", "Contacts"};
+        String selection = "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " =? " + "AND " + CalendarContract.Calendars.CALENDAR_DISPLAY_NAME + " !=? " +
+                "AND " + CalendarContract.Calendars.VISIBLE + " =? )";
+        String[] selectionArgs = new String[]{"com.google", "Contacts", "true"};
         return new CursorLoader(this,  // Context
                 uri, // URI
                 Calendar_PROJECTION,                // Projection
