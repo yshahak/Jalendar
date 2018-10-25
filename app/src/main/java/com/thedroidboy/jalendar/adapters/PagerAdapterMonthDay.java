@@ -46,6 +46,13 @@ public class PagerAdapterMonthDay extends PagerAdapterBase {
         return dropPages ? POSITION_NONE : super.getItemPosition(object);
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        dropPages = true;
+        super.notifyDataSetChanged();
+        dropPages = false;
+    }
+
     public void setDisplayState(DISPLAY displayState) {
         if(displayState != this.displayState) {
             this.displayState = displayState;

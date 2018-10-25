@@ -216,7 +216,9 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onDataChanged() {
-        getLoaderManager().restartLoader(100, null, this);
+        if(isAdded()) {
+            getLoaderManager().restartLoader(100, null, this);
+        }
     }
 }
 
@@ -228,7 +230,7 @@ class DataObserver extends ContentObserver {
 
     private final DataChanged dataChanged;
 
-    public DataObserver(Handler handler, DataChanged dataChanged) {
+    DataObserver(Handler handler, DataChanged dataChanged) {
         super(handler);
         this.dataChanged = dataChanged;
     }

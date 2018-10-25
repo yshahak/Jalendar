@@ -11,6 +11,7 @@ import android.provider.CalendarContract;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.thedroidboy.jalendar.calendars.google.CalendarHelper;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendarPool;
@@ -20,6 +21,7 @@ import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthDAO;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.thedroidboy.jalendar.calendars.google.Contract.INSTANCE_PROJECTION;
@@ -201,10 +203,22 @@ public class CalendarRepoImpl implements CalendarRepo {
     @Override
     public Cursor getMonthEventsCursor(Context context, long start, long end) {
         Uri uri = GoogleManager.getInstanceUriForInterval(start, end);
-        String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? "; //AND " +
-        String[] WHERE_CALENDARS_ARGS = {"1"};//
+        StringBuilder builder = new StringBuilder(CalendarContract.Calendars.VISIBLE + " = 1");
+        boolean needLocalVisibilityQuery = CalendarHelper.notVisibleList.size() > 0;
+        if (needLocalVisibilityQuery){
+            builder.append(" AND calendar_id NOT IN (");
+            Iterator<Integer> iterator = CalendarHelper.notVisibleList.iterator();
+            while (iterator.hasNext()){
+                builder.append(iterator.next());
+                if (iterator.hasNext()){
+                    builder.append(",");
+                }
+            }
+            builder.append(")");
+        }
+        String WHERE_CALENDARS_SELECTED = builder.toString();
         ContentResolver cr = context.getContentResolver();
-        return cr.query(uri, INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, WHERE_CALENDARS_ARGS,
+        return cr.query(uri, INSTANCE_PROJECTION, WHERE_CALENDARS_SELECTED, null,
                 CalendarContract.Events.DTSTART + " ASC");
     }
 

@@ -30,6 +30,7 @@ import com.thedroidboy.jalendar.fragments.HebrewPickerDialog;
 import com.thedroidboy.jalendar.fragments.TimePickerFragment;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.GoogleEvent;
+import com.thedroidboy.jalendar.utils.Constants;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -49,11 +50,11 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
  */
 
 @SuppressWarnings("unused")
-public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener , KeyboardVisibilityEventListener
+public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, KeyboardVisibilityEventListener
         , PopupMenu.OnMenuItemClickListener, View.OnClickListener, /*OnValueChangeListener, */TextWatcher {
 
-    public static final String EXTRA_EVENT = "EXTRA_EVENT" ;
-    public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY" ;
+    public static final String EXTRA_EVENT = "EXTRA_EVENT";
+    public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY";
     public static JewCalendar currentCalendar;
     private ActivityCreateIvriEventBinding binding;
     @Inject
@@ -77,15 +78,15 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 //        binding.countPicker.setListener(this);
     }
 
-    private void createEventInstance(){
+    private void createEventInstance() {
         Intent eventIntent = getIntent();
         GoogleEvent event = eventIntent.getParcelableExtra(EXTRA_EVENT);
-        long calID = prefs.getLong(KEY_HEBREW_ID, -1L);
+        long calID = prefs.getLong(Constants.KEY_PRIMARY_ID, -1L);
         if (event == null) {
             Calendar calendar = Calendar.getInstance();
             long startEvent = eventIntent.getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
             long endEvent = eventIntent.getLongExtra(CalendarContract.EXTRA_EVENT_END_TIME, 0L);
-            if (endEvent == 0){
+            if (endEvent == 0) {
                 endEvent = startEvent + TimeUnit.HOURS.toMillis(1);
             }
             long eventId = eventIntent.getLongExtra(CalendarContract.Instances.EVENT_ID, -1L);
@@ -94,7 +95,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             String location = eventIntent.getStringExtra(CalendarContract.Events.EVENT_LOCATION);
             int available = eventIntent.getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
             String email = eventIntent.getStringExtra(Intent.EXTRA_EMAIL);
-            event = GoogleEvent.Companion.newInstance(eventId, calID, title, startEvent, endEvent, Color.BLUE, -1,"");
+            event = GoogleEvent.Companion.newInstance(eventId, calID, title, startEvent, endEvent, Color.BLUE, -1, "");
             String rrule = eventIntent.getStringExtra(CalendarContract.Events.RRULE);
         }
         event.convertRruleToFrequencyAndRepeatValue();
@@ -105,7 +106,8 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         hebrewPickerDialog = new HebrewPickerDialog();
         hebrewPickerDialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
-//
+
+    //
     public void openTimeDialog(View text) {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timePicker");
@@ -126,7 +128,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         }
     }
 
-    public void editRepeat(View v){
+    public void editRepeat(View v) {
         onValueChanged(0, 10);
     }
 
@@ -134,23 +136,25 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         PopupMenu popup = new PopupMenu(this, v);
         popup.setOnMenuItemClickListener(this);
         MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_event_instances, popup.getMenu());
+        inflater.inflate(R.menu.menu_event_instances, popup.getMenu()); //todo add custom back to menu
         int position = 0;
         if (binding.getEvent().getRecurrenceRule() != null) {
             Frequency frequency = binding.getEvent().getRecurrenceRule().getValue().getFrequency();
-            switch (frequency) {
-                case DAILY:
-                    position = 1;
-                    break;
-                case WEEKLY:
-                    position = 2;
-                    break;
-                case MONTHLY:
-                    position = 3;
-                    break;
-                case YEARLY:
-                    position = 4;
-                    break;
+            if (frequency != null) {
+                switch (frequency) {
+                    case DAILY:
+                        position = 1;
+                        break;
+                    case WEEKLY:
+                        position = 2;
+                        break;
+                    case MONTHLY:
+                        position = 3;
+                        break;
+                    case YEARLY:
+                        position = 4;
+                        break;
+                }
             }
         }
         popup.getMenu().getItem(position).setChecked(true);
@@ -176,10 +180,11 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             case R.id.repeat_yearly:
                 event.setFrequency(Frequency.YEARLY);
                 break;
-            case R.id.repeat_custom:
-                //todo custom dialog
-                break;
+//            case R.id.repeat_custom:
+//                //todo custom dialog
+//                break;
         }
+        event.setRepeatValue(4);
         binding.setEvent(event);
         return true;
     }
@@ -189,7 +194,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     }
 
     public void deleteEvent(View view) {
-        if (binding.getEvent().isRecuuringEvent()){
+        if (binding.getEvent().isRecuuringEvent()) {
             deleteRecurringEvent();
         } else {
             new AlertDialog.Builder(this, R.style.AlertDialogCustom)
@@ -205,14 +210,15 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     }
 
     public void deleteRecurringEvent() {
-        /*AlertDialog alertDialog = */new AlertDialog.Builder(this, R.style.AlertDialogCustom)
+        /*AlertDialog alertDialog = */
+        new AlertDialog.Builder(this, R.style.AlertDialogCustom)
                 .setTitle("מחיקת אירועים")
                 .setPositiveButton("אירוע זה בלבד", (dialogInterface, i) -> {
-                    GoogleManager.deleteEvent(getApplicationContext(), binding.getEvent());
+                    GoogleManager.deleteSingleEventFromRecurring(getApplicationContext(), binding.getEvent());
                     finish();
                 })
                 .setNeutralButton("כל האירועים", ((dialog, which) -> {
-                    GoogleManager.deleteSingleEventFromRecurring(getApplicationContext(), binding.getEvent());
+                    GoogleManager.deleteEvent(getApplicationContext(), binding.getEvent());
                     finish();
                 }))
                 .setNegativeButton("בטל", null)
@@ -230,7 +236,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 event.setBegin(calendar.getTimeInMillis());
-                if(event.getBegin() > event.getEnd()){
+                if (event.getBegin() > event.getEnd()) {
                     event.setEnd(event.getBegin() + timeDiff);
                 }
                 break;
@@ -239,7 +245,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
                 calendar.set(Calendar.MINUTE, minute);
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 event.setEnd(calendar.getTimeInMillis());
-                if(event.getBegin() > event.getEnd()){
+                if (event.getBegin() > event.getEnd()) {
                     event.setBegin(event.getEnd() - timeDiff);
                 }
         }
@@ -290,7 +296,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         }
     }
 
-//    @Override
+    //    @Override
     public void onValueChanged(int oldValue, int newValue) {
         GoogleEvent event = binding.getEvent();
         event.setRepeatValue(newValue);

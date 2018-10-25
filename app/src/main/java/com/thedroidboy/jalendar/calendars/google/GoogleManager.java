@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -92,8 +93,8 @@ public class GoogleManager {
              .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
              .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "com.google");
      ContentUris.appendId(builder, event.getBegin());
-     ContentUris.appendId(builder, event.getBegin() + event.getEnd());
-     String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? AND " +CalendarContract.Instances.CALENDAR_ID + " = ? AND " + CalendarContract.Instances.EVENT_ID + " = ?";
+     ContentUris.appendId(builder, event.getBegin() + TimeUnit.DAYS.toMillis(1));
+     String WHERE_CALENDARS_SELECTED = CalendarContract.Calendars.VISIBLE + " = ? AND " + CalendarContract.Instances.CALENDAR_ID + " = ? AND " + CalendarContract.Instances.EVENT_ID + " = ?";
      String[] WHERE_CALENDARS_ARGS = {"1", Long.toString(event.getCalendarId()), Long.toString(event.getEventId())};//
      String[] mProjection = {
              CalendarContract.Events.DTSTART, //0
@@ -109,7 +110,7 @@ public class GoogleManager {
              do {
                  long begin = cur.getLong((2));
                  ContentValues values = new ContentValues();
-                 values.put(CalendarContract.Events.DTSTART, event.getBegin());
+//                 values.put(CalendarContract.Events.DTSTART, event.getBegin());
                  values.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, begin);
                  values.put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED);
                  Uri uri = Uri.withAppendedPath(CalendarContract.Events.CONTENT_EXCEPTION_URI,  String.valueOf(event.getEventId()));
@@ -134,7 +135,7 @@ public class GoogleManager {
                 event.setEventId(eventId);
                 final RecurrenceRule rule = event.getRecurrenceRule();
                 if (rule != null && (Frequency.MONTHLY.equals(rule.getValue().getFrequency()) || Frequency.YEARLY.equals(rule.getValue().getFrequency()))){
-                    new Thread(() -> editAllEventInstances(context, event)).start();
+                    AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> editAllEventInstances(context, event));
                 }
             }
         } else {

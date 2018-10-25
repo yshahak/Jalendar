@@ -61,7 +61,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.Calendar_PROJEC
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int RC_SIGN_IN = 1000;
+//    private static final int RC_SIGN_IN = 1000;
     private static final int PLACE_PICKER_REQUEST = 2000;
 
     private DrawerLayout drawerLayout;
@@ -99,11 +99,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         validateCalendarPermission();
         drawerLayout = findViewById(R.id.drawer_layout);
         setDrawerMenu();
-        initScreen(PagerAdapterMonthDay.DISPLAY.MONTH, 0);
+        initScreen(PagerAdapterMonthDay.DISPLAY.MONTH, 0, false);
     }
 
-    private void initScreen(PagerAdapterMonthDay.DISPLAY display, int position) {
-        if (display.equals(this.display)) {
+    private void initScreen(PagerAdapterMonthDay.DISPLAY display, int position, boolean forceRefresh) {
+        if (display.equals(this.display) && !forceRefresh) {
             return;
         }
         this.display = display;
@@ -117,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .replace(R.id.container, fragment, tag)
                 .commit();
         fragment.shiftToPosition(position);
+        if (forceRefresh){
+            fragment.refresh();
+        }
     }
 
     @Override
@@ -180,11 +183,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     setLocationValue();
                 }
                 break;
-            case RC_SIGN_IN:
-                if (resultCode == RESULT_OK) {
-                    String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR, Manifest.permission.GET_ACCOUNTS};
-                    EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
-                }
+//            case RC_SIGN_IN:
+//                if (resultCode == RESULT_OK) {
+//                    String[] perms = {Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_CALENDAR, Manifest.permission.GET_ACCOUNTS};
+//                    EasyPermissions.requestPermissions(this, getString(R.string.calendar_ask_premission), 100, perms);
+//                }
 
         }
     }
@@ -228,10 +231,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = AccountManager.newChooseAccountIntent(null, null, new String[]{"com.google"}, null, null, null, null);
-            startActivityForResult(intent, 42);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            Intent intent = AccountManager.newChooseAccountIntent(null, null, new String[]{"com.google"}, null, null, null, null);
+//            startActivityForResult(intent, 42);
+//        }
     }
 
     @AfterPermissionGranted(100)
@@ -250,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Uri uri = CalendarContract.Calendars.CONTENT_URI;
         String selection = "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " =? " + "AND " + CalendarContract.Calendars.CALENDAR_DISPLAY_NAME + " !=? " +
                 "AND " + CalendarContract.Calendars.VISIBLE + " =? )";
-        String[] selectionArgs = new String[]{"com.google", "Contacts", "true"};
+        String[] selectionArgs = new String[]{"com.google", "Contacts", "1"};
         return new CursorLoader(this,  // Context
                 uri, // URI
                 Calendar_PROJECTION,                // Projection
@@ -262,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cur) {
         if (cur != null) {
-            CalendarHelper.setCalendarsListInDrawer(this, cur, calendarsList);
+            CalendarHelper.setCalendarsListInDrawer(this, cur, calendarsList, v -> initScreen(PagerAdapterMonthDay.DISPLAY.MONTH, 0, true));
         }
     }
 
@@ -296,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 radioButtonDay.setTag(R.string.tag_month_position, null);
             }
             PagerAdapterMonthDay.DISPLAY display = compoundButton.getId() == R.id.display_month ? PagerAdapterMonthDay.DISPLAY.MONTH : PagerAdapterMonthDay.DISPLAY.DAY;
-            initScreen(display, position);
+            initScreen(display, position, false);
         }
     }
 
