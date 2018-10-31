@@ -22,6 +22,7 @@ import com.thedroidboy.jalendar.utils.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ public class CalendarHelper {
     public static final String HOLIDAYS = "Holidays";
     public static final String TAG = "CalendarHelper";
     public static Set<Integer> notVisibleList = new HashSet<>();
+    public static LinkedHashMap<String, Integer> accountToIdsMap = new LinkedHashMap<>();
 
     /**
      * setting the drawer category menu of the store
@@ -50,6 +52,7 @@ public class CalendarHelper {
     @SuppressLint("RestrictedApi")
     public static void setCalendarsListInDrawer(Context context, Cursor cursor, LinearLayout calendarsList, View.OnClickListener clickListener) {
         notVisibleList.clear();
+        accountToIdsMap.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         HashMap<String, List<CalendarAccount>> accountListNames = getCalendarInfo(prefs, cursor);
         calendarsList.removeAllViews();
@@ -117,6 +120,7 @@ public class CalendarHelper {
             isPrimary = cur.getInt(PROJECTION_IS_PRIMARY) == 1;
             //todo can be more than one primary, for each google account...
             if (isPrimary){
+                accountToIdsMap.put(accountName, calID);
                 prefs.edit().putLong(Constants.KEY_PRIMARY_ID, calID).apply();
             }
             if (!visible){

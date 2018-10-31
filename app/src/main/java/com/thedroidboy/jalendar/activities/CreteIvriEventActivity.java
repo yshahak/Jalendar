@@ -19,10 +19,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import com.thedroidboy.jalendar.CalendarRepo;
 import com.thedroidboy.jalendar.R;
+import com.thedroidboy.jalendar.adapters.SpinnerCalIdAdapter;
+import com.thedroidboy.jalendar.calendars.google.CalendarHelper;
 import com.thedroidboy.jalendar.calendars.google.GoogleManager;
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar;
 import com.thedroidboy.jalendar.databinding.ActivityCreateIvriEventBinding;
@@ -81,7 +84,6 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     private void createEventInstance() {
         Intent eventIntent = getIntent();
         GoogleEvent event = eventIntent.getParcelableExtra(EXTRA_EVENT);
-        long calID = prefs.getLong(Constants.KEY_PRIMARY_ID, -1L);
         if (event == null) {
             Calendar calendar = Calendar.getInstance();
             long startEvent = eventIntent.getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0L);
@@ -95,8 +97,12 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             String location = eventIntent.getStringExtra(CalendarContract.Events.EVENT_LOCATION);
             int available = eventIntent.getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
             String email = eventIntent.getStringExtra(Intent.EXTRA_EMAIL);
+            long calID = prefs.getLong(Constants.KEY_PRIMARY_ID, -1L);
             event = GoogleEvent.Companion.newInstance(eventId, calID, title, startEvent, endEvent, Color.BLUE, -1, "");
+            binding.setSpinnerAdapter(new SpinnerCalIdAdapter(CalendarHelper.accountToIdsMap.keySet().toArray(new String[0]), 0, true));
             String rrule = eventIntent.getStringExtra(CalendarContract.Events.RRULE);
+        } else {
+            binding.setSpinnerAdapter(new SpinnerCalIdAdapter(CalendarHelper.accountToIdsMap.keySet().toArray(new String[0]), 0, false));
         }
         event.convertRruleToFrequencyAndRepeatValue();
         binding.setEvent(event);
@@ -255,7 +261,9 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
 
 
     private void saveEvent() {
-        GoogleManager.addHebrewEventToGoogleServer(this, binding.getEvent());
+        GoogleEvent event = binding.getEvent();
+        event.setCalendarId(CalendarHelper.accountToIdsMap.get(binding.spinnerEventCal.getSelectedItem()));
+        GoogleManager.addHebrewEventToGoogleServer(this, event);
 //        MainActivity.recreateFlag = true;
         finish();
     }

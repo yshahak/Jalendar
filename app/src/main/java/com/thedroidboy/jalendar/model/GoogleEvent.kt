@@ -3,6 +3,7 @@
 package com.thedroidboy.jalendar.model
 
 import android.os.Parcelable
+import android.util.Log
 import biweekly.ICalVersion
 import biweekly.io.ParseContext
 import biweekly.io.scribe.property.RecurrenceRuleScribe
@@ -14,6 +15,7 @@ import com.thedroidboy.jalendar.MyApplication
 import com.thedroidboy.jalendar.R
 import com.thedroidboy.jalendar.calendars.byDayToDayOfWeekList
 import com.thedroidboy.jalendar.calendars.convertDayToHebrew
+import com.thedroidboy.jalendar.calendars.google.CalendarHelper
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar
 import com.thedroidboy.jalendar.calendars.jewish.JewCalendar.hebrewHebDateFormatter
 import kotlinx.android.parcel.IgnoredOnParcel
@@ -168,6 +170,11 @@ data class GoogleEvent(var eventId: Long,
 
     override fun compareTo(other: GoogleEvent): Int {
         return (this.begin - other.begin).toInt()
+    }
+
+    fun onCalIdSelected(selected: Int) {
+        Log.d("TAG", "selected=${CalendarHelper.accountToIdsMap.keys.toTypedArray()[selected]}")
+        calendarId = CalendarHelper.accountToIdsMap.get(CalendarHelper.accountToIdsMap.keys.toTypedArray()[selected])!!.toLong()
     }
 
 }

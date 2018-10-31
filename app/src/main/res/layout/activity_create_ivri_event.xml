@@ -9,6 +9,10 @@
         <variable
             name="repeatVisibility"
             type="java.lang.Boolean"/>
+
+        <variable
+            name="spinnerAdapter"
+            type="com.thedroidboy.jalendar.adapters.SpinnerCalIdAdapter"/>
     </data>
 
     <ScrollView
@@ -89,6 +93,15 @@
                         android:src="@android:drawable/ic_menu_close_clear_cancel"
                         android:textColorHint="@android:color/white"
                         android:textColor="@android:color/white" />
+
+                    <Spinner
+                        android:id="@+id/spinner_event_cal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{spinnerAdapter.shouldShowSpinner ? View.VISIBLE : View.GONE}"
+                        android:entries="@{spinnerAdapter.entries}"
+                        android:selection="@{spinnerAdapter.selectedItem}"
+                        android:onItemSelected="@{(p, v, pos, id) -> event.onCalIdSelected(pos)}"/>
                 </LinearLayout>
 
             </android.support.v7.widget.Toolbar>
