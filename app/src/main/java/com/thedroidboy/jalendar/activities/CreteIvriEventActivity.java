@@ -13,12 +13,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
@@ -54,7 +56,7 @@ import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
 
 @SuppressWarnings("unused")
 public class CreteIvriEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, KeyboardVisibilityEventListener
-        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, /*OnValueChangeListener, */TextWatcher {
+        , PopupMenu.OnMenuItemClickListener, View.OnClickListener, /*OnValueChangeListener, */TextWatcher, SwitchCompat.OnCheckedChangeListener {
 
     public static final String EXTRA_EVENT = "EXTRA_EVENT";
     public static final String EXTRA_USE_CURRENT_DAY = "EXTRA_USE_CURRENT_DAY";
@@ -78,6 +80,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         calendar = Calendar.getInstance();
         createEventInstance();
         binding.headerEditTextEventTitle.addTextChangedListener(this);
+        binding.checkboxAllDayEvent.setOnCheckedChangeListener(this);
 //        binding.countPicker.setListener(this);
     }
 
@@ -171,26 +174,32 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     public boolean onMenuItemClick(MenuItem item) {
         GoogleEvent event = binding.getEvent();
         event.clearFrequency();
+        int repeat = 0;
         switch (item.getItemId()) {
             case R.id.repeat_single:
+                repeat = 1;
                 break;
             case R.id.repeat_daily:
+                repeat = 365;
                 event.setFrequency(Frequency.DAILY);
                 break;
             case R.id.repeat_weekly:
+                repeat = 54;
                 event.setFrequency(Frequency.WEEKLY);
                 break;
             case R.id.repeat_monthly:
                 event.setFrequency(Frequency.MONTHLY);
+                repeat = 36;
                 break;
             case R.id.repeat_yearly:
                 event.setFrequency(Frequency.YEARLY);
+                repeat = 20;
                 break;
 //            case R.id.repeat_custom:
 //                //todo custom dialog
 //                break;
         }
-        event.setRepeatValue(4);
+        event.setRepeatValue(repeat);
         binding.setEvent(event);
         return true;
     }
@@ -264,7 +273,6 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         GoogleEvent event = binding.getEvent();
         event.setCalendarId(CalendarHelper.accountToIdsMap.get(binding.spinnerEventCal.getSelectedItem()));
         GoogleManager.addHebrewEventToGoogleServer(this, event);
-//        MainActivity.recreateFlag = true;
         finish();
     }
 
@@ -324,6 +332,13 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     @Override
     public void afterTextChanged(Editable s) {
         binding.getEvent().setEventTitle(binding.headerEditTextEventTitle.getText().toString());
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        GoogleEvent event = binding.getEvent();
+        event.setAllDayEvent(isChecked);
+        binding.setEvent(event);
     }
 
 

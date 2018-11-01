@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
 
         <variable
             name="event"
             type="com.thedroidboy.jalendar.model.GoogleEvent" />
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="repeatVisibility"
-            type="java.lang.Boolean"/>
+            type="java.lang.Boolean" />
 
         <variable
             name="spinnerAdapter"
-            type="com.thedroidboy.jalendar.adapters.SpinnerCalIdAdapter"/>
+            type="com.thedroidboy.jalendar.adapters.SpinnerCalIdAdapter" />
     </data>
 
-    <ScrollView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -51,11 +53,11 @@
                             android:id="@+id/header_btn_x"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="@{event.eventId != -1 ? View.VISIBLE : View.GONE}"
                             android:layout_gravity="center_vertical"
                             android:onClick="clickX"
                             android:padding="4dp"
-                            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+                            android:src="@android:drawable/ic_menu_close_clear_cancel"
+                            android:visibility="@{event.eventId != -1 ? View.VISIBLE : View.GONE}" />
 
                         <ImageView
                             android:id="@+id/header_btn_delete"
@@ -85,23 +87,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="הזן כותרת"
-                        android:text="@{event.eventTitle}"
                         android:imeActionLabel="Done"
                         android:imeOptions="actionDone"
                         android:inputType="text"
                         android:maxLines="1"
                         android:src="@android:drawable/ic_menu_close_clear_cancel"
-                        android:textColorHint="@android:color/white"
-                        android:textColor="@android:color/white" />
+                        android:text="@{event.eventTitle}"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@android:color/white" />
 
                     <Spinner
                         android:id="@+id/spinner_event_cal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="@{spinnerAdapter.shouldShowSpinner ? View.VISIBLE : View.GONE}"
                         android:entries="@{spinnerAdapter.entries}"
+                        android:onItemSelected="@{(p, v, pos, id) -> event.onCalIdSelected(pos)}"
                         android:selection="@{spinnerAdapter.selectedItem}"
-                        android:onItemSelected="@{(p, v, pos, id) -> event.onCalIdSelected(pos)}"/>
+                        android:visibility="@{spinnerAdapter.shouldShowSpinner ? View.VISIBLE : View.GONE}" />
                 </LinearLayout>
 
             </android.support.v7.widget.Toolbar>
@@ -136,7 +138,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{event.allDayEvent ? View.GONE : View.VISIBLE}">
 
 
                 <View
@@ -148,21 +151,21 @@
                     android:id="@+id/event_start_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:onClick="openDayDialog"
-                    tools:text="רביעי, ג' חשון"
+                    android:padding="8dp"
                     android:text="@{event.startEventDate}"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="רביעי, ג' חשון" />
 
                 <TextView
                     android:id="@+id/event_start_day_loazy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:onClick="openDayDialog"
-                    tools:text="05/12"
+                    android:padding="8dp"
                     android:text="@{event.startEventDateLoazy}"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="05/12" />
 
                 <View
                     android:layout_width="0dp"
@@ -174,11 +177,11 @@
                     android:id="@+id/event_start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:onClick="openTimeDialog"
+                    android:padding="8dp"
                     android:text="@{event.startEventHour}"
-                    tools:text="7:15"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="7:15" />
 
             </LinearLayout>
 
@@ -188,7 +191,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{event.allDayEvent ? View.GONE : View.VISIBLE}">
 
                 <View
                     android:layout_width="0dp"
@@ -199,21 +203,21 @@
                     android:id="@+id/event_end_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="openDayDialog"
                     android:padding="8dp"
                     android:text="@{event.endEventDate}"
-                    android:onClick="openDayDialog"
-                    tools:text="רביעי, ג' חשון"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="רביעי, ג' חשון" />
 
                 <TextView
                     android:id="@+id/event_end_day_loazy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:onClick="openDayDialog"
-                    tools:text="05/12"
+                    android:padding="8dp"
                     android:text="@{event.endEventDateLoazy}"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="05/12" />
 
 
                 <View
@@ -225,11 +229,11 @@
                     android:id="@+id/event_end_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:onClick="openTimeDialog"
+                    android:padding="8dp"
                     android:text="@{event.endEventHour}"
-                    tools:text="8:15"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="8:15" />
 
             </LinearLayout>
 
@@ -253,8 +257,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:onClick="showPopup"
                 android:layoutDirection="rtl"
+                android:onClick="showPopup"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -278,55 +282,55 @@
             </LinearLayout>
 
             <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginLeft="8dp"-->
-                <!--android:layout_marginRight="8dp"-->
-                <!--android:layoutDirection="rtl"-->
-                <!--android:visibility="@{event.repeatVisibility ? View.VISIBLE : View.GONE}"-->
-                <!--android:orientation="horizontal">-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="8dp"-->
+            <!--android:layout_marginRight="8dp"-->
+            <!--android:layoutDirection="rtl"-->
+            <!--android:visibility="@{event.repeatVisibility ? View.VISIBLE : View.GONE}"-->
+            <!--android:orientation="horizontal">-->
 
 
-                <!--<TextView-->
-                    <!--android:id="@+id/event_count_title"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_vertical"-->
-                    <!--android:maxLines="1"-->
-                    <!--android:padding="2dp"-->
-                    <!--android:text="@{event.repeatHeader}"-->
-                    <!--android:onClick="editRepeat"-->
-                    <!--tools:text="חזרות:"-->
-                    <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
-                    <!--tools:visibility="visible" />-->
+            <!--<TextView-->
+            <!--android:id="@+id/event_count_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:maxLines="1"-->
+            <!--android:padding="2dp"-->
+            <!--android:text="@{event.repeatHeader}"-->
+            <!--android:onClick="editRepeat"-->
+            <!--tools:text="חזרות:"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--tools:visibility="visible" />-->
 
 
-                <!--<com.thedroidboy.jalendar.views.CustomNumberPicker-->
-                    <!--android:id="@+id/countPicker"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="48dp"-->
-                    <!--android:layout_gravity="center_vertical"-->
-                    <!--app:bar_color="#ddd"-->
-                    <!--app:bar_width="1dp"-->
-                    <!--app:bars_count="200"-->
-                    <!--app:controls_color="@android:color/black"-->
-                    <!--app:draw_over_controls="false"-->
-                    <!--app:draw_over_text="false"-->
-                    <!--app:fast_controls_color="@android:color/darker_gray"-->
-                    <!--app:highlight_color="#FFFF3040"-->
-                    <!--app:max_value="1000"-->
-                    <!--app:min_value="0"-->
-                    <!--app:selection_color="#A0FF3040"-->
-                    <!--app:show_bars="true"-->
-                    <!--app:show_controls="true"-->
-                    <!--app:show_fast_controls="true"-->
-                    <!--app:show_highlight="true"-->
-                    <!--app:show_text="true"-->
-                    <!--app:text_color="@android:color/black"-->
-                    <!--app:text_size="18sp"-->
-                    <!--app:value="@{event.repeatValue}"-->
-                    <!--android:visibility="@{event.repeatValue > 0 ? View.VISIBLE : View.GONE}"-->
-                    <!--tools:visibility="visible" />-->
+            <!--<com.thedroidboy.jalendar.views.CustomNumberPicker-->
+            <!--android:id="@+id/countPicker"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="48dp"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--app:bar_color="#ddd"-->
+            <!--app:bar_width="1dp"-->
+            <!--app:bars_count="200"-->
+            <!--app:controls_color="@android:color/black"-->
+            <!--app:draw_over_controls="false"-->
+            <!--app:draw_over_text="false"-->
+            <!--app:fast_controls_color="@android:color/darker_gray"-->
+            <!--app:highlight_color="#FFFF3040"-->
+            <!--app:max_value="1000"-->
+            <!--app:min_value="0"-->
+            <!--app:selection_color="#A0FF3040"-->
+            <!--app:show_bars="true"-->
+            <!--app:show_controls="true"-->
+            <!--app:show_fast_controls="true"-->
+            <!--app:show_highlight="true"-->
+            <!--app:show_text="true"-->
+            <!--app:text_color="@android:color/black"-->
+            <!--app:text_size="18sp"-->
+            <!--app:value="@{event.repeatValue}"-->
+            <!--android:visibility="@{event.repeatValue > 0 ? View.VISIBLE : View.GONE}"-->
+            <!--tools:visibility="visible" />-->
 
 
             <!--</LinearLayout>-->

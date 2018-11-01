@@ -37,7 +37,7 @@ data class GoogleEvent(var eventId: Long,
                        val displayColor: Int,
                        var dayOfMonth: Int = 0,
                        var stringOccurenceRule: String? = null,
-                       val allDayEvent: Boolean = false) : Parcelable, Comparable<GoogleEvent> {
+                       var allDayEvent: Boolean = false) : Parcelable, Comparable<GoogleEvent> {
 
     @IgnoredOnParcel
     var recurrenceRule: RecurrenceRule? = null
@@ -145,7 +145,7 @@ data class GoogleEvent(var eventId: Long,
 
     fun getEndEventDate(): String {
         val calendar = JewCalendar(Date(end))
-        val date = hebrewHebDateFormatter.formatHebrewNumber(calendar.getJewishDayOfMonth()) + " " +
+        val date = hebrewHebDateFormatter.formatHebrewNumber(calendar.jewishDayOfMonth) + " " +
                 hebrewHebDateFormatter.formatMonth(calendar)
         return hebrewHebDateFormatter.formatDayOfWeek(calendar) + " , " + date
     }
@@ -175,6 +175,11 @@ data class GoogleEvent(var eventId: Long,
     fun onCalIdSelected(selected: Int) {
         Log.d("TAG", "selected=${CalendarHelper.accountToIdsMap.keys.toTypedArray()[selected]}")
         calendarId = CalendarHelper.accountToIdsMap.get(CalendarHelper.accountToIdsMap.keys.toTypedArray()[selected])!!.toLong()
+    }
+
+    fun onAllDayChanged(isChecked: Boolean) {
+        Log.d("TAG", "isChecked=$isChecked")
+        allDayEvent = isChecked
     }
 
 }

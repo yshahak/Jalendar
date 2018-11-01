@@ -176,6 +176,9 @@ public class GoogleManager {
                     break;
             }
         }
+        if (event.getAllDayEvent()){
+            values.put(CalendarContract.Events.ALL_DAY, 1);
+        }
         values.put(CalendarContract.Events.TITLE, event.getEventTitle());
         values.put(CalendarContract.Events.CALENDAR_ID, event.getCalendarId());
         values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
