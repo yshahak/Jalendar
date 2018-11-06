@@ -77,8 +77,8 @@ data class GoogleEvent(var eventId: Long,
                 when (frequency) {
                     Frequency.DAILY -> builder.append(ctx.getString(R.string.instance_daily))
                     Frequency.WEEKLY -> builder.append(ctx.getString(R.string.instance_weekly))
-                    Frequency.MONTHLY -> builder.append(ctx.getString(R.string.instance_monthly))
-                    Frequency.YEARLY -> builder.append(ctx.getString(R.string.instance_yearly))
+                    Frequency.MONTHLY -> builder.append(ctx.getString(R.string.instance_monthly_ivri))
+                    Frequency.YEARLY -> builder.append(ctx.getString(R.string.instance_yearly_ivri))
                 }
             }
             rule.value.byDay?.takeIf { it.size > 0 }?.let {

@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import com.thedroidboy.jalendar.CalendarRepo;
@@ -48,8 +47,6 @@ import javax.inject.Inject;
 import biweekly.util.Frequency;
 import dagger.android.AndroidInjection;
 
-import static com.thedroidboy.jalendar.calendars.google.Contract.KEY_HEBREW_ID;
-
 /**
  * Created by B.E.L on 31/10/2016.
  */
@@ -69,6 +66,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     private PICKER_STATE pickerState;
     private Calendar calendar;
     private DialogFragment hebrewPickerDialog;
+    private boolean isIvriMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,7 +159,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
                         position = 3;
                         break;
                     case YEARLY:
-                        position = 4;
+                        position = 5;
                         break;
                 }
             }
@@ -175,6 +173,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
         GoogleEvent event = binding.getEvent();
         event.clearFrequency();
         int repeat = 0;
+        isIvriMode = false;
         switch (item.getItemId()) {
             case R.id.repeat_single:
                 repeat = 1;
@@ -188,10 +187,14 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
                 event.setFrequency(Frequency.WEEKLY);
                 break;
             case R.id.repeat_monthly:
+                isIvriMode = true;
+            case R.id.repeat_monthly_loazi:
                 event.setFrequency(Frequency.MONTHLY);
                 repeat = 36;
                 break;
             case R.id.repeat_yearly:
+                isIvriMode = true;
+            case R.id.repeat_yearly_loazit:
                 event.setFrequency(Frequency.YEARLY);
                 repeat = 20;
                 break;
@@ -272,7 +275,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     private void saveEvent() {
         GoogleEvent event = binding.getEvent();
         event.setCalendarId(CalendarHelper.accountToIdsMap.get(binding.spinnerEventCal.getSelectedItem()));
-        GoogleManager.addHebrewEventToGoogleServer(this, event);
+        GoogleManager.addEventToGoogleServer(this, event, isIvriMode);
         finish();
     }
 

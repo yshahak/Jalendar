@@ -13,10 +13,17 @@
             android:title="@string/instance_weekly"/>
         <item
             android:id="@+id/repeat_monthly"
-            android:title="@string/instance_monthly"/>
+            android:title="@string/instance_monthly_ivri"/>
+        <item
+            android:id="@+id/repeat_monthly_loazi"
+            android:title="@string/instance_monthly_loazi"/>
         <item
             android:id="@+id/repeat_yearly"
-            android:title="@string/instance_yearly"/>
+            android:title="@string/instance_yearly_ivri"/>
+
+        <item
+            android:id="@+id/repeat_yearly_loazit"
+            android:title="@string/instance_yearly_loazit"/>
 
         <!--<item-->
             <!--android:id="@+id/repeat_custom"-->

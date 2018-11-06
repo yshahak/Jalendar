@@ -124,7 +124,7 @@ public class GoogleManager {
     }
 
     @SuppressWarnings("MissingPermission")
-    public static void addHebrewEventToGoogleServer(Context context, GoogleEvent event) {
+    public static void addEventToGoogleServer(Context context, GoogleEvent event, boolean ivriMode) {
         ContentValues values;
         ContentResolver cr = context.getContentResolver();
         values = getContentValuesForEvent(event);
@@ -134,7 +134,7 @@ public class GoogleManager {
                 long eventId = Long.parseLong(uri.getLastPathSegment());
                 event.setEventId(eventId);
                 final RecurrenceRule rule = event.getRecurrenceRule();
-                if (rule != null && (Frequency.MONTHLY.equals(rule.getValue().getFrequency()) || Frequency.YEARLY.equals(rule.getValue().getFrequency()))){
+                if (ivriMode && rule != null){
                     AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> editAllEventInstances(context, event));
                 }
             }

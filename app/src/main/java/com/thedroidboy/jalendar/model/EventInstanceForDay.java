@@ -172,9 +172,9 @@ public class EventInstanceForDay implements Comparable<EventInstanceForDay>, Par
             case WEEKLY:
                 return ctx.getString(R.string.instance_weekly);
             case MONTHLY:
-                return ctx.getString(R.string.instance_monthly);
+                return ctx.getString(R.string.instance_monthly_ivri);
             case YEARLY:
-                return ctx.getString(R.string.instance_yearly);
+                return ctx.getString(R.string.instance_yearly_ivri);
         }
         return ctx.getString(R.string.instance_single);
     }

@@ -6,8 +6,10 @@
     <string name="instance_single">אינו חוזר</string>
     <string name="instance_daily">מדי יום</string>
     <string name="instance_weekly">מדי שבוע</string>
-    <string name="instance_monthly">מדי חודש</string>
-    <string name="instance_yearly">מדי שנה</string>
+    <string name="instance_monthly_ivri">מדי חודש</string>
+    <string name="instance_monthly_loazi">מדי חודש לועזי</string>
+    <string name="instance_yearly_ivri">מדי שנה</string>
+    <string name="instance_yearly_loazit">מדי שנה לועזית</string>
     <string name="display_month">חודשי</string>
     <string name="display_day">יומי</string>
     <string name="display_header">תצוגה:</string>
