@@ -91,7 +91,8 @@ public class Contract {
             Calendars.CALENDAR_TIME_ZONE, //8
             Instances.CALENDAR_ID,      //9
             Instances.RRULE,            //10
-            Instances.RDATE            //11
+            Instances.RDATE,            //11
+            Instances.ALL_DAY            //12
     };
     //10
     // The indices for the projection array above.
@@ -106,6 +107,7 @@ public class Contract {
     public static final int PROJECTION_CALENDAR_ID = 9;
     public static final int PROJECTION_RRULE = 10;
     public static final int PROJECTION_RDATE = 11;
+    public static final int PROJECTION_ALL_DATE = 12;
 
     public static void getInstances(Activity activity, Long eventId){
         // Specify the date range you want to search for recurring

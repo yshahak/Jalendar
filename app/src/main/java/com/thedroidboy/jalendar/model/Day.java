@@ -70,7 +70,7 @@ public class Day implements Parcelable {
         return labelDay;
     }
 
-    public String getLoaziLabel() {
+    public String   getLoaziLabel() {
         return Integer.toString(loazyDayOfMonth);
     }
 

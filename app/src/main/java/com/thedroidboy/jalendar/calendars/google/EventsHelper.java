@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_ALL_DATE;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_BEGIN_INDEX;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_ID;
 import static com.thedroidboy.jalendar.calendars.google.Contract.PROJECTION_CALENDAR_TIME_ZONE;
@@ -227,8 +228,9 @@ public class EventsHelper {
 
         String rrule = cursor.getString(PROJECTION_RRULE);
         String rDate = cursor.getString(PROJECTION_RDATE);
+        boolean allDayEvent = cursor.getInt(PROJECTION_ALL_DATE) == 1;
         int dayOfMonth = JewCalendar.getDayOfMonth(start);
-        return GoogleEvent.Companion.newInstance(eventId, calendarId, title, start + offset, end + offset, displayColor, dayOfMonth , rrule);
+        return GoogleEvent.Companion.newInstance(eventId, calendarId, title, start + offset, end + offset, displayColor, dayOfMonth , rrule, allDayEvent);
     }
 
     public static String covertDurationToRule(long duration) {

@@ -58,8 +58,9 @@ data class GoogleEvent(var eventId: Long,
                         end: Long,
                         displayColor: Int,
                         dayOfMonth: Int = 0,
-                        rrule: String?): GoogleEvent {
-            return GoogleEvent(eventId, calendarId, eventTitle, begin, end, displayColor, dayOfMonth, rrule)
+                        rrule: String?,
+                        allDayEvent: Boolean): GoogleEvent {
+            return GoogleEvent(eventId, calendarId, eventTitle, begin, end, displayColor, dayOfMonth, rrule, allDayEvent)
         }
     }
 

@@ -75,7 +75,7 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
         viewPager.post(() -> onPageSelected(PagerAdapterMonthDay.INITIAL_OFFSET));
     }
 
-    public void refresh(){
+    public void refresh() {
         viewPager.getAdapter().notifyDataSetChanged();
     }
 
@@ -123,7 +123,7 @@ public class PagerFragment extends Fragment implements ViewPager.OnPageChangeLis
     public void onPageSelected(int position) {
         PagerAdapterBase adapter = (PagerAdapterBase) viewPager.getAdapter();
         if (getActivity() != null && adapter != null) {
-            getActivity().setTitle(adapter.getPageTitle(position));
+            viewPager.post(() -> getActivity().setTitle(adapter.getPageTitle(position)));
         }
     }
 

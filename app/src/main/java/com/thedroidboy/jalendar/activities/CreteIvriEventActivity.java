@@ -99,7 +99,7 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
             int available = eventIntent.getIntExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
             String email = eventIntent.getStringExtra(Intent.EXTRA_EMAIL);
             long calID = prefs.getLong(Constants.KEY_PRIMARY_ID, -1L);
-            event = GoogleEvent.Companion.newInstance(eventId, calID, title, startEvent, endEvent, Color.BLUE, -1, "");
+            event = GoogleEvent.Companion.newInstance(eventId, calID, title, startEvent, endEvent, Color.BLUE, -1, "", false);
             binding.setSpinnerAdapter(new SpinnerCalIdAdapter(CalendarHelper.accountToIdsMap.keySet().toArray(new String[0]), 0, true));
             String rrule = eventIntent.getStringExtra(CalendarContract.Events.RRULE);
         } else {

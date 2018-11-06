@@ -29,6 +29,7 @@ import com.thedroidboy.jalendar.databinding.FragmentDayItemBinding;
 import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.DayVM;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,6 +55,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     @Inject
     SharedPreferences prefs;
     private FragmentDayItemBinding dayBinding;
+    private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("d/M");
 
     public FragmentDay() {
         dataObserver = new DataObserver(new Handler(), this);
@@ -139,10 +141,11 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     @Override
     public String getFragmentTitle() {
         LiveData<Day> dayLiveData = dayVM.getDayLiveData();
-        if (dayLiveData.getValue() != null) {
-            return dayLiveData.getValue().getLabelDayAndMonth();
+        Day dataValue = dayLiveData.getValue();
+        if (dataValue != null) {
+            return dataValue.getLabelDayAndMonth() + " " + simpleFormatter.format(dataValue.getStartDayInMillis());
         } else {
-            dayLiveData.observe(this, day -> (getActivity()).setTitle(day != null ? day.getLabelDayAndMonth() : "..."));
+            dayLiveData.observe(this, day -> (getActivity()).setTitle(day != null ? day.getLabelDayAndMonth() + " " + simpleFormatter.format(day.getStartDayInMillis()): "..."));
         }
         return "...";
     }
