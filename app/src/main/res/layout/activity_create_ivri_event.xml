@@ -56,8 +56,7 @@
                             android:layout_gravity="center_vertical"
                             android:onClick="clickX"
                             android:padding="4dp"
-                            android:src="@android:drawable/ic_menu_close_clear_cancel"
-                            android:visibility="@{event.eventId != -1 ? View.VISIBLE : View.GONE}" />
+                            android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
                         <ImageView
                             android:id="@+id/header_btn_delete"

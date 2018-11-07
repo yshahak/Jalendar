@@ -212,13 +212,16 @@ public class CreteIvriEventActivity extends AppCompatActivity implements TimePic
     }
 
     public void deleteEvent(View view) {
-        if (binding.getEvent().isRecuuringEvent()) {
+        GoogleEvent event = binding.getEvent();
+        if (event.isRecuuringEvent()) {
             deleteRecurringEvent();
         } else {
             new AlertDialog.Builder(this, R.style.AlertDialogCustom)
                     .setTitle("האם למחוק אירוע זה?")
                     .setPositiveButton("כן", (dialogInterface, i) -> {
-                        GoogleManager.deleteEvent(getApplicationContext(), binding.getEvent());
+                        if (event.getEventId() != -1L){
+                            GoogleManager.deleteEvent(getApplicationContext(), event);
+                        }
                         finish();
                     })
                     .setNegativeButton("לא", null)

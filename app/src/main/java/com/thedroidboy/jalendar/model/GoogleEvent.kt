@@ -167,7 +167,7 @@ data class GoogleEvent(var eventId: Long,
         return recurrenceRule?.value?.frequency != null
     }
 
-    fun isRecuuringEvent() = recurrenceRule != null
+    fun isRecuuringEvent() = "" != stringOccurenceRule
 
     override fun compareTo(other: GoogleEvent): Int {
         return (this.begin - other.begin).toInt()
