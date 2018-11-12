@@ -30,8 +30,10 @@ import com.thedroidboy.jalendar.model.Day;
 import com.thedroidboy.jalendar.model.Month;
 import com.thedroidboy.jalendar.model.MonthVM;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -59,6 +61,8 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     private int currentDayOfMonth = -1;
     private float cellHeight;
     private boolean shouldShowEvents;
+    private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("MMM", Locale.US);
+
 
     public FragmentMonth() {
         this.dataObserver = new DataObserver(new Handler(), this);
@@ -190,12 +194,13 @@ public class FragmentMonth extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public String getFragmentTitle() {
         LiveData<Month> monthLiveData = monthVM.getMonth();
-        if (monthLiveData.getValue() != null) {
-            return monthLiveData.getValue().getMonthHebLabel();
+        Month monthLiveDataValue = monthLiveData.getValue();
+        if (monthLiveDataValue != null) {
+            return monthLiveDataValue.getMonthHebLabel() + " " + simpleFormatter.format(monthLiveDataValue.getStartMonthInMs());
         } else {
             monthLiveData.observe(this, month -> {
                 try {
-                    (getActivity()).setTitle(month.getMonthHebLabel());
+                    (getActivity()).setTitle(month.getMonthHebLabel() + " " + simpleFormatter.format(month.getStartMonthInMs()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

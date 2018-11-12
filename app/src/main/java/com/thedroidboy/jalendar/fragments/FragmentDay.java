@@ -32,6 +32,7 @@ import com.thedroidboy.jalendar.model.DayVM;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -55,7 +56,7 @@ public class FragmentDay extends Fragment implements PagerAdapterBase.FragmentDa
     @Inject
     SharedPreferences prefs;
     private FragmentDayItemBinding dayBinding;
-    private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("d/M");
+    private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("d/M", Locale.US);
 
     public FragmentDay() {
         dataObserver = new DataObserver(new Handler(), this);

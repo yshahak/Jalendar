@@ -133,7 +133,7 @@ public class Month {
         return endMonthInMs + trailOffset * DAY_IN_MS;
     }
 
-    public long setMonthDays(JewCalendar monthCalendar) {
+    private long setMonthDays(JewCalendar monthCalendar) {
         dayList = new ArrayList<>();
         long shift = (monthCalendar.getJewishDayOfMonth() - 1 + headOffset) * DAY_IN_MS;//moving calendar to the previous month
         JewCalendar calendar = new JewCalendar(new Date(monthCalendar.getTime().getTime() - shift));
@@ -147,9 +147,10 @@ public class Month {
                     , startDayInMs, calendar.getGregorianDayOfMonth());
             dayList.add(day);
             calendar.forward();
-            if (jewishDayOfMonth == 1){
+            if (jewishDayOfMonth == 1 && beginOfMonth == 0){
                 beginOfMonth = startDayInMs;
-            }  if (beginOfMonth == 0 || dayList.size() > headOffset + daysInMonth){ // headset
+            }
+            else if (beginOfMonth == 0 || dayList.size() > headOffset + daysInMonth){ // headset
                 day.setOutOfMonthRange(true);
             }
 
